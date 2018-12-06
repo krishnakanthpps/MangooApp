@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "780076537579",
+    "firebase_url": "https://mangooapp-a0d4a.firebaseio.com",
+    "project_id": "mangooapp-a0d4a",
+    "storage_bucket": "mangooapp-a0d4a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780076537579:android:8f49909f68b0abaa",
+        "android_client_info": {
+          "package_name": "app.mangoofood.mangooapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "780076537579-cn2m657vt6cu5b5jlm8a00h4oaee3g1r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.mangoofood.mangooapp",
+            "certificate_hash": "0b095cc90aee467a4a094f972f77e27a92fd4ca9"
+          }
+        },
+        {
+          "client_id": "780076537579-h6luu0tlp8r3rqoefc6c6r4mjqi8f1ff.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNH5Hn0svWa6aJN6b0GNkAHrDSxCZ90Gg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "780076537579-h6luu0tlp8r3rqoefc6c6r4mjqi8f1ff.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
