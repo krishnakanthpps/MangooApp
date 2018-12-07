@@ -24,6 +24,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Interface.ItemClickListener;
 import app.mangoofood.mangooapp.Model.Food;
 import app.mangoofood.mangooapp.ViewHolder.FoodViewHolder;
@@ -59,9 +60,15 @@ public class FoodList extends AppCompatActivity {
 
         if(getIntent()!=null)
             categoryId = getIntent().getStringExtra("CategoryId");
-        if(!categoryId.isEmpty() && categoryId!=null)
-        {
-            loadListFood(categoryId);
+        if(!categoryId.isEmpty() && categoryId!=null) {
+            if (Common.isConnectedToInternet(getBaseContext()))
+                loadListFood(categoryId);
+            else
+            {
+                Toast.makeText(FoodList.this, "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
         }
 
         materialSearchBar = (MaterialSearchBar)findViewById(R.id.searchBar);

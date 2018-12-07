@@ -21,6 +21,7 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.annotation.ElementType;
 
+import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Database.Database;
 import app.mangoofood.mangooapp.Model.Food;
 import app.mangoofood.mangooapp.Model.Order;
@@ -79,7 +80,13 @@ public class FoodDetail extends AppCompatActivity {
             foodId = getIntent().getStringExtra("FoodId");
         if(!foodId.isEmpty())
         {
-            getDetailFood(foodId);
+            if(Common.isConnectedToInternet(getBaseContext()))
+               getDetailFood(foodId);
+            else
+            {
+                Toast.makeText(FoodDetail.this, "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
     }

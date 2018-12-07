@@ -3,6 +3,7 @@ package app.mangoofood.mangooapp;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompatSideChannelService;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -43,45 +44,49 @@ public class LogIn extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final ProgressDialog mDialog = new ProgressDialog(LogIn.this);
-                mDialog.setMessage("Please waiting..");
-                mDialog.show();
+                if (Common.isConnectedToInternet(getBaseContext())) {
 
-                table_user.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    final ProgressDialog mDialog = new ProgressDialog(LogIn.this);
+                    mDialog.setMessage("Please waiting..");
+                    mDialog.show();
 
-                        if(dataSnapshot.child(edtPhone.getText().toString()).exists()){
-                        mDialog.dismiss();
-                        User user = dataSnapshot.child(edtPhone.getText().toString()).getValue(User.class);
-                        user.setPhone(edtPhone.getText().toString());
-                        if(user.getPassword().equals(edtPassword.getText().toString()))
-                        {
-                            {
-                                Intent homeIntent = new Intent(LogIn.this,Home.class);
-                                Common.currentUser = user;
-                                startActivity(homeIntent);
-                                finish();
+                    table_user.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            if (dataSnapshot.child(edtPhone.getText().toString()).exists()) {
+                                mDialog.dismiss();
+                                User user = dataSnapshot.child(edtPhone.getText().toString()).getValue(User.class);
+                                user.setPhone(edtPhone.getText().toString());
+                                if (user.getPassword().equals(edtPassword.getText().toString())) {
+                                    {
+                                        Intent homeIntent = new Intent(LogIn.this, Home.class);
+                                        Common.currentUser = user;
+                                        startActivity(homeIntent);
+                                        finish();
+                                    }
+                                } else {
+                                    Toast.makeText(LogIn.this, "Wrong Password", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                mDialog.dismiss();
+                                Toast.makeText(LogIn.this, "User not exist", Toast.LENGTH_SHORT).show();
                             }
                         }
-                        else
-                        {
-                            Toast.makeText(LogIn.this,"Wrong Password",Toast.LENGTH_SHORT).show();
-                        }
-                         }
-                         else
-                        {
-                            mDialog.dismiss();
-                            Toast.makeText(LogIn.this,"User not exist",Toast.LENGTH_SHORT).show();
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+                }
+                else
+                {
+                    Toast.makeText(LogIn.this, "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
+
         });
     }
 }
