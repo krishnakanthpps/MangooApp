@@ -20,7 +20,7 @@ import app.mangoofood.mangooapp.Model.User;
 
 public class SignUp extends AppCompatActivity {
 
-    MaterialEditText edtPhone,edtName,edtPassword;
+    MaterialEditText edtPhone,edtName,edtPassword,edtsecureCode;
     Button btnSignUp;
 
     @Override
@@ -31,6 +31,7 @@ public class SignUp extends AppCompatActivity {
         edtName = (MaterialEditText)findViewById(R.id.edtName);
         edtPhone =(MaterialEditText)findViewById(R.id.edtPhone);
         edtPassword =(MaterialEditText)findViewById(R.id.edtPassword);
+        edtsecureCode =(MaterialEditText)findViewById(R.id.edtSecureCode);
         btnSignUp = (Button)findViewById(R.id.btnSignUp);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -53,7 +54,7 @@ public class SignUp extends AppCompatActivity {
                                 Toast.makeText(SignUp.this, "Phone Number Already exists !", Toast.LENGTH_SHORT).show();
                             } else {
                                 mDialog.dismiss();
-                                User user = new User(edtName.getText().toString(), edtPassword.getText().toString());
+                                User user = new User(edtName.getText().toString(), edtPassword.getText().toString(),edtsecureCode.getText().toString());
                                 table_user.child(edtPhone.getText().toString()).setValue(user);
                                 Toast.makeText(SignUp.this, "Sign Up Successful !", Toast.LENGTH_SHORT).show();
                                 finish();

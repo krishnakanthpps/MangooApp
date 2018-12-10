@@ -38,7 +38,7 @@ import app.mangoofood.mangooapp.Model.Category;
 import app.mangoofood.mangooapp.Model.Food;
 import app.mangoofood.mangooapp.ViewHolder.FoodViewHolder;
 import app.mangoofood.mangooapp.ViewHolder.MenuViewHolder;
-
+import io.paperdb.Paper;
 
 
 public class Home extends AppCompatActivity
@@ -67,6 +67,7 @@ public class Home extends AppCompatActivity
         database = FirebaseDatabase.getInstance();
         category = database.getReference("Category");
 
+        Paper.init(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,6 +178,7 @@ public class Home extends AppCompatActivity
 
         } else if (id == R.id.nav_log_out) {
 
+            Paper.book().destroy();
             Intent signIn = new Intent(Home.this,LogIn.class);
             signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(signIn);
