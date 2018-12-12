@@ -2,6 +2,7 @@ package app.mangoofood.mangooapp;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -31,6 +32,8 @@ import javax.security.auth.login.LoginException;
 import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Model.User;
 import io.paperdb.Paper;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class LogIn extends AppCompatActivity {
     EditText edtPhone,edtPassword;
@@ -42,8 +45,19 @@ public class LogIn extends AppCompatActivity {
     DatabaseReference table_user;
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/Product-Sans.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
         setContentView(R.layout.activity_log_in);
 
         edtPassword = (MaterialEditText)findViewById(R.id.edtPassword);
@@ -78,7 +92,7 @@ public class LogIn extends AppCompatActivity {
                     mDialog.setMessage("Please waiting..");
                     mDialog.show();
 
-                    table_user.addValueEventListener(new ValueEventListener() {
+                    table_user.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -92,6 +106,8 @@ public class LogIn extends AppCompatActivity {
                                         Common.currentUser = user;
                                         startActivity(homeIntent);
                                         finish();
+
+                                        table_user.removeEventListener(this);
                                     }
                                 } else {
                                     Toast.makeText(LogIn.this, "Wrong Password", Toast.LENGTH_SHORT).show();

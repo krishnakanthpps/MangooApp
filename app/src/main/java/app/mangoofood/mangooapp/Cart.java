@@ -1,5 +1,6 @@
 package app.mangoofood.mangooapp;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,8 @@ import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.Model.Request;
 import app.mangoofood.mangooapp.ViewHolder.CartAdapter;
 import info.hoang8f.widget.FButton;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class Cart extends AppCompatActivity {
     
@@ -44,10 +47,20 @@ public class Cart extends AppCompatActivity {
     List<Order> cart = new ArrayList<>();
     CartAdapter adapter;
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+        .setDefaultFontPath("fonts/Product-Sans.ttf")
+        .setFontAttrId(R.attr.fontPath)
+        .build());
+
         setContentView(R.layout.activity_cart);
         
         database = FirebaseDatabase.getInstance();

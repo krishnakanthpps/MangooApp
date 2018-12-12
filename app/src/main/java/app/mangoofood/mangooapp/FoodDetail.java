@@ -1,5 +1,6 @@
 package app.mangoofood.mangooapp;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +34,8 @@ import app.mangoofood.mangooapp.Database.Database;
 import app.mangoofood.mangooapp.Model.Food;
 import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.Model.Rating;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FoodDetail extends AppCompatActivity implements RatingDialogListener {
 
@@ -53,8 +56,19 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
     DatabaseReference ratingTb1;
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/Product-Sans.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
         setContentView(R.layout.activity_food_detail);
 
         database = FirebaseDatabase.getInstance();
