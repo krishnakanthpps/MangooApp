@@ -36,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -49,6 +50,7 @@ import app.mangoofood.mangooapp.Database.Database;
 import app.mangoofood.mangooapp.Interface.ItemClickListener;
 import app.mangoofood.mangooapp.Model.Category;
 import app.mangoofood.mangooapp.Model.Food;
+import app.mangoofood.mangooapp.Model.Token;
 import app.mangoofood.mangooapp.ViewHolder.FoodViewHolder;
 import app.mangoofood.mangooapp.ViewHolder.MenuViewHolder;
 import dmax.dialog.SpotsDialog;
@@ -157,6 +159,15 @@ public class Home extends AppCompatActivity
         //recyler_menu.setLayoutManager(layoutManager);
         recyler_menu.setLayoutManager(new GridLayoutManager(this,2));
 
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+    }
+
+    private void updateToken(String token) {
+        FirebaseDatabase db=FirebaseDatabase.getInstance();
+        DatabaseReference tokens=db.getReference("Tokens");
+        Token data=new Token(token,false);
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
     }
 
     private void loadMenu(){
@@ -195,9 +206,10 @@ public class Home extends AppCompatActivity
             }
         };
 
-        adapter.startListening();
+
 
         recyler_menu.setAdapter(adapter);
+        adapter.startListening();
         swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -205,9 +217,16 @@ public class Home extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
+
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        loadMenu();
+    }
+
+        @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {

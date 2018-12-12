@@ -181,7 +181,7 @@ public class FoodList extends AppCompatActivity {
 
     private void startSearch(CharSequence text) {
 
-        Query searchByName = foodList.orderByChild("Name").equalTo(text.toString());
+        Query searchByName = foodList.orderByChild("name").equalTo(text.toString());
 
         FirebaseRecyclerOptions<Food> foodOptions = new FirebaseRecyclerOptions.Builder<Food>()
                 .setQuery(searchByName,Food.class)
@@ -309,8 +309,8 @@ public class FoodList extends AppCompatActivity {
             }
         };
 
-
         adapter.startListening();
+
         recyclerView.setAdapter(adapter);
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -318,8 +318,18 @@ public class FoodList extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        adapter.stopListening();
-        searchAdapter.stopListening();
+        if(adapter != null) {
+            adapter.stopListening();
+        }
+        if(searchAdapter != null) {
+            searchAdapter.stopListening();
+        }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadListFood(categoryId);
     }
 }
