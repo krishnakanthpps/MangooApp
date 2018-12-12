@@ -26,6 +26,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -36,6 +37,7 @@ import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Interface.ItemClickListener;
 import app.mangoofood.mangooapp.Model.Category;
 import app.mangoofood.mangooapp.Model.Food;
+import app.mangoofood.mangooapp.Model.Token;
 import app.mangoofood.mangooapp.ViewHolder.FoodViewHolder;
 import app.mangoofood.mangooapp.ViewHolder.MenuViewHolder;
 import io.paperdb.Paper;
@@ -103,6 +105,15 @@ public class Home extends AppCompatActivity
             return;
         }
 
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+    }
+
+    private void updateToken(String token) {
+        FirebaseDatabase db=FirebaseDatabase.getInstance();
+        DatabaseReference tokens=db.getReference("Tokens");
+        Token data=new Token(token,false);
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
     }
 
     private void loadMenu(){
