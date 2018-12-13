@@ -46,7 +46,7 @@
         
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.andremion.counterfab.CounterFab
         android:id="@+id/btnCart"
         android:src="@drawable/ic_shopping_cart_black_24dp"
         android:backgroundTint="@android:color/white"
@@ -143,7 +143,7 @@
                         app:backGroundColor="@color/colorAccent"
                         app:initialNumber="1"
                         app:finalNumber="20"
-                        ></com.cepheuen.elegantnumberbutton.view.ElegantNumberButton>
+                        />
 
                 </LinearLayout>
 
@@ -182,6 +182,23 @@
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
+
+            <info.hoang8f.widget.FButton
+                android:id="@+id/btnShowComment"
+                android:text="Show Commnet"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_alignParentBottom="true"
+                android:textColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:fButtonColor="@color/btnSignUp"
+                app:shadowColor="@color/colorAccent"
+                app:shadowEnabled="true"
+                app:shadowHeight="5dp"
+                app:cornerRadius="4dp"
+                />
             
         </LinearLayout>
         

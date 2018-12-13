@@ -23,9 +23,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andremion.counterfab.CounterFab;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -74,6 +77,8 @@ public class Home extends AppCompatActivity
     //FirebaseRecyclerAdapter<Category,MenuViewHolder>adapter;
 
     SwipeRefreshLayout swipeRefreshLayout;
+
+    CounterFab fab;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -130,48 +135,6 @@ public class Home extends AppCompatActivity
         database = FirebaseDatabase.getInstance();
         category = database.getReference("Category");
 
-        Paper.init(this);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent cartIntent = new Intent(Home.this,Cart.class);
-                startActivity(cartIntent);
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        View headerView = navigationView.getHeaderView(0);
-        txtFullName = (TextView)findViewById(R.id.txtFullName);
-        //TextView..setText(Common.currentUser.getName());
-
-        recyler_menu = (RecyclerView)findViewById(R.id.recyler_menu);
-        recyler_menu.setHasFixedSize(true);
-        //layoutManager = new LinearLayoutManager(this);
-        //recyler_menu.setLayoutManager(layoutManager);
-        recyler_menu.setLayoutManager(new GridLayoutManager(this,2));
-
-        updateToken(FirebaseInstanceId.getInstance().getToken());
-
-    }
-
-    private void updateToken(String token) {
-        FirebaseDatabase db=FirebaseDatabase.getInstance();
-        DatabaseReference tokens=db.getReference("Tokens");
-        Token data=new Token(token,false);
-        tokens.child(Common.currentUser.getPhone()).setValue(data);
-    }
-
-    private void loadMenu(){
-
         FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
                 .setQuery(category,Category.class)
                 .build();
@@ -208,9 +171,63 @@ public class Home extends AppCompatActivity
 
 
 
+        Paper.init(this);
+
+
+        fab = (CounterFab) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent cartIntent = new Intent(Home.this,Cart.class);
+                startActivity(cartIntent);
+            }
+        });
+
+        fab.setCount(new Database(this).getCountCart());
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View headerView = navigationView.getHeaderView(0);
+        txtFullName = (TextView)findViewById(R.id.txtFullName);
+        //TextView..setText(Common.currentUser.getName());
+
+        recyler_menu = (RecyclerView)findViewById(R.id.recyler_menu);
+        recyler_menu.setHasFixedSize(true);
+        //layoutManager = new LinearLayoutManager(this);
+        //recyler_menu.setLayoutManager(layoutManager);
+        recyler_menu.setLayoutManager(new GridLayoutManager(this,2));
+
+        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(recyler_menu.getContext(),
+                R.anim.layout_fall_down);
+        recyler_menu.setLayoutAnimation(controller);
+
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+    }
+
+    private void updateToken(String token) {
+        FirebaseDatabase db=FirebaseDatabase.getInstance();
+        DatabaseReference tokens=db.getReference("Tokens");
+        Token data=new Token(token,false);
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
+    }
+
+    private void loadMenu(){
+
         recyler_menu.setAdapter(adapter);
         adapter.startListening();
         swipeRefreshLayout.setRefreshing(false);
+
+        recyler_menu.getAdapter().notifyDataSetChanged();
+        recyler_menu.scheduleLayoutAnimation();
+
     }
 
     @Override
@@ -224,6 +241,7 @@ public class Home extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         loadMenu();
+        fab.setCount(new Database(this).getCountCart());
     }
 
         @Override
@@ -280,10 +298,50 @@ public class Home extends AppCompatActivity
         {
             showChangePasswordDialog();
         }
+        else if (id == R.id.nav_home_address)
+        {
+            showHomeAddressDialog();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showHomeAddressDialog() {
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Home.this);
+        alertDialog.setTitle("CHANGE HOME ADDRESS");
+        alertDialog.setMessage("All fields are necessary");
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View layout_home = inflater.inflate(R.layout.home_address_layout,null);
+
+        final MaterialEditText edtHomeAddress= (MaterialEditText)layout_home.findViewById(R.id.edtHomeAddress);
+
+        alertDialog.setView(layout_home);
+
+        alertDialog.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                dialogInterface.dismiss();
+
+                Common.currentUser.setHomeAddress(edtHomeAddress.getText().toString());
+
+                FirebaseDatabase.getInstance().getReference("User")
+                        .child(Common.currentUser.getPhone())
+                        .setValue(Common.currentUser)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(Home.this, "Home Address updated successfully", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        });
+
+        alertDialog.show();
+
     }
 
     private void showChangePasswordDialog() {

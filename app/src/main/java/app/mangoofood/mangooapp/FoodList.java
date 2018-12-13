@@ -34,6 +34,7 @@ import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Database.Database;
 import app.mangoofood.mangooapp.Interface.ItemClickListener;
 import app.mangoofood.mangooapp.Model.Food;
+import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.ViewHolder.FoodViewHolder;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -263,6 +264,22 @@ public class FoodList extends AppCompatActivity {
                 viewHolder.food_price.setText(String.format("₹ %s",model.getPrice().toString()));
                 Picasso.with(getBaseContext()).load(model.getImage())
                         .into(viewHolder.food_image);
+
+                viewHolder.quick_cart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new Database(getBaseContext()).addToCart(new Order(
+                                adapter.getRef(position).getKey(),
+                                model.getName(),
+                                "1",
+                                model.getPrice(),
+                                model.getDiscount(),
+                                model.getImage()
+                        ));
+
+                        Toast.makeText(FoodList.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
 
                 if(localDB.isFavourite(adapter.getRef(position).getKey()))

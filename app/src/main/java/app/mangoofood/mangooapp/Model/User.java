@@ -5,12 +5,14 @@ public class User {
     private  String Password;
     private String Phone;
     private String secureCode;
+    private String homeAddress;
 
 
     public User(String name, String password,String securecode) {
         Name = name;
         Password = password;
         this.secureCode=securecode;
+
     }
 
     public User(){
@@ -47,5 +49,13 @@ public class User {
 
     public void setPassword(String password) {
         Password = password;
+    }
+
+    public String getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(String homeAddress) {
+        this.homeAddress = homeAddress;
     }
 }
