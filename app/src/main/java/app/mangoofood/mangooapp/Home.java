@@ -29,15 +29,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andremion.counterfab.CounterFab;
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
@@ -51,6 +58,7 @@ import java.util.Map;
 import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Database.Database;
 import app.mangoofood.mangooapp.Interface.ItemClickListener;
+import app.mangoofood.mangooapp.Model.Banner;
 import app.mangoofood.mangooapp.Model.Category;
 import app.mangoofood.mangooapp.Model.Food;
 import app.mangoofood.mangooapp.Model.Token;
@@ -80,6 +88,9 @@ public class Home extends AppCompatActivity
 
     CounterFab fab;
 
+    HashMap<String, String> image_list;
+    SliderLayout mSlider;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -99,6 +110,8 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
+
+
 
         swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
@@ -210,6 +223,61 @@ public class Home extends AppCompatActivity
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
 
+        setupslider();
+
+    }
+
+    private void setupslider() {
+        mSlider = (SliderLayout)findViewById(R.id.slider);
+        image_list = new HashMap<>();
+
+        final DatabaseReference banners = database.getReference("Banner");
+
+        banners.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
+                {
+                    Banner banner = postSnapshot.getValue(Banner.class);
+                    image_list.put(banner.getName()+"@@@"+banner.getId(),banner.getImage());
+                }
+                for(String key:image_list.keySet())
+                {
+                    String[] keySplit = key.split("@@@");
+                    String nameofFood = keySplit[0];
+                    String idofFood = keySplit[1];
+
+                    final TextSliderView textSliderView = new TextSliderView(getBaseContext());
+                    textSliderView
+                            .description(nameofFood)
+                            .image(image_list.get(key))
+                            .setScaleType(BaseSliderView.ScaleType.Fit)
+                            .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
+                                @Override
+                                public void onSliderClick(BaseSliderView slider) {
+                                    Intent intent = new Intent(Home.this,FoodDetail.class);
+
+                                    intent.putExtras(textSliderView.getBundle());
+                                    startActivity(intent);
+                                }
+                            });
+                    textSliderView.bundle(new Bundle());
+                    textSliderView.getBundle().putString("FoodId",idofFood);
+                    mSlider.addSlider(textSliderView);
+
+                    banners.removeEventListener(this);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        mSlider.setPresetTransformer(SliderLayout.Transformer.Background2Foreground);
+        mSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mSlider.setCustomAnimation(new DescriptionAnimation());
+        mSlider.setDuration(4000);
     }
 
     private void updateToken(String token) {
@@ -234,6 +302,7 @@ public class Home extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
+        mSlider.stopAutoCycle();
 
     }
 

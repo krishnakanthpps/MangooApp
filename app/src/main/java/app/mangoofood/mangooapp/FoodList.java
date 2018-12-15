@@ -117,6 +117,56 @@ public class FoodList extends AppCompatActivity {
                     }
 
                 }
+
+                materialSearchBar = (MaterialSearchBar)findViewById(R.id.searchBar);
+                materialSearchBar.setHint("Search Food..");
+                loadSuggest();
+                materialSearchBar.setCardViewElevation(10);
+                materialSearchBar.addTextChangeListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        List<String > suggest = new ArrayList<String>();
+                        for (String search:suggestList)
+                        {
+                            if(search.toLowerCase().contains(materialSearchBar.getText().toLowerCase()))
+                                suggest.add(search);
+                        }
+                        materialSearchBar.setLastSuggestions(suggest);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                });
+
+                materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+                    @Override
+                    public void onSearchStateChanged(boolean enabled) {
+
+                        if (!enabled)
+                            recyclerView.setAdapter(adapter);
+
+                    }
+
+                    @Override
+                    public void onSearchConfirmed(CharSequence text) {
+
+                        startSearch(text);
+
+                    }
+
+                    @Override
+                    public void onButtonClicked(int buttonCode) {
+
+                    }
+                });
             }
         });
 
@@ -126,63 +176,13 @@ public class FoodList extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
 
-        materialSearchBar = (MaterialSearchBar)findViewById(R.id.searchBar);
-        materialSearchBar.setHint("Search Food..");
-        loadSuggest();
 
-        materialSearchBar.setLastSuggestions(suggestList);
-        materialSearchBar.setCardViewElevation(10);
-        materialSearchBar.addTextChangeListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                List<String > suggest = new ArrayList<String>();
-                for (String search:suggestList)
-                {
-                    if(search.toLowerCase().contains(materialSearchBar.getText().toLowerCase()))
-                        suggest.add(search);
-                }
-                materialSearchBar.setLastSuggestions(suggest);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
-            @Override
-            public void onSearchStateChanged(boolean enabled) {
-
-                if (!enabled)
-                    recyclerView.setAdapter(adapter);
-
-            }
-
-            @Override
-            public void onSearchConfirmed(CharSequence text) {
-
-                startSearch(text);
-
-            }
-
-            @Override
-            public void onButtonClicked(int buttonCode) {
-
-            }
-        });
 
     }
 
     private void startSearch(CharSequence text) {
 
-        Query searchByName = foodList.orderByChild("name").equalTo(text.toString());
+        Query searchByName = foodList.orderByChild("Name").equalTo(text.toString());
 
         FirebaseRecyclerOptions<Food> foodOptions = new FirebaseRecyclerOptions.Builder<Food>()
                 .setQuery(searchByName,Food.class)
@@ -237,7 +237,7 @@ public class FoodList extends AppCompatActivity {
                             Food item = postSnapshot.getValue(Food.class);
                             suggestList.add(item.getName());
                         }
-
+                        materialSearchBar.setLastSuggestions(suggestList);
                     }
 
                     @Override

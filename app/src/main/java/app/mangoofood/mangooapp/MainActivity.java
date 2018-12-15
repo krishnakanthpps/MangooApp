@@ -26,7 +26,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnSignUp, btnLogIn;
+    Button btnContinue;
     TextView txtSlogan;
 
     @Override
@@ -45,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        btnLogIn = findViewById(R.id.btnLogIn);
-        btnSignUp = findViewById(R.id.btnSignUp);
+        btnContinue = findViewById(R.id.btn_continue);
 
         txtSlogan = (TextView)findViewById(R.id.txtSlogan);
         Typeface face = Typeface.createFromAsset(getAssets(),"fonts/Roboto-Regular.ttf");
@@ -54,33 +53,12 @@ public class MainActivity extends AppCompatActivity {
 
         Paper.init(this);
 
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
-
-        btnLogIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        btnLogIn.setOnClickListener(new View.OnClickListener(){
+        btnContinue.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Intent logIn = new Intent(MainActivity.this,LogIn.class);
                 startActivity(logIn);
-            }
-        });
-
-        btnSignUp.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Intent signUp = new Intent(MainActivity.this,SignUp.class);
-                startActivity(signUp);
             }
         });
 

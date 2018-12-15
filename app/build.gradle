@@ -21,6 +21,10 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
+    implementation 'com.facebook.android:account-kit-sdk:4.29.0'
+    implementation ('com.facebook.android:facebook-share:4.29.0')
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation 'com.daimajia.slider:library:1.1.5@aar'
     implementation 'com.stepstone.apprating:app-rating:2.0.0'
     implementation 'io.paperdb:paperdb:2.1'
     implementation 'com.github.rey5137:material:1.2.4'

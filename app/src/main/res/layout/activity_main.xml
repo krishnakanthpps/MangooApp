@@ -31,13 +31,13 @@ tools:context=".MainActivity">
 <LinearLayout
     android:orientation="horizontal"
     android:layout_alignParentBottom="true"
-    android:weightSum="2"
+    android:weightSum="1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <info.hoang8f.widget.FButton
-        android:id="@+id/btnSignUp"
-        android:text="Sign Up"
+        android:id="@+id/btn_continue"
+        android:text="CONTINUE"
         android:layout_weight="1"
         android:textColor="@android:color/white"
         android:layout_width="0dp"
@@ -50,20 +50,6 @@ tools:context=".MainActivity">
         app:cornerRadius="4dp"
         />
 
-    <info.hoang8f.widget.FButton
-        android:id="@+id/btnLogIn"
-        android:text="Log In"
-        android:layout_weight="1"
-        android:textColor="@android:color/white"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:fButtonColor="@color/colorAccent"
-        app:shadowColor="@color/colorAccent"
-        app:shadowEnabled="true"
-        app:shadowHeight="5dp"
-        app:cornerRadius="4dp"
-        />
 
 </LinearLayout>
 
