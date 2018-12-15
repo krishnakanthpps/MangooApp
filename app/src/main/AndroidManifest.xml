@@ -18,7 +18,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDqoRcNfgEgsglHA_ToFZR9medvr0NU3Tk" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,7 +47,9 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ShowComment"></activity>
+        <activity android:name=".ShowComment" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".Onboard"></activity>
     </application>
 
 </manifest>

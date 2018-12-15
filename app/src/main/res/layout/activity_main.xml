@@ -45,9 +45,9 @@ tools:context=".MainActivity">
         android:layout_margin="8dp"
         app:fButtonColor="@color/btnSignUp"
         app:shadowColor="@color/colorAccent"
-        app:shadowEnabled="true"
+        app:shadowEnabled="false"
         app:shadowHeight="5dp"
-        app:cornerRadius="4dp"
+        app:cornerRadius="8dp"
         />
 
     <info.hoang8f.widget.FButton
@@ -62,7 +62,7 @@ tools:context=".MainActivity">
         app:shadowColor="@color/colorAccent"
         app:shadowEnabled="true"
         app:shadowHeight="5dp"
-        app:cornerRadius="4dp"
+        app:cornerRadius="8dp"
         />
 
 </LinearLayout>
