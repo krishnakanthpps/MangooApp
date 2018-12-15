@@ -20,16 +20,4 @@ public class RetrofitClient {
     }
 
 
-    public static Retrofit getGoogleClient(String baseURL)
-    {
-        if(retrofit==null)
-        {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseURL)
-                    .addConverterFactory(ScalarsConverterFactory.create())
-                    .build();
-        }
-        return retrofit;
-    }
-
 }

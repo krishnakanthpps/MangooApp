@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 
 import app.mangoofood.mangooapp.Model.User;
 import app.mangoofood.mangooapp.Remote.APIService;
+import app.mangoofood.mangooapp.Remote.GoogleRetrofitClient;
 import app.mangoofood.mangooapp.Remote.IGoogleService;
 import app.mangoofood.mangooapp.Remote.RetrofitClient;
 
@@ -27,7 +28,7 @@ public class Common {
 
     public static IGoogleService getGoogleMapAPI()
     {
-        return RetrofitClient.getGoogleClient(GOOGLE_API_URL).create(IGoogleService.class);
+        return GoogleRetrofitClient.getGoogleClient(GOOGLE_API_URL).create(IGoogleService.class);
     }
 
     public static final String USER_KEY="User";

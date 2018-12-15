@@ -1,6 +1,7 @@
 package app.mangoofood.mangooapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.app.Notification;
 import android.content.DialogInterface;
@@ -45,6 +46,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.razorpay.Checkout;
+import com.razorpay.PaymentResultListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import org.json.JSONArray;
@@ -77,7 +80,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Cart extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, PaymentResultListener
+
+{
     
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
@@ -91,7 +96,6 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
     List<Order> cart = new ArrayList<>();
     CartAdapter adapter;
-    APIService mService;
 
     Place shippingAddress;
 
@@ -107,6 +111,10 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
     private static final int PLAY_SERVICE_REQUEST = 9997;
 
     IGoogleService mGoogleMapService;
+    APIService mService;
+
+    int payamount;
+
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -316,7 +324,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
                 if (b)
                 {
-                    mGoogleMapService.getAddressName(String.format("https://maps.google.com/maps/api/geocode/json?latlng=%f,%f&sensor=false",
+                    mGoogleMapService.getAddressName(String.format("https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=false",
                             mLastLocation.getLatitude(),
                             mLastLocation.getLongitude()))
                     .enqueue(new Callback<String>() {
@@ -332,8 +340,9 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
                                 address = firstObject.getString("formatted_address");
 
-                                ((EditText)edtAddress.getView().findViewById(R.id.place_autocomplete_search_input))
-                                        .setText(address);
+                                edtAddress.setText(address);
+                                //((EditText)edtAddress.getView().findViewById(R.id.place_autocomplete_search_input))
+                                 //       .setText(address);
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -374,9 +383,10 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                     }
                 }
 
-                if (!TextUtils.isEmpty(address))
+
+                if (TextUtils.isEmpty(address))
                 {
-                    Toast.makeText(Cart.this, "Please enter address or select option address", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Cart.this, "Please enter address", Toast.LENGTH_SHORT).show();
 
                     getFragmentManager().beginTransaction()
                             .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
@@ -388,26 +398,30 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                 Request request = new Request(
                         Common.currentUser.getPhone(),
                         Common.currentUser.getName(),
-                        shippingAddress.getAddress().toString(),
+                        address,
                         txtTotalPrice.getText().toString(),
                         "0",
                         edtComment.getText().toString(),
-                        String.format("%s","%s",shippingAddress.getLatLng().latitude,shippingAddress.getLatLng().longitude),
+                        String.format("%s","%s",mLastLocation.getLatitude(),mLastLocation.getLongitude()),
                         cart
                 );
 
                 String order_number = String.valueOf(System.currentTimeMillis());
                 requests.child(order_number).setValue(request);
 
+                startPayment();
                 new Database(getBaseContext()).cleanCart();
 
+
                 sendNotificationOrder(order_number);
-               // Toast.makeText(Cart.this, "Thank you, Order Placed", Toast.LENGTH_SHORT).show();
-                //finish();
+                Toast.makeText(Cart.this, "Thank you, Order Placed", Toast.LENGTH_SHORT).show();
+                finish();
 
                 getFragmentManager().beginTransaction()
                         .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
                         .commit();
+
+
             }
         });
 
@@ -422,6 +436,29 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
             }
         });
         alertDialog.show();
+
+    }
+
+    private void startPayment() {
+
+        payamount = 1000;
+
+        Checkout checkout = new Checkout();
+        checkout.setImage(R.mipmap.ic_launcher);
+
+        final Activity activity = this;
+
+        try {
+            JSONObject options = new JSONObject();
+            options.put("Description","Order #123455");
+            options.put("currency","INR");
+            options.put("amount",payamount*100);
+            checkout.open(activity,options);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
@@ -526,6 +563,21 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                 }
             }
         }
+
+    }
+
+    @Override
+    public void onPaymentSuccess(String s) {
+
+        new Database(getBaseContext()).cleanCart();
+        Toast.makeText(Cart.this, "Payment Successful", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onPaymentError(int i, String s) {
+
+        Toast.makeText(Cart.this, "Payment Failed", Toast.LENGTH_SHORT).show();
 
     }
 }

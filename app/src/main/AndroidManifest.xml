@@ -50,6 +50,11 @@
         <activity android:name=".ShowComment" />
         <activity android:name=".MainActivity" />
         <activity android:name=".Onboard"></activity>
+
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="rzp_test_eXiJeMlNzXt3Yl"/>
+
     </application>
 
 </manifest>

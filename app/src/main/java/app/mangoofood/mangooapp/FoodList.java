@@ -49,9 +49,9 @@ public class FoodList extends AppCompatActivity {
 
     String categoryId = "";
 
-    FirebaseRecyclerAdapter<Food,FoodViewHolder> adapter;
+    FirebaseRecyclerAdapter<Food, FoodViewHolder> adapter;
 
-    FirebaseRecyclerAdapter<Food,FoodViewHolder> searchAdapter;
+    FirebaseRecyclerAdapter<Food, FoodViewHolder> searchAdapter;
     List<String> suggestList = new ArrayList<>();
     MaterialSearchBar materialSearchBar;
     Database localDB;
@@ -77,9 +77,9 @@ public class FoodList extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         foodList = database.getReference("Foods");
 
-        localDB=new Database(this);
+        localDB = new Database(this);
 
-        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_layout);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
@@ -87,13 +87,12 @@ public class FoodList extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(getIntent()!=null)
+                if (getIntent() != null)
                     categoryId = getIntent().getStringExtra("CategoryId");
-                if(!categoryId.isEmpty() && categoryId!=null) {
+                if (!categoryId.isEmpty() && categoryId != null) {
                     if (Common.isConnectedToInternet(getBaseContext()))
                         loadListFood(categoryId);
-                    else
-                    {
+                    else {
                         Toast.makeText(FoodList.this, "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -105,18 +104,72 @@ public class FoodList extends AppCompatActivity {
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if(getIntent()!=null)
+                if (getIntent() != null)
                     categoryId = getIntent().getStringExtra("CategoryId");
-                if(!categoryId.isEmpty() && categoryId!=null) {
+                if (!categoryId.isEmpty() && categoryId != null) {
                     if (Common.isConnectedToInternet(getBaseContext()))
                         loadListFood(categoryId);
-                    else
-                    {
+                    else {
                         Toast.makeText(FoodList.this, "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                 }
+
+
+        /*recyclerView = (RecyclerView)findViewById(R.id.recyler_food);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);*/
+
+                materialSearchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
+                materialSearchBar.setHint("Search Food..");
+                loadSuggest();
+                materialSearchBar.setCardViewElevation(10);
+                materialSearchBar.addTextChangeListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        List<String> suggest = new ArrayList<String>();
+                        for (String search : suggestList) {
+                            if (search.toLowerCase().contains(materialSearchBar.getText().toLowerCase()))
+                                suggest.add(search);
+                        }
+                        materialSearchBar.setLastSuggestions(suggest);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                });
+
+                materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+                    @Override
+                    public void onSearchStateChanged(boolean enabled) {
+
+                        if (!enabled)
+                            recyclerView.setAdapter(adapter);
+
+                    }
+
+                    @Override
+                    public void onSearchConfirmed(CharSequence text) {
+
+                        startSearch(text);
+
+                    }
+
+                    @Override
+                    public void onButtonClicked(int buttonCode) {
+
+                    }
+                });
+
             }
         });
 
@@ -124,65 +177,13 @@ public class FoodList extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
-
-        materialSearchBar = (MaterialSearchBar)findViewById(R.id.searchBar);
-        materialSearchBar.setHint("Search Food..");
-        loadSuggest();
-
-        materialSearchBar.setLastSuggestions(suggestList);
-        materialSearchBar.setCardViewElevation(10);
-        materialSearchBar.addTextChangeListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                List<String > suggest = new ArrayList<String>();
-                for (String search:suggestList)
-                {
-                    if(search.toLowerCase().contains(materialSearchBar.getText().toLowerCase()))
-                        suggest.add(search);
-                }
-                materialSearchBar.setLastSuggestions(suggest);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        materialSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
-            @Override
-            public void onSearchStateChanged(boolean enabled) {
-
-                if (!enabled)
-                    recyclerView.setAdapter(adapter);
-
-            }
-
-            @Override
-            public void onSearchConfirmed(CharSequence text) {
-
-                startSearch(text);
-
-            }
-
-            @Override
-            public void onButtonClicked(int buttonCode) {
-
-            }
-        });
-
     }
+
+
 
     private void startSearch(CharSequence text) {
 
-        Query searchByName = foodList.orderByChild("name").equalTo(text.toString());
+        Query searchByName = foodList.orderByChild("Name").equalTo(text.toString());
 
         FirebaseRecyclerOptions<Food> foodOptions = new FirebaseRecyclerOptions.Builder<Food>()
                 .setQuery(searchByName,Food.class)
@@ -237,6 +238,7 @@ public class FoodList extends AppCompatActivity {
                             Food item = postSnapshot.getValue(Food.class);
                             suggestList.add(item.getName());
                         }
+                        materialSearchBar.setLastSuggestions(suggestList);
 
                     }
 

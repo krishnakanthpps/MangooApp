@@ -20,7 +20,7 @@ import io.paperdb.Paper;
 
 public class Splash extends AppCompatActivity {
 
-    private static int SPLASH_TIME = 4000;
+    private static int SPLASH_TIME = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,27 +29,31 @@ public class Splash extends AppCompatActivity {
 
         Paper.init(this);
 
+        final String user=Paper.book().read(Common.USER_KEY);
+        final String pwd=Paper.book().read(Common.PWD_KEY);
+
         //Code to start timer and take action after the timer ends
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 //Do any action here. Now we are moving to next page
-                Intent mainIntent = new Intent(Splash.this, Onboard.class);
-                startActivity(mainIntent);
+                if(user!=null && pwd!=null)
+                {
+                    if(!user.isEmpty() && !pwd.isEmpty())
+                        login(user,pwd);
+                }
+                else {
+                    Intent mainIntent = new Intent(Splash.this, Onboard.class);
+                    startActivity(mainIntent);
+                }
                 /* This 'finish()' is for exiting the app when back button pressed
                  *  from Home page which is ActivityHome
                  */
-                finish();
+               // finish();
             }
         }, SPLASH_TIME);
 
-        String user=Paper.book().read(Common.USER_KEY);
-        String pwd=Paper.book().read(Common.PWD_KEY);
-        if(user!=null && pwd!=null)
-        {
-            if(!user.isEmpty() && !pwd.isEmpty())
-                login(user,pwd);
-        }
+
     }
 
     private void login(final String phone, final String pwd) {
@@ -60,7 +64,7 @@ public class Splash extends AppCompatActivity {
 
 
             final ProgressDialog mDialog = new ProgressDialog(Splash.this);
-            mDialog.setMessage("Please waiting..");
+            mDialog.setMessage("Logging in. .. .");
             mDialog.show();
 
             table_user.addValueEventListener(new ValueEventListener() {
