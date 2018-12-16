@@ -3,6 +3,12 @@ package app.mangoofood.mangooapp.Common;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.ParseException;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import app.mangoofood.mangooapp.Model.User;
 import app.mangoofood.mangooapp.Remote.APIService;
@@ -54,4 +60,12 @@ public class Common {
         return false;
     }
 
+    public static BigDecimal formatCurrrency(String amount, Locale locale) throws ParseException, java.text.ParseException {
+        NumberFormat format = NumberFormat.getCurrencyInstance(locale);
+        if(format instanceof DecimalFormat)
+        {
+            ((DecimalFormat)format).setParseBigDecimal(true);
+        }
+        return (BigDecimal)format.parse(amount.replace("[^\\d.,]",""));
+    }
 }
