@@ -1,5 +1,6 @@
 package app.mangoofood.mangooapp;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Handler;
@@ -8,6 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.facebook.accountkit.Account;
+import com.facebook.accountkit.AccountKit;
+import com.facebook.accountkit.AccountKitCallback;
+import com.facebook.accountkit.AccountKitError;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,31 +21,65 @@ import com.google.firebase.database.ValueEventListener;
 
 import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Model.User;
+import dmax.dialog.SpotsDialog;
 import io.paperdb.Paper;
 
 public class Splash extends AppCompatActivity {
 
     private static int SPLASH_TIME = 1000;
 
+    FirebaseDatabase database;
+    DatabaseReference users;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        Paper.init(this);
+        AccountKit.initialize(this);
 
-        final String user=Paper.book().read(Common.USER_KEY);
-        final String pwd=Paper.book().read(Common.PWD_KEY);
+        database = FirebaseDatabase.getInstance();
+        users = database.getReference("User");
 
         //Code to start timer and take action after the timer ends
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 //Do any action here. Now we are moving to next page
-                if(user!=null && pwd!=null)
+                if (AccountKit.getCurrentAccessToken() != null)
                 {
-                    if(!user.isEmpty() && !pwd.isEmpty())
-                        login(user,pwd);
+                    final AlertDialog waitingDialog = new SpotsDialog(Splash.this);
+                    waitingDialog.show();
+                    waitingDialog.setMessage("Please Wait");
+                    waitingDialog.setCancelable(false);
+
+                    AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                        @Override
+                        public void onSuccess(Account account) {
+                            users.child(account.getPhoneNumber().toString())
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            User localUser = dataSnapshot.getValue(User.class);
+                                            Intent homeIntent = new Intent(Splash.this, Home.class);
+                                            Common.currentUser = localUser;
+                                            startActivity(homeIntent);
+                                            waitingDialog.dismiss();
+                                            finish();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                        }
+
+                        @Override
+                        public void onError(AccountKitError error) {
+
+                        }
+                    });
                 }
                 else {
                     Intent mainIntent = new Intent(Splash.this, Onboard.class);

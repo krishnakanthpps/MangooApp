@@ -421,7 +421,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                     Request request = new Request(
                             Common.currentUser.getPhone(),
                             Common.currentUser.getName(),
-                            shippingAddress.getAddress().toString(),
+                            address,
                             "COD",
                             txtTotalPrice.getText().toString(),
                             "0",
@@ -503,7 +503,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                     Request request = new Request(
                             Common.currentUser.getPhone(),
                             Common.currentUser.getName(),
-                            shippingAddress.getAddress().toString(),
+                            address,
                             "COD",
                             txtTotalPrice.getText().toString(),
                             "0",

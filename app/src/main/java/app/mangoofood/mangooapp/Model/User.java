@@ -6,6 +6,7 @@ public class User {
     private String Phone;
     private String secureCode;
     private String homeAddress;
+    private double balance;
 
 
     public User(String name, String password,String securecode) {
@@ -13,6 +14,14 @@ public class User {
         Password = password;
         this.secureCode=securecode;
 
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
     public User(){
