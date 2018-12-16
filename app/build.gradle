@@ -9,6 +9,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -74,6 +75,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:16.0.0'
 
     implementation 'com.razorpay:checkout:1.5.1'
+
+    implementation 'com.facebook.android:account-kit-sdk:4.11.0'
 
 }
 apply plugin: 'com.google.gms.google-services'
