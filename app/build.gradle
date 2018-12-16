@@ -25,6 +25,7 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
+    
     implementation 'com.daimajia.slider:library:1.1.5@aar'
     implementation 'com.stepstone.apprating:app-rating:2.0.0'
     implementation 'io.paperdb:paperdb:2.1'

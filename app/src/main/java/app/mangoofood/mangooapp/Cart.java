@@ -40,6 +40,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -57,9 +59,12 @@ import org.json.JSONObject;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import app.mangoofood.mangooapp.Common.Common;
@@ -69,6 +74,7 @@ import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.Model.Request;
 import app.mangoofood.mangooapp.Model.Sender;
 import app.mangoofood.mangooapp.Model.Token;
+import app.mangoofood.mangooapp.Model.User;
 import app.mangoofood.mangooapp.Remote.APIService;
 import app.mangoofood.mangooapp.Remote.IGoogleService;
 import app.mangoofood.mangooapp.ViewHolder.CartAdapter;
@@ -299,6 +305,10 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
         final RadioButton rdiShipToAddress = (RadioButton)order_address_comment.findViewById(R.id.rdiShipToAddress);
         final RadioButton rdiHomeAddress = (RadioButton)order_address_comment.findViewById(R.id.rdiHomeAddress);
+        final RadioButton rdiCOD = (RadioButton)order_address_comment.findViewById(R.id.rdiCOD);
+        final RadioButton rdiPaypal = (RadioButton)order_address_comment.findViewById(R.id.rdiPaypal);
+        final RadioButton rdiBalance= (RadioButton)order_address_comment.findViewById(R.id.rdiBalance);
+
 
         rdiHomeAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -395,27 +405,120 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                     return;
                 }
 
-                Request request = new Request(
-                        Common.currentUser.getPhone(),
-                        Common.currentUser.getName(),
-                        address,
-                        txtTotalPrice.getText().toString(),
-                        "0",
-                        edtComment.getText().toString(),
-                        String.format("%s","%s",mLastLocation.getLatitude(),mLastLocation.getLongitude()),
-                        cart
-                );
+                if(!rdiCOD.isChecked() && !rdiPaypal.isChecked() && !rdiBalance.isChecked())
+                {
+                    Toast.makeText(Cart.this, "Please choose a payment method", Toast.LENGTH_SHORT).show();
 
-                String order_number = String.valueOf(System.currentTimeMillis());
-                requests.child(order_number).setValue(request);
+                    getFragmentManager().beginTransaction()
+                            .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
+                            .commit();
 
-                startPayment();
-                new Database(getBaseContext()).cleanCart();
+                    return;
+                }
 
+                else if(rdiCOD.isChecked())
+                {
+                    Request request = new Request(
+                            Common.currentUser.getPhone(),
+                            Common.currentUser.getName(),
+                            shippingAddress.getAddress().toString(),
+                            "COD",
+                            txtTotalPrice.getText().toString(),
+                            "0",
+                            edtComment.getText().toString(),
+                            String.format("%s","%s",mLastLocation.getLatitude(),mLastLocation.getLatitude()),
+                            cart
+                    );
 
-                sendNotificationOrder(order_number);
-                Toast.makeText(Cart.this, "Thank you, Order Placed", Toast.LENGTH_SHORT).show();
-                finish();
+                    String order_number = String.valueOf(System.currentTimeMillis());
+                    requests.child(order_number).setValue(request);
+
+                    new Database(getBaseContext()).cleanCart();
+
+                    sendNotificationOrder(order_number);
+                    // Toast.makeText(Cart.this, "Thank you, Order Placed", Toast.LENGTH_SHORT).show();
+                    //finish();
+                }
+                else if(rdiBalance.isChecked()) {
+                    double amount = 0;
+                    try {
+                        amount = Common.formatCurrrency(txtTotalPrice.getText().toString(), Locale.US).doubleValue();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if (Common.currentUser.getBalance() >= amount) {
+                        Request request = new Request(
+                                Common.currentUser.getPhone(),
+                                Common.currentUser.getName(),
+                                shippingAddress.getAddress().toString(),
+                                "COD",
+                                txtTotalPrice.getText().toString(),
+                                "0",
+                                edtComment.getText().toString(),
+                                String.format("%s", "%s", mLastLocation.getLatitude(), mLastLocation.getLatitude()),
+                                cart
+                        );
+
+                        final String order_number = String.valueOf(System.currentTimeMillis());
+                        requests.child(order_number).setValue(request);
+
+                        new Database(getBaseContext()).cleanCart();
+
+                        double balance = Common.currentUser.getBalance() - amount;
+                        Map<String, Object> update_balance = new HashMap<>();
+                        update_balance.put("balance", balance);
+
+                        FirebaseDatabase.getInstance()
+                                .getReference("User")
+                                .child(Common.currentUser.getPhone())
+                                .updateChildren(update_balance)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            FirebaseDatabase.getInstance()
+                                                    .getReference("User")
+                                                    .child(Common.currentUser.getPhone())
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            Common.currentUser = dataSnapshot.getValue(User.class);
+                                                            sendNotificationOrder(order_number);
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    });
+                                        }
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(Cart.this, "Your Balance is not enough,Please choose another payment method", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if(rdiPaypal.isChecked())
+                {
+                    Request request = new Request(
+                            Common.currentUser.getPhone(),
+                            Common.currentUser.getName(),
+                            shippingAddress.getAddress().toString(),
+                            "COD",
+                            txtTotalPrice.getText().toString(),
+                            "0",
+                            edtComment.getText().toString(),
+                            String.format("%s", "%s", mLastLocation.getLatitude(), mLastLocation.getLatitude()),
+                            cart
+                    );
+
+                    String order_number = String.valueOf(System.currentTimeMillis());
+                    requests.child(order_number).setValue(request);
+
+                    startPayment();
+                    new Database(getBaseContext()).cleanCart();
+                    sendNotificationOrder(order_number);
+                }
 
                 getFragmentManager().beginTransaction()
                         .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
