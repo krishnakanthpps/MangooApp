@@ -18,23 +18,100 @@
         android:layout_alignParentBottom="true"
         app:cardBackgroundColor="@color/colorPrimary"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="250dp">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:background="@color/white"
             android:layout_height="match_parent">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_margin="8dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:text="Total : "
+                    android:text="Amount "
                     android:textSize="20sp"
-                    android:textColor="@android:color/white"
+                    android:textColor="@android:color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/edtAmount"
+                    android:text="1,000"
+                    android:textSize="20sp"
+                    android:layout_alignParentEnd="true"
+                    android:textColor="@android:color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_margin="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Delivery "
+                    android:textSize="20sp"
+                    android:textColor="@android:color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/edtDelivery"
+                    android:text="1,000"
+                    android:textSize="20sp"
+                    android:textColor="@android:color/black"
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_margin="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Discounts "
+                    android:textSize="20sp"
+                    android:textColor="@android:color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/edtDiscount"
+                    android:text="1,000"
+                    android:textSize="20sp"
+                    android:textColor="@android:color/black"
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_margin="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Total "
+                    android:textSize="24sp"
+                    android:textColor="@android:color/black"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -42,11 +119,12 @@
                     android:id="@+id/total"
                     android:text="1,000"
                     android:textSize="24sp"
-                    android:textColor="@android:color/white"
+                    android:textColor="@android:color/black"
+                    android:layout_alignParentEnd="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <info.hoang8f.widget.FButton
                 android:id="@+id/btnPlaceOrder"
@@ -60,12 +138,12 @@
                 android:layout_margin="8dp"
                 app:fButtonColor="@color/btnSignUp"
                 app:shadowColor="@color/colorAccent"
-                app:shadowEnabled="true"
+                app:shadowEnabled="false"
                 app:shadowHeight="5dp"
-                app:cornerRadius="4dp"
+               app:cornerRadius="20dp"
                 />
+            </LinearLayout>
 
-        </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 

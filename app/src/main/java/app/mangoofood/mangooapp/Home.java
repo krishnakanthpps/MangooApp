@@ -30,6 +30,7 @@ import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.facebook.accountkit.AccountKit;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -341,10 +342,11 @@ public class Home extends AppCompatActivity
 
         } else if (id == R.id.nav_log_out) {
 
-            Paper.book().destroy();
-            Intent signIn = new Intent(Home.this,LogIn.class);
-            signIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(signIn);
+            AccountKit.logOut();
+
+            Intent intent = new Intent(Home.this,MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         }
         else if (id == R.id.nav_update_name)
         {
