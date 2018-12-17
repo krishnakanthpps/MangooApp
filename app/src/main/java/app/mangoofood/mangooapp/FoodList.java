@@ -267,38 +267,45 @@ public class FoodList extends AppCompatActivity {
                 Picasso.with(getBaseContext()).load(model.getImage())
                         .into(viewHolder.food_image);
 
+                final boolean isExists = new Database(getBaseContext()).checkExist(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
                 viewHolder.quick_cart.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new Database(getBaseContext()).addToCart(new Order(
-                                adapter.getRef(position).getKey(),
-                                model.getName(),
-                                "1",
-                                model.getPrice(),
-                                model.getDiscount(),
-                                model.getImage()
-                        ));
-
-                        Toast.makeText(FoodList.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
-                    }
+                        @Override
+                        public void onClick(View v) {
+                            if(!isExists) {
+                                new Database(getBaseContext()).addToCart(new Order(
+                                        Common.currentUser.getPhone(),
+                                        adapter.getRef(position).getKey(),
+                                        model.getName(),
+                                        "1",
+                                        model.getPrice(),
+                                        model.getDiscount(),
+                                        model.getImage()
+                                ));
+                            }
+                            else
+                            {
+                                new Database(getBaseContext()).increaseCart(Common.currentUser.getPhone(),adapter.getRef(position).getKey());
+                            }
+                            Toast.makeText(FoodList.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
+                        }
                 });
 
 
-                if(localDB.isFavourite(adapter.getRef(position).getKey()))
+                if(localDB.isFavourite(adapter.getRef(position).getKey(),Common.currentUser.getPhone()))
                     viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
 
                 viewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!localDB.isFavourite(adapter.getRef(position).getKey()))
+                        if(!localDB.isFavourite(adapter.getRef(position).getKey(),Common.currentUser.getPhone()))
                         {
-                            localDB.addToFavourites(adapter.getRef(position).getKey());
+                            localDB.addToFavourites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
                             viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
                             Toast.makeText(FoodList.this, ""+model.getName()+" added to Favourites", Toast.LENGTH_SHORT).show();
                         }
                         else
                         {
-                            localDB.removeFromFavourites(adapter.getRef(position).getKey());
+                            localDB.removeFromFavourites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
                             viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                             Toast.makeText(FoodList.this, ""+model.getName()+" removed from Favourites", Toast.LENGTH_SHORT).show();
                         }
