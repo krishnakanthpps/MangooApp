@@ -433,7 +433,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                     String order_number = String.valueOf(System.currentTimeMillis());
                     requests.child(order_number).setValue(request);
 
-                    new Database(getBaseContext()).cleanCart();
+                    new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
 
                     sendNotificationOrder(order_number);
                     // Toast.makeText(Cart.this, "Thank you, Order Placed", Toast.LENGTH_SHORT).show();
@@ -462,7 +462,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                         final String order_number = String.valueOf(System.currentTimeMillis());
                         requests.child(order_number).setValue(request);
 
-                        new Database(getBaseContext()).cleanCart();
+                        new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
 
                         double balance = Common.currentUser.getBalance() - amount;
                         Map<String, Object> update_balance = new HashMap<>();
@@ -516,7 +516,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                     requests.child(order_number).setValue(request);
 
                     startPayment();
-                    new Database(getBaseContext()).cleanCart();
+                    new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
                     sendNotificationOrder(order_number);
                 }
 
@@ -610,7 +610,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
     private void loadListFood() {
 
-        cart = new Database(this).getCarts();
+        cart = new Database(this).getCarts(Common.currentUser.getPhone());
         adapter = new CartAdapter(cart,this);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
@@ -634,7 +634,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
     private void deleteCart(int pos) {
         cart.remove(pos);
-        new Database(this).cleanCart();
+        new Database(this).cleanCart(Common.currentUser.getPhone());
         for(Order item:cart)
             new Database(this).addToCart(item);
         loadListFood();
@@ -672,7 +672,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
     @Override
     public void onPaymentSuccess(String s) {
 
-        new Database(getBaseContext()).cleanCart();
+        new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
         Toast.makeText(Cart.this, "Payment Successful", Toast.LENGTH_SHORT).show();
 
     }
