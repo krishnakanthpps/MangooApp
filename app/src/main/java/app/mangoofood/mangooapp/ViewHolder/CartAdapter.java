@@ -29,41 +29,7 @@ import app.mangoofood.mangooapp.Interface.ItemClickListener;
 import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.R;
 
-class CartViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener{
 
-    public TextView txt_cart_name,txt_price;
-    public ElegantNumberButton btn_quantity;
-    public ImageView cart_image;
-
-    private ItemClickListener itemClickListener;
-
-    public void setTxt_cart_name(TextView txt_cart_name) {
-        this.txt_cart_name = txt_cart_name;
-    }
-
-    public CartViewHolder(View itemView) {
-        super(itemView);
-
-        txt_cart_name = (TextView)itemView.findViewById(
-                R.id.cart_item_name);
-        txt_price = (TextView)itemView.findViewById(R.id.cart_item_Price);
-        btn_quantity = (ElegantNumberButton) itemView.findViewById(R.id.btn_quantity);
-        cart_image = (ImageView)itemView.findViewById(R.id.cart_image);
-
-        itemView.setOnCreateContextMenuListener(this);
-    }
-
-    @Override
-    public void onClick(View view) {
-
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-        contextMenu.setHeaderTitle("Select action");
-        contextMenu.add(0,0,getAdapterPosition(), Common.DELETE);
-    }
-}
 
 public class CartAdapter extends RecyclerView.Adapter<CartViewHolder>{
 
@@ -122,5 +88,22 @@ public class CartAdapter extends RecyclerView.Adapter<CartViewHolder>{
     @Override
     public int getItemCount() {
         return listData.size();
+    }
+
+    public Order getItem(int position)
+    {
+        return listData.get(position);
+    }
+
+    public void removeItem(int position)
+    {
+        listData.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(Order item,int position)
+    {
+        listData.add(position,item);
+        notifyItemInserted(position);
     }
 }

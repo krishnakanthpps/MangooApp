@@ -33,6 +33,7 @@ import java.util.List;
 import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Database.Database;
 import app.mangoofood.mangooapp.Interface.ItemClickListener;
+import app.mangoofood.mangooapp.Model.Favourites;
 import app.mangoofood.mangooapp.Model.Food;
 import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.ViewHolder.FoodViewHolder;
@@ -297,9 +298,20 @@ public class FoodList extends AppCompatActivity {
                 viewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+                        Favourites favourites = new Favourites();
+                        favourites.setFoodId(adapter.getRef(position).getKey());
+                        favourites.setFoodName(model.getName());
+                        favourites.setFoodDescription(model.getDescription());
+                        favourites.setFoodDiscount(model.getDiscount());
+                        favourites.setFoodImage(model.getImage());
+                        favourites.setFoodMenuId(model.getMenuId());
+                        favourites.setUserPhone(Common.currentUser.getPhone());
+                        favourites.setFoodPrice(model.getPrice());
+
                         if(!localDB.isFavourite(adapter.getRef(position).getKey(),Common.currentUser.getPhone()))
                         {
-                            localDB.addToFavourites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
+                            localDB.addToFavourites(favourites);
                             viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
                             Toast.makeText(FoodList.this, ""+model.getName()+" added to Favourites", Toast.LENGTH_SHORT).show();
                         }

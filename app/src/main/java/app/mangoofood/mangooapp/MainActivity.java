@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                                                 User newUser = new User();
                                                 newUser.setPhone(userPhone);
                                                 newUser.setName("");
+                                                newUser.setBalance(String.valueOf(0.0));
 
                                                 users.child(userPhone)
                                                         .setValue(newUser)

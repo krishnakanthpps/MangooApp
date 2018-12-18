@@ -6,9 +6,11 @@ import android.content.Context;
 import android.app.Notification;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -16,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +28,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +55,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rey.material.widget.SnackBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,6 +74,8 @@ import java.util.concurrent.TimeUnit;
 
 import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Database.Database;
+import app.mangoofood.mangooapp.Helper.RecyclerItemTouchHelper;
+import app.mangoofood.mangooapp.Interface.RecyclerItemTouchHelperListener;
 import app.mangoofood.mangooapp.Model.MyResponse;
 import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.Model.Request;
@@ -78,6 +85,7 @@ import app.mangoofood.mangooapp.Model.User;
 import app.mangoofood.mangooapp.Remote.APIService;
 import app.mangoofood.mangooapp.Remote.IGoogleService;
 import app.mangoofood.mangooapp.ViewHolder.CartAdapter;
+import app.mangoofood.mangooapp.ViewHolder.CartViewHolder;
 import info.hoang8f.widget.FButton;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -86,7 +94,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Cart extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, PaymentResultListener
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, PaymentResultListener, RecyclerItemTouchHelperListener
 
 {
     
@@ -118,6 +126,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
     IGoogleService mGoogleMapService;
     APIService mService;
+    RelativeLayout rootLayout;
 
     int payamount;
 
@@ -139,6 +148,8 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
         setContentView(R.layout.activity_cart);
 
         mGoogleMapService = Common.getGoogleMapAPI();
+
+        rootLayout = (RelativeLayout)findViewById(R.id.rootLayout);
 
         if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -169,7 +180,9 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0,ItemTouchHelper.LEFT,this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         txtTotalPrice = (TextView)findViewById(R.id.total);
         btnPlace = (FButton)findViewById(R.id.btnPlaceOrder);
 
@@ -446,7 +459,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                    if (Common.currentUser.getBalance() >= amount) {
+                    if (Double.parseDouble(Common.currentUser.getBalance().toString())>= amount) {
                         Request request = new Request(
                                 Common.currentUser.getPhone(),
                                 Common.currentUser.getName(),
@@ -464,7 +477,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
                         new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
 
-                        double balance = Common.currentUser.getBalance() - amount;
+                        double balance = Double.parseDouble(Common.currentUser.getBalance().toString()) - amount;
                         Map<String, Object> update_balance = new HashMap<>();
                         update_balance.put("balance", balance);
 
@@ -682,5 +695,50 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
         Toast.makeText(Cart.this, "Payment Failed", Toast.LENGTH_SHORT).show();
 
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if(viewHolder instanceof CartViewHolder)
+        {
+            String name = ((CartAdapter)recyclerView.getAdapter()).getItem(viewHolder.getAdapterPosition()).getProductName();
+            final Order deleteItem = ((CartAdapter)recyclerView.getAdapter()).getItem(viewHolder.getAdapterPosition());
+
+            final int deleteIndex = viewHolder.getAdapterPosition();
+
+            adapter.removeItem(deleteIndex);
+            new Database(getBaseContext()).removeFromCart(deleteItem.getProductId(),Common.currentUser.getPhone());
+
+            int total = 0;
+            List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+            for(Order item:orders)
+                total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));
+
+            Locale locale = new Locale("en","US");
+            NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+
+            txtTotalPrice.setText(fmt.format(total));
+
+            Snackbar snackBar =Snackbar.make(rootLayout,name + " removed from cart.",Snackbar.LENGTH_LONG);
+            snackBar.setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    adapter.restoreItem(deleteItem,deleteIndex);
+                    new Database(getBaseContext()).addToCart(deleteItem);
+
+                    int total = 0;
+                    List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+                    for(Order item:orders)
+                        total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));
+
+                    Locale locale = new Locale("en","US");
+                    NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+
+                    txtTotalPrice.setText(fmt.format(total));
+                }
+            });
+            snackBar.setActionTextColor(Color.YELLOW);
+            snackBar.show();
+        }
     }
 }

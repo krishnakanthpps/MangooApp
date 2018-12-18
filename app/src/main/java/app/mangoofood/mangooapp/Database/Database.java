@@ -10,6 +10,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.mangoofood.mangooapp.Model.Favourites;
 import app.mangoofood.mangooapp.Model.Order;
 
 public class Database extends SQLiteAssetHelper {
@@ -121,10 +122,25 @@ public class Database extends SQLiteAssetHelper {
     }
 
 
-    public void addToFavourites(String foodId,String userPhone)
+    public void addToFavourites(Favourites food)
     {
         SQLiteDatabase db=getReadableDatabase();
-        String query=String.format("INSERT INTO Favourites(FoodId,UserPhone) VALUES('%s','%s');",foodId,userPhone);
+        String query=String.format("INSERT INTO Favourites(FoodId,FoodName,FoodPrice,FoodMenuId,FoodImage,FoodDiscount,FoodDescription,UserPhone)" +
+                        " VALUES('%s','%s','%s','%s','%s','%s','%s','%s');",
+                food.getFoodId(),
+                food.getFoodName(),
+                food.getFoodPrice(),
+                food.getFoodMenuId(),
+                food.getFoodImage(),
+                food.getFoodDiscount(),
+                food.getFoodDescription(),
+                food.getUserPhone());
+        db.execSQL(query);
+    }
+
+    public void removeFromCart(String productId, String phone) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format("DELETE FROM OrderDetail WHERE UserPhone='%s' AND ProductId='%s'",phone,productId);
         db.execSQL(query);
     }
 
@@ -149,6 +165,37 @@ public class Database extends SQLiteAssetHelper {
         return true;
 
     }
+
+    public List<Favourites> getAllFavourites(String userPhone)
+    {
+        SQLiteDatabase db = getReadableDatabase();
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        String[] sqlSelect = {"UserPhone","FoodId","FoodName","FoodPrice","FoodMenuId","FoodImage","FoodDiscount","FoodDescription"};
+        String sqlTable = "Favourites";
+
+        qb.setTables(sqlTable);
+        Cursor c = qb.query(db,sqlSelect,"UserPhone=?",new String[]{userPhone},null,null,null);
+
+        final List<Favourites> result = new ArrayList<>();
+        if(c.moveToFirst())
+        {
+            do {
+                result.add(new Favourites(
+                        c.getString(c.getColumnIndex("FoodId")),
+                        c.getString(c.getColumnIndex("FoodName")),
+                        c.getString(c.getColumnIndex("FoodPrice")),
+                        c.getString(c.getColumnIndex("FoodMenuId")),
+                        c.getString(c.getColumnIndex("FoodImage")),
+                        c.getString(c.getColumnIndex("FoodDiscount")),
+                        c.getString(c.getColumnIndex("FoodDescription")),
+                        c.getString(c.getColumnIndex("UserPhone"))
+                ));
+            }while(c.moveToNext());
+        }
+        return result;
+    }
+
 
 
 }

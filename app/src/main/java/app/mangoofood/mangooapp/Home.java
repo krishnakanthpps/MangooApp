@@ -320,8 +320,8 @@ public class Home extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(item.getItemId() == R.id.refresh)
-            loadMenu();
+        if(item.getItemId() == R.id.menu_search)
+            startActivity(new Intent(Home.this,SearchActivity.class));
         return super.onOptionsItemSelected(item);
     }
 
@@ -362,6 +362,10 @@ public class Home extends AppCompatActivity
         else if (id == R.id.nav_setting)
         {
             showSettingDialog();
+        }
+        else if (id == R.id.nav_favourites)
+        {
+            startActivity(new Intent(Home.this,FavouritesActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
