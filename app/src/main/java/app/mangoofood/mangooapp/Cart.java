@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.app.Notification;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -176,11 +177,15 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
         btnPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                /*
                 if(cart.size()>0)
                     showAlertDialog();
                 else
                     Toast.makeText(Cart.this, "Your cart is empty.", Toast.LENGTH_SHORT).show();
+                 */
+
+                Intent intent = new Intent(Cart.this,PlaceOrder.class);
+                startActivity(intent);
             }
         });
         
