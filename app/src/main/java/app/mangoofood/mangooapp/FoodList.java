@@ -76,7 +76,8 @@ public class FoodList extends AppCompatActivity {
         setContentView(R.layout.activity_food_list);
 
         database = FirebaseDatabase.getInstance();
-        foodList = database.getReference("Foods");
+        foodList = database.getReference("Restaurants").child(Common.restaurantSelected)
+                .child("detail").child("Foods");
 
         localDB = new Database(this);
 
@@ -90,7 +91,7 @@ public class FoodList extends AppCompatActivity {
             public void onRefresh() {
                 if (getIntent() != null)
                     categoryId = getIntent().getStringExtra("CategoryId");
-                if (!categoryId.isEmpty() && categoryId != null) {
+                if (!categoryId.isEmpty()) {
                     if (Common.isConnectedToInternet(getBaseContext()))
                         loadListFood(categoryId);
                     else {
@@ -107,7 +108,7 @@ public class FoodList extends AppCompatActivity {
             public void run() {
                 if (getIntent() != null)
                     categoryId = getIntent().getStringExtra("CategoryId");
-                if (!categoryId.isEmpty() && categoryId != null) {
+                if (!categoryId.isEmpty()) {
                     if (Common.isConnectedToInternet(getBaseContext()))
                         loadListFood(categoryId);
                     else {

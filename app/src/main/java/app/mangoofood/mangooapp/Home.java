@@ -70,14 +70,14 @@ public class Home extends AppCompatActivity
 
     FirebaseDatabase database;
     DatabaseReference category;
-    FirebaseRecyclerAdapter adapter;
+
 
     TextView txtFullName;
 
     RecyclerView recyler_menu;
     RecyclerView.LayoutManager layoutManager;
 
-    //FirebaseRecyclerAdapter<Category,MenuViewHolder>adapter;
+    FirebaseRecyclerAdapter<Category,MenuViewHolder>adapter;
 
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -99,7 +99,6 @@ public class Home extends AppCompatActivity
                 .setDefaultFontPath("fonts/Product-Sans.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
-
         setContentView(R.layout.activity_home);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -110,7 +109,8 @@ public class Home extends AppCompatActivity
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
-                android.R.color.holo_blue_dark);
+                android.R.color.holo_blue_dark
+        );
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -139,13 +139,26 @@ public class Home extends AppCompatActivity
         });
 
         database = FirebaseDatabase.getInstance();
-        category = database.getReference("Category");
+        category = database.getReference("Restaurants").child(Common.restaurantSelected)
+        .child("detail").child("Category");
 
         FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
                 .setQuery(category,Category.class)
                 .build();
 
-        adapter = new FirebaseRecyclerAdapter<Category,MenuViewHolder>(options) {
+
+
+        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
+            @NonNull
+            @Override
+            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.menu_item,parent,false);
+                return new MenuViewHolder(itemView);
+
+            }
+
             @Override
             protected void onBindViewHolder(@NonNull MenuViewHolder viewHolder, int position, @NonNull Category model) {
 
@@ -164,15 +177,8 @@ public class Home extends AppCompatActivity
 
             }
 
-            @NonNull
-            @Override
-            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-                View itemView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.menu_item,parent,false);
-                return new MenuViewHolder(itemView);
 
-            }
         };
 
 

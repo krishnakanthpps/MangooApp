@@ -63,4 +63,19 @@ public class NotificationHelper extends ContextWrapper {
 
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
+    public android.app.Notification.Builder getMangooChannelNotification(String title, String body,
+                                                                          Uri soundUri)
+    {
+
+        return new android.app.Notification.Builder(getApplicationContext(),MANGOO_CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSound(soundUri)
+                .setAutoCancel(false);
+
+    }
+
+
 }

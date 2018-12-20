@@ -2,8 +2,8 @@ package app.mangoofood.mangooapp.Remote;
 
 
 
+import app.mangoofood.mangooapp.Model.DataMessage;
 import app.mangoofood.mangooapp.Model.MyResponse;
-import app.mangoofood.mangooapp.Model.Sender;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
@@ -21,6 +21,6 @@ public interface APIService {
     )
 
     @POST("fcm/send")
-    Call<MyResponse> sendNotification(@Body Sender body);
+    Call<MyResponse> sendNotification(@Body DataMessage body);
 
 }

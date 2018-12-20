@@ -3,7 +3,6 @@ package app.mangoofood.mangooapp;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.app.Notification;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -12,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,9 +31,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -55,14 +50,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
-import com.rey.material.widget.SnackBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -70,16 +62,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Database.Database;
 import app.mangoofood.mangooapp.Helper.RecyclerItemTouchHelper;
 import app.mangoofood.mangooapp.Interface.RecyclerItemTouchHelperListener;
+import app.mangoofood.mangooapp.Model.DataMessage;
 import app.mangoofood.mangooapp.Model.MyResponse;
 import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.Model.Request;
-import app.mangoofood.mangooapp.Model.Sender;
 import app.mangoofood.mangooapp.Model.Token;
 import app.mangoofood.mangooapp.Model.User;
 import app.mangoofood.mangooapp.Remote.APIService;
@@ -203,7 +194,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
     private void createLocationRequest() {
 
-        mLocatioRequest = new LocationRequest();
+        mLocatioRequest = LocationRequest.create();
         mLocatioRequest.setInterval(UPDATE_INTERVAL);
         mLocatioRequest.setFastestInterval(FASTEST_INTERVAL);
         mLocatioRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -587,10 +578,16 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
                 for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
                 {
                     Token serverToken =postSnapshot.getValue(Token.class);
-                    app.mangoofood.mangooapp.Model.Notification notification = new app.mangoofood.mangooapp.Model.Notification("Mangoo","You have new order"+order_number);
-                    Sender content = new Sender(serverToken.getToken(),notification);
+//                    app.mangoofood.mangooapp.Model.Notification notification = new app.mangoofood.mangooapp.Model.Notification("Mangoo","You have new order"+order_number);
+//                    Sender content = new Sender(serverToken.getToken(),notification);
+                    Map<String,String> dataSend = new HashMap<>();
+                    dataSend.put("title","Mangoo");
+                    dataSend.put("message","You have new order"+order_number);
+                    DataMessage dataMessage = new DataMessage(serverToken.getToken(),dataSend);
 
-                    mService.sendNotification(content)
+
+
+                    mService.sendNotification(dataMessage)
                             .enqueue(new Callback<MyResponse>() {
                                 @Override
                                 public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {

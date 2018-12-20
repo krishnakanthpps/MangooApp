@@ -61,7 +61,7 @@ public class Splash extends AppCompatActivity {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             User localUser = dataSnapshot.getValue(User.class);
-                                            Intent homeIntent = new Intent(Splash.this, Home.class);
+                                            Intent homeIntent = new Intent(Splash.this, RestaurantList.class);
                                             Common.currentUser = localUser;
                                             startActivity(homeIntent);
                                             waitingDialog.dismiss();
@@ -116,7 +116,7 @@ public class Splash extends AppCompatActivity {
                         user.setPhone(phone);
                         if (user.getPassword().equals(pwd)){
                             {
-                                Intent homeIntent = new Intent(Splash.this, Home.class);
+                                Intent homeIntent = new Intent(Splash.this, RestaurantList.class);
                                 Common.currentUser = user;
                                 startActivity(homeIntent);
                                 finish();

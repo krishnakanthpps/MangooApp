@@ -39,6 +39,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import app.mangoofood.mangooapp.Common.Common;
+import app.mangoofood.mangooapp.Model.Restaurant;
 import app.mangoofood.mangooapp.Model.User;
 import dmax.dialog.SpotsDialog;
 import io.paperdb.Paper;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     User localUser = dataSnapshot.getValue(User.class);
-                                    Intent homeIntent = new Intent(MainActivity.this, Home.class);
+                                    Intent homeIntent = new Intent(MainActivity.this, RestaurantList.class);
                                     Common.currentUser = localUser;
                                     startActivity(homeIntent);
                                     waitingDialog.dismiss();
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE)
         {
@@ -188,16 +189,16 @@ public class MainActivity extends AppCompatActivity {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                 if (task.isSuccessful())
-                                                                {
                                                                     Toast.makeText(MainActivity.this, "Registered Successfully !", Toast.LENGTH_SHORT).show();
-                                                                }
+
 
                                                                 users.child(userPhone)
                                                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                                                             @Override
-                                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
                                                                                 User localUser = dataSnapshot.getValue(User.class);
-                                                                                Intent homeIntent = new Intent(MainActivity.this, Home.class);
+                                                                                Intent homeIntent = new Intent(MainActivity.this, RestaurantList.class);
                                                                                 Common.currentUser = localUser;
                                                                                 startActivity(homeIntent);
                                                                                 waitingDialog.dismiss();
@@ -217,9 +218,10 @@ public class MainActivity extends AppCompatActivity {
                                                 users.child(userPhone)
                                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                                             @Override
-                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+
                                                                 User localUser = dataSnapshot.getValue(User.class);
-                                                                Intent homeIntent = new Intent(MainActivity.this, Home.class);
+                                                                Intent homeIntent = new Intent(MainActivity.this, RestaurantList.class);
                                                                 Common.currentUser = localUser;
                                                                 startActivity(homeIntent);
                                                                 waitingDialog.dismiss();

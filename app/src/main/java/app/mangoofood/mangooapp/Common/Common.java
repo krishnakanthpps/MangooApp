@@ -25,6 +25,8 @@ public class Common {
 
     public static final String INTENT_FOOD_ID = "FoodId";
 
+    public static String restaurantSelected="";
+
     private static final String BASE_URL="https://fcm.googleapis.com/";
     private static final String GOOGLE_API_URL="https://maps.googleapis.com/";
 

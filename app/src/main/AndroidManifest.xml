@@ -46,11 +46,6 @@
         <activity android:name=".Cart" />
         <activity android:name=".OrderStatus" />
 
-        <service android:name=".Service.MyFirebaseIdService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
         <service android:name=".Service.MyFirebaseMessaging">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -66,7 +61,8 @@
             android:value="rzp_test_eXiJeMlNzXt3Yl" />
 
         <activity android:name=".FavouritesActivity" />
-        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".SearchActivity" />
+        <activity android:name=".RestaurantList"></activity>
     </application>
 
 </manifest>
