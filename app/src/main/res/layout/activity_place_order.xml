@@ -33,6 +33,7 @@
             android:layout_height="58dp">
 
             <ImageView
+                android:id="@+id/backBtn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="center"
@@ -106,7 +107,6 @@
                     android:paddingTop="16dp">
 
                     <LinearLayout
-                        android:id="@+id/edtAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -202,6 +202,8 @@
 
             </LinearLayout>
 
+
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -213,8 +215,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="330dp"
-                android:layout_marginBottom="30dp"
+                android:layout_height="300dp"
+                android:layout_marginBottom="10dp"
                 android:background="#fafafa"
                 android:orientation="vertical">
 
@@ -236,7 +238,6 @@
                     app:cardPreventCornerOverlap="false">
 
                     <LinearLayout
-                        android:id="@+id/americanExpress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
@@ -257,10 +258,10 @@
                                 android:orientation="horizontal">
 
                                 <ImageView
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginLeft="10dp"
                                     android:layout_width="45dp"
                                     android:layout_height="45dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginTop="10dp"
                                     android:src="@drawable/card" />
 
                                 <ImageView
@@ -342,8 +343,8 @@
                                 <ImageView
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"
-                                    android:layout_marginTop="10dp"
                                     android:layout_marginLeft="10dp"
+                                    android:layout_marginTop="10dp"
                                     android:src="@drawable/wallet" />
 
                                 <TextView
@@ -417,8 +418,8 @@
                                 <ImageView
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"
-                                    android:layout_marginTop="10dp"
                                     android:layout_marginLeft="10dp"
+                                    android:layout_marginTop="10dp"
                                     android:src="@drawable/cod" />
 
                                 <TextView
@@ -455,6 +456,167 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#b4b4b4"
+                android:gravity="bottom" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:background="#ffffff"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Amount "
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:orientation="horizontal"
+                            android:layout_marginRight="10dp"
+                            android:layout_height="wrap_content">
+
+
+                        <TextView
+                            android:id="@+id/edtAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="₹ 1,000"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Delivery "
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:orientation="horizontal"
+                            android:layout_marginRight="10dp"
+                            android:layout_height="wrap_content">
+
+
+                            <TextView
+                                android:id="@+id/edtDelivery"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:text="₹ 50"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Discounts "
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="10dp"
+                            android:orientation="horizontal"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/edtDiscount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="₹ 0"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total "
+                            android:textStyle="bold"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="10dp"
+                            android:orientation="horizontal"
+                            android:layout_height="wrap_content">
+
+
+                        <TextView
+                            android:id="@+id/total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="1,000"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
 
         </LinearLayout>
 
@@ -462,7 +624,7 @@
     </ScrollView>
 
     <!--****PAY****-->
-    <TextView
+    <info.hoang8f.widget.FButton
         android:id="@+id/pay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -473,7 +635,10 @@
         android:background="@color/blue"
         android:gravity="center"
         android:padding="16dp"
-        android:text="CONTINUE"
+        android:text="PAY ₹1000"
+        app:cornerRadius="0dp"
+        app:shadowEnabled="false"
+        app:fButtonColor="@color/blue"
         android:textColor="#fff"
         android:textSize="20dp" />
 

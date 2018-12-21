@@ -1,6 +1,7 @@
 package app.mangoofood.mangooapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -29,6 +31,8 @@ public class OrderStatus extends AppCompatActivity {
     public RecyclerView.LayoutManager layoutManager;
 
     FirebaseRecyclerAdapter<Request,OrderViewHolder> adapter;
+
+    ImageView backBtn;
 
     FirebaseDatabase database;
     DatabaseReference requests;
@@ -56,6 +60,15 @@ public class OrderStatus extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+        backBtn = (ImageView)findViewById(R.id.backBtn);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OrderStatus.this,Home.class);
+                startActivity(intent);
+            }
+        });
 
         loadOrders(Common.currentUser.getPhone());
 

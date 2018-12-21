@@ -78,6 +78,7 @@ dependencies {
 
     implementation 'com.facebook.android:account-kit-sdk:4.11.0'
     implementation 'com.mcxiaoke.volley:library:1.0.19'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 
 }
 apply plugin: 'com.google.gms.google-services'

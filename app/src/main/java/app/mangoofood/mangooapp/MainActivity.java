@@ -77,19 +77,11 @@ public class MainActivity extends AppCompatActivity {
 
         btnContinue = findViewById(R.id.btn_continue);
 
-        txtSlogan = (TextView)findViewById(R.id.txtSlogan);
-        Typeface face = Typeface.createFromAsset(getAssets(),"fonts/Roboto-Regular.ttf");
-        txtSlogan.setTypeface(face);
-
-
 
         btnContinue.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                /*
-                Intent logIn = new Intent(MainActivity.this,LogIn.class);
-                startActivity(logIn);
-                */
+
                 startLoginSystem();
             }
         });
@@ -180,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                                                 User newUser = new User();
                                                 newUser.setPhone(userPhone);
                                                 newUser.setName("");
+                                                newUser.setBalance(Double.valueOf(0.0));
 
                                                 users.child(userPhone)
                                                         .setValue(newUser)
@@ -196,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                                                                             @Override
                                                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                                 User localUser = dataSnapshot.getValue(User.class);
-                                                                                Intent homeIntent = new Intent(MainActivity.this, Home.class);
+                                                                                Intent homeIntent = new Intent(MainActivity.this, Name.class);
                                                                                 Common.currentUser = localUser;
                                                                                 startActivity(homeIntent);
                                                                                 waitingDialog.dismiss();

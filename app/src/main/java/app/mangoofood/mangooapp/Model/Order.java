@@ -10,6 +10,9 @@ public class Order {
     private String Discount;
     private String Image;
 
+    public Order() {
+    }
+
     public Order(String userPhone, String productId, String productName, String quantity, String price, String discount, String image) {
         UserPhone = userPhone;
         ProductId = productId;

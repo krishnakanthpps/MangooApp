@@ -7,9 +7,12 @@ import android.app.Notification;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -17,15 +20,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +60,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rey.material.widget.SnackBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,9 +76,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.Inflater;
 
 import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Database.Database;
+import app.mangoofood.mangooapp.Helper.RecyclerItemTouchHelper;
+import app.mangoofood.mangooapp.Interface.RecyclerItemTouchHelperListener;
 import app.mangoofood.mangooapp.Model.MyResponse;
 import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.Model.Request;
@@ -79,6 +91,7 @@ import app.mangoofood.mangooapp.Model.User;
 import app.mangoofood.mangooapp.Remote.APIService;
 import app.mangoofood.mangooapp.Remote.IGoogleService;
 import app.mangoofood.mangooapp.ViewHolder.CartAdapter;
+import app.mangoofood.mangooapp.ViewHolder.CartViewHolder;
 import info.hoang8f.widget.FButton;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -86,10 +99,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Cart extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, PaymentResultListener
-
-{
+public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperListener {
     
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
@@ -99,28 +109,23 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
     
     public TextView txtTotalPrice;
     public String address;
+
     FButton btnPlace;
+
+    public TextView edtAmount,edtDelivery,edtDiscount;
+    LinearLayout empty;
+    ScrollView scroll;
+    ImageView backBtn;
 
     List<Order> cart = new ArrayList<>();
     CartAdapter adapter;
 
-    Place shippingAddress;
-
-    private LocationRequest mLocatioRequest;
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-
-    private static final int UPDATE_INTERVAL = 5000;
-    private static final int FASTEST_INTERVAL = 3000;
-    private static final int DISPLACEMENT = 10;
-
-    private static final int LOCATION_REQUEST_CODE = 9999;
-    private static final int PLAY_SERVICE_REQUEST = 9997;
-
     IGoogleService mGoogleMapService;
     APIService mService;
+    RelativeLayout rootLayout;
 
-    int payamount;
+    int payamount = 0;
+    public int total = 0;
 
 
     @Override
@@ -141,25 +146,7 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
 
         mGoogleMapService = Common.getGoogleMapAPI();
 
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-
-            ActivityCompat.requestPermissions(this,new String[]
-                    {
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                    },LOCATION_REQUEST_CODE);
-
-        }
-        else
-        {
-            if (checkPlayServices())
-            {
-                buildGoogleApiClient();
-                createLocationRequest();
-            }
-        }
+        rootLayout = (RelativeLayout)findViewById(R.id.rootLayout);
 
         mService = Common.getFCMService();
 
@@ -170,447 +157,42 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        
-        txtTotalPrice = (TextView)findViewById(R.id.total);
-        btnPlace = (FButton)findViewById(R.id.btnPlaceOrder);
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0,ItemTouchHelper.LEFT,this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
+        txtTotalPrice = (TextView)findViewById(R.id.totalpay);
+        btnPlace = (FButton) findViewById(R.id.btnPlaceOrder);
+        edtAmount = (TextView)findViewById(R.id.edtAmount);
+        edtDelivery = (TextView)findViewById(R.id.edtDelivery);
+        edtDiscount = (TextView)findViewById(R.id.edtDiscount);
+        empty = (LinearLayout) findViewById(R.id.empty);
+        scroll = (ScrollView)findViewById(R.id.scroll);
+        backBtn = (ImageView)findViewById(R.id.backBtn);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Cart.this,Home.class);
+                startActivity(intent);
+            }
+        });
 
         btnPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                if(cart.size()>0)
-                    showAlertDialog();
+
+                if(cart.size()>0) {
+                    Intent intent = new Intent(Cart.this, PlaceOrder.class);
+                    intent.putExtra("Total", edtAmount.getText().toString());
+                    startActivity(intent);
+                }
                 else
                     Toast.makeText(Cart.this, "Your cart is empty.", Toast.LENGTH_SHORT).show();
-                 */
-
-                Intent intent = new Intent(Cart.this,PlaceOrder.class);
-                startActivity(intent);
             }
         });
         
         loadListFood();
         
-    }
-
-    private void createLocationRequest() {
-
-        mLocatioRequest = new LocationRequest();
-        mLocatioRequest.setInterval(UPDATE_INTERVAL);
-        mLocatioRequest.setFastestInterval(FASTEST_INTERVAL);
-        mLocatioRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocatioRequest.setSmallestDisplacement(DISPLACEMENT);
-
-    }
-
-    private synchronized void buildGoogleApiClient() {
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API).build();
-
-        mGoogleApiClient.connect();
-    }
-
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-        displayLocation();
-        startLocationUpdate();
-
-    }
-
-    private void startLocationUpdate() {
-
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,mLocatioRequest,this);
-    }
-
-    private void displayLocation() {
-
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation!=null)
-        {
-            Log.d("LOCATION","Your Location : " + mLastLocation.getLatitude() + "," + mLastLocation.getLongitude());
-        }
-        else
-        {
-            Log.d("LOCATION","Could not get your Location ");
-        }
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-
-    private boolean checkPlayServices() {
-
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS)
-        {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode))
-                GooglePlayServicesUtil.getErrorDialog(resultCode,this,PLAY_SERVICE_REQUEST).show();
-            else
-            {
-                Toast.makeText(this, "This device is not supported", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
-
-    private void showAlertDialog() {
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Cart.this);
-        alertDialog.setTitle("One more Step");
-        alertDialog.setMessage("Enter your address : ");
-
-        LayoutInflater inflater=this.getLayoutInflater();
-        View order_address_comment=inflater.inflate(R.layout.order_address_comment,null);
-
-        //final MaterialEditText edtAddress = (MaterialEditText)order_address_comment.findViewById(R.id.edtAddress);
-        final PlaceAutocompleteFragment edtAddress = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-
-        edtAddress.getView().findViewById(R.id.place_autocomplete_search_button).setVisibility(View.GONE);
-
-        ((EditText)edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setHint("Enter your address");
-        ((EditText)edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setTextSize(20);
-
-        edtAddress.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                shippingAddress = place;
-            }
-
-            @Override
-            public void onError(Status status) {
-                Log.e("ERROR",status.getStatusMessage());
-            }
-        });
-
-        final MaterialEditText edtComment = (MaterialEditText)order_address_comment.findViewById(R.id.edtComment);
-
-        final RadioButton rdiShipToAddress = (RadioButton)order_address_comment.findViewById(R.id.rdiShipToAddress);
-        final RadioButton rdiHomeAddress = (RadioButton)order_address_comment.findViewById(R.id.rdiHomeAddress);
-        final RadioButton rdiCOD = (RadioButton)order_address_comment.findViewById(R.id.rdiCOD);
-        final RadioButton rdiPaypal = (RadioButton)order_address_comment.findViewById(R.id.rdiPaypal);
-        final RadioButton rdiBalance= (RadioButton)order_address_comment.findViewById(R.id.rdiBalance);
-
-
-        rdiHomeAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b)
-                {
-                    if (!TextUtils.isEmpty(Common.currentUser.getHomeAddress()) ||
-                            Common.currentUser.getHomeAddress() == null)
-                    {
-                        address = Common.currentUser.getHomeAddress();
-                        ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input))
-                                .setText(address);
-                    }
-                    else
-                        Toast.makeText(Cart.this, "Please update your Home Address", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        rdiShipToAddress.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                if (b)
-                {
-                    mGoogleMapService.getAddressName(String.format("https://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=false",
-                            mLastLocation.getLatitude(),
-                            mLastLocation.getLongitude()))
-                    .enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
-
-                            try {
-                                JSONObject jsonObject = new JSONObject(response.body().toString());
-
-                                JSONArray resultsArray = jsonObject.getJSONArray("results");
-
-                                JSONObject firstObject = resultsArray.getJSONObject(0);
-
-                                address = firstObject.getString("formatted_address");
-
-                                edtAddress.setText(address);
-                                //((EditText)edtAddress.getView().findViewById(R.id.place_autocomplete_search_input))
-                                 //       .setText(address);
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<String> call, Throwable t) {
-                            Toast.makeText(Cart.this, ""+t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-            }
-        });
-
-        alertDialog.setView(order_address_comment);
-        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
-
-        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-
-                if (!rdiShipToAddress.isChecked() && !rdiHomeAddress.isChecked())
-                {
-                    if (shippingAddress != null)
-                        address = shippingAddress.getAddress().toString();
-                    else
-                    {
-                        Toast.makeText(Cart.this, "Please enter address or select option address", Toast.LENGTH_SHORT).show();
-
-                        getFragmentManager().beginTransaction()
-                                .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
-                                .commit();
-
-                        return;
-                    }
-                }
-
-
-                if (TextUtils.isEmpty(address))
-                {
-                    Toast.makeText(Cart.this, "Please enter address", Toast.LENGTH_SHORT).show();
-
-                    getFragmentManager().beginTransaction()
-                            .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
-                            .commit();
-
-                    return;
-                }
-
-                if(!rdiCOD.isChecked() && !rdiPaypal.isChecked() && !rdiBalance.isChecked())
-                {
-                    Toast.makeText(Cart.this, "Please choose a payment method", Toast.LENGTH_SHORT).show();
-
-                    getFragmentManager().beginTransaction()
-                            .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
-                            .commit();
-
-                    return;
-                }
-
-                else if(rdiCOD.isChecked())
-                {
-                    Request request = new Request(
-                            Common.currentUser.getPhone(),
-                            Common.currentUser.getName(),
-                            address,
-                            "COD",
-                            txtTotalPrice.getText().toString(),
-                            "0",
-                            edtComment.getText().toString(),
-                            String.format("%s","%s",mLastLocation.getLatitude(),mLastLocation.getLatitude()),
-                            cart
-                    );
-
-                    String order_number = String.valueOf(System.currentTimeMillis());
-                    requests.child(order_number).setValue(request);
-
-                    new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
-
-                    sendNotificationOrder(order_number);
-                    // Toast.makeText(Cart.this, "Thank you, Order Placed", Toast.LENGTH_SHORT).show();
-                    //finish();
-                }
-                else if(rdiBalance.isChecked()) {
-                    double amount = 0;
-                    try {
-                        amount = Common.formatCurrrency(txtTotalPrice.getText().toString(), Locale.US).doubleValue();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    if (Common.currentUser.getBalance() >= amount) {
-                        Request request = new Request(
-                                Common.currentUser.getPhone(),
-                                Common.currentUser.getName(),
-                                address,
-                                "COD",
-                                txtTotalPrice.getText().toString(),
-                                "0",
-                                edtComment.getText().toString(),
-                                String.format("%s", "%s", mLastLocation.getLatitude(), mLastLocation.getLatitude()),
-                                cart
-                        );
-
-                        final String order_number = String.valueOf(System.currentTimeMillis());
-                        requests.child(order_number).setValue(request);
-
-                        new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
-
-                        double balance = Common.currentUser.getBalance() - amount;
-                        Map<String, Object> update_balance = new HashMap<>();
-                        update_balance.put("balance", balance);
-
-                        FirebaseDatabase.getInstance()
-                                .getReference("User")
-                                .child(Common.currentUser.getPhone())
-                                .updateChildren(update_balance)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            FirebaseDatabase.getInstance()
-                                                    .getReference("User")
-                                                    .child(Common.currentUser.getPhone())
-                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                            Common.currentUser = dataSnapshot.getValue(User.class);
-                                                            sendNotificationOrder(order_number);
-                                                        }
-
-                                                        @Override
-                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                        }
-                                                    });
-                                        }
-                                    }
-                                });
-                    } else {
-                        Toast.makeText(Cart.this, "Your Balance is not enough,Please choose another payment method", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else if(rdiPaypal.isChecked())
-                {
-                    Request request = new Request(
-                            Common.currentUser.getPhone(),
-                            Common.currentUser.getName(),
-                            address,
-                            "COD",
-                            txtTotalPrice.getText().toString(),
-                            "0",
-                            edtComment.getText().toString(),
-                            String.format("%s", "%s", mLastLocation.getLatitude(), mLastLocation.getLatitude()),
-                            cart
-                    );
-
-                    String order_number = String.valueOf(System.currentTimeMillis());
-                    requests.child(order_number).setValue(request);
-
-                    startPayment();
-                    new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
-                    sendNotificationOrder(order_number);
-                }
-
-                getFragmentManager().beginTransaction()
-                        .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
-                        .commit();
-
-
-            }
-        });
-
-        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int which) {
-                dialogInterface.dismiss();
-
-                getFragmentManager().beginTransaction()
-                        .remove(getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment))
-                        .commit();
-            }
-        });
-        alertDialog.show();
-
-    }
-
-    private void startPayment() {
-
-        payamount = 1000;
-
-        Checkout checkout = new Checkout();
-        checkout.setImage(R.mipmap.ic_launcher);
-
-        final Activity activity = this;
-
-        try {
-            JSONObject options = new JSONObject();
-            options.put("Description","Order #123455");
-            options.put("currency","INR");
-            options.put("amount",payamount*100);
-            checkout.open(activity,options);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void sendNotificationOrder(final String order_number) {
-        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query data = tokens.orderByChild("isServerToken").equalTo(true);
-        data.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
-                {
-                    Token serverToken =postSnapshot.getValue(Token.class);
-                    app.mangoofood.mangooapp.Model.Notification notification = new app.mangoofood.mangooapp.Model.Notification("Mangoo","You have new order"+order_number);
-                    Sender content = new Sender(serverToken.getToken(),notification);
-
-                    mService.sendNotification(content)
-                            .enqueue(new Callback<MyResponse>() {
-                                @Override
-                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                    if (response.code() == 200) {
-
-                                        if (response.body().success == 1) {
-                                            Toast.makeText(Cart.this, "Thank you, Order Placed", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        } else {
-                                            Toast.makeText(Cart.this, "Failed !!", Toast.LENGTH_SHORT).show();
-                                        }
-
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<MyResponse> call, Throwable t) {
-                                    Log.e("ERROR",t.getMessage());
-                                }
-                            });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private void loadListFood() {
@@ -620,14 +202,34 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
 
-        int total = 0;
+        //int total = 0;
         for(Order order:cart)
             total += (Integer.parseInt(order.getPrice())) * (Integer.parseInt(order.getQuantity()));
 
-        Locale locale = new Locale("en","US");
+        Locale locale = new Locale("en","IN");
         NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
-        txtTotalPrice.setText(fmt.format(total));
+        edtAmount.setText(fmt.format(total));
+        int a = 50,b =0;
+        if (cart.size() == 0) {
+            empty.setVisibility(View.VISIBLE);
+            btnPlace.setVisibility(View.INVISIBLE);
+            scroll.setVisibility(View.INVISIBLE);
+            edtDelivery.setText(fmt.format(0));
+        }
+        else
+        {
+            edtDelivery.setText(fmt.format(50));
+        }
+
+        try {
+            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
+                    + fmt.parse(edtDelivery.getText().toString()).intValue();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        txtTotalPrice.setText(fmt.format(payamount));
 
     }
     @Override
@@ -646,46 +248,78 @@ public class Cart extends AppCompatActivity implements GoogleApiClient.Connectio
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-
-        mLastLocation = location;
-        displayLocation();
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode)
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if(viewHolder instanceof CartViewHolder)
         {
-            case LOCATION_REQUEST_CODE:
-            {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    if (checkPlayServices())
-                    {
-                        buildGoogleApiClient();
-                        createLocationRequest();
-                    }
-                }
+            String name = ((CartAdapter)recyclerView.getAdapter()).getItem(viewHolder.getAdapterPosition()).getProductName();
+            final Order deleteItem = ((CartAdapter)recyclerView.getAdapter()).getItem(viewHolder.getAdapterPosition());
+
+            final int deleteIndex = viewHolder.getAdapterPosition();
+
+            adapter.removeItem(deleteIndex);
+            new Database(getBaseContext()).removeFromCart(deleteItem.getProductId(),Common.currentUser.getPhone());
+
+            total = 0;
+            List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+            for(Order item:orders)
+                total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));
+
+            Locale locale = new Locale("en","IN");
+            NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+
+            edtAmount.setText(fmt.format(total));
+
+            int a = 50,b =0,payamount = 0;
+            edtDelivery.setText(fmt.format(a));
+            edtDiscount.setText(fmt.format(b));
+
+            try {
+                payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
+                        + fmt.parse(edtDelivery.getText().toString()).intValue();
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+
+            txtTotalPrice.setText(fmt.format(payamount));
+            if ((cart.size() == 0 )&& (edtAmount.getText().toString().equals("₹ 0.00")))
+        {
+            edtDelivery.setText(fmt.format("0"));
         }
 
-    }
+            Snackbar snackBar =Snackbar.make(rootLayout,name + " removed from cart.",Snackbar.LENGTH_LONG);
+            snackBar.setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    adapter.restoreItem(deleteItem,deleteIndex);
+                    new Database(getBaseContext()).addToCart(deleteItem);
 
-    @Override
-    public void onPaymentSuccess(String s) {
+                    total = 0;
+                    List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+                    for(Order item:orders)
+                        total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));
 
-        new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
-        Toast.makeText(Cart.this, "Payment Successful", Toast.LENGTH_SHORT).show();
+                    Locale locale = new Locale("en","IN");
+                    NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
-    }
+                    edtAmount.setText(fmt.format(total));
 
-    @Override
-    public void onPaymentError(int i, String s) {
+                    int a = 50,b =0, payamount = 0;
+                    edtDelivery.setText(fmt.format(a));
+                    edtDiscount.setText(fmt.format(b));
 
-        Toast.makeText(Cart.this, "Payment Failed", Toast.LENGTH_SHORT).show();
+                    try {
+                        payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
+                                + fmt.parse(edtDelivery.getText().toString()).intValue();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
 
+                    txtTotalPrice.setText(fmt.format(payamount));
+
+                }
+            });
+            snackBar.setActionTextColor(Color.YELLOW);
+            snackBar.show();
+        }
     }
 }

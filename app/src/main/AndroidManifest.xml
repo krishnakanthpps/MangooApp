@@ -35,16 +35,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LogIn" />
-        <activity android:name=".SignUp" />
         <activity
             android:name=".Home"
             android:label="@string/title_activity_home"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".FoodList" />
-        <activity android:name=".FoodDetail" />
-        <activity android:name=".Cart" />
-        <activity android:name=".OrderStatus" />
+        <activity
+            android:name=".FoodList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FoodDetail"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Cart"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrderStatus"
+            android:screenOrientation="portrait" />
 
         <service android:name=".Service.MyFirebaseIdService">
             <intent-filter>
@@ -57,16 +64,39 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ShowComment" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".Onboard" />
+        <activity
+            android:name=".ShowComment"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Onboard"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.razorpay.ApiKey"
             android:value="rzp_test_eXiJeMlNzXt3Yl" />
 
-        <activity android:name=".PlaceOrder" />
-        <activity android:name=".Payment"></activity>
+        <activity
+            android:name=".PlaceOrder"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Payment"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FavouritesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrderDetail"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrderFailed"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Name"></activity>
     </application>
 
 </manifest>

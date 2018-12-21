@@ -13,8 +13,8 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public TextView txtOrderId,txtOrderStatus,txtOrderPhone,txtOrderAddress;
     private ItemClickListener itemClickListener;
 
-    public void setItemClickListener(ItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
+    public void setItemClickListener(ItemClickListener listener) {
+        itemClickListener = listener;
     }
 
     public OrderViewHolder(@NonNull View itemView) {

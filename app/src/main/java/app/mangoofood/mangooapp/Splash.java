@@ -26,7 +26,7 @@ import io.paperdb.Paper;
 
 public class Splash extends AppCompatActivity {
 
-    private static int SPLASH_TIME = 1000;
+    private static int SPLASH_TIME = 100;
 
     FirebaseDatabase database;
     DatabaseReference users;
@@ -48,10 +48,6 @@ public class Splash extends AppCompatActivity {
                 //Do any action here. Now we are moving to next page
                 if (AccountKit.getCurrentAccessToken() != null)
                 {
-                    final AlertDialog waitingDialog = new SpotsDialog(Splash.this);
-                    waitingDialog.show();
-                    waitingDialog.setMessage("Please Wait");
-                    waitingDialog.setCancelable(false);
 
                     AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
                         @Override
@@ -64,7 +60,6 @@ public class Splash extends AppCompatActivity {
                                             Intent homeIntent = new Intent(Splash.this, Home.class);
                                             Common.currentUser = localUser;
                                             startActivity(homeIntent);
-                                            waitingDialog.dismiss();
                                             finish();
                                         }
 

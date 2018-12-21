@@ -8,9 +8,32 @@
     android:layout_height="match_parent"
     tools:context="app.mangoofood.mangooapp.FoodList">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:background="@android:color/white"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/backBtn"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="15dp"
+                    android:src="@drawable/ic_arrow_back_black_24dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Menu"
+                    android:textColor="@android:color/black"
+                    android:textSize="22dp"
+                    />
+            </android.support.v7.widget.Toolbar>
 
     <com.mancj.materialsearchbar.MaterialSearchBar
         android:id="@+id/searchBar"
@@ -20,6 +43,7 @@
         app:mt_speechMode="false"
         app:mt_hint="Search Food .."
         />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyler_food"
         android:scrollbars="vertical"
@@ -30,6 +54,6 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

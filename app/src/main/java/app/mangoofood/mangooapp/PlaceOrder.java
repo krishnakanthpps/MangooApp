@@ -1,12 +1,17 @@
 package app.mangoofood.mangooapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Parcelable;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -26,29 +31,61 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.razorpay.Checkout;
+import com.razorpay.PaymentResultListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.IOError;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import app.mangoofood.mangooapp.Common.Common;
+import app.mangoofood.mangooapp.Database.Database;
+import app.mangoofood.mangooapp.Model.MyResponse;
+import app.mangoofood.mangooapp.Model.Order;
+import app.mangoofood.mangooapp.Model.Request;
+import app.mangoofood.mangooapp.Model.Sender;
+import app.mangoofood.mangooapp.Model.Token;
+import app.mangoofood.mangooapp.Model.User;
+import app.mangoofood.mangooapp.Remote.APIService;
+import info.hoang8f.widget.FButton;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
-public class PlaceOrder extends AppCompatActivity {
+public class PlaceOrder extends AppCompatActivity implements PaymentResultListener {
 
     CardView onlineCard,walletCard,codCard;
     ImageView check1,check2,check3;
 
-    TextView currentAddress,edtComment,pay;
+    TextView currentAddress,edtComment,txtTotalPrice,edtAmount,edtDelivery,edtDiscount;
+    FButton pay;
 
     Geocoder geocoder;
     List<Address> addressList;
@@ -57,14 +94,22 @@ public class PlaceOrder extends AppCompatActivity {
     GPSTracker gps;
 
     RequestQueue requestQueue;
+    APIService mService;
 
     String lati,longi;
     Context mContext;
-
     double latitude,longitude;
 
     Place shippingAddress;
     PlaceAutocompleteFragment edtAddress;
+
+    List<Order> cart = new ArrayList<>();
+    FirebaseDatabase database;
+    DatabaseReference requests;
+
+    ImageView backBtn;
+
+    int payamount = 0;
 
 
     @Override
@@ -83,12 +128,15 @@ public class PlaceOrder extends AppCompatActivity {
 
         setContentView(R.layout.activity_place_order);
 
-
         mContext = this;
+        mService = Common.getFCMService();
 
         geocoder = new Geocoder(this, Locale.getDefault());
 
         client = LocationServices.getFusedLocationProviderClient(this);
+
+        database = FirebaseDatabase.getInstance();
+        requests = database.getReference("Requests");
 
         onlineCard = (CardView)findViewById(R.id.onlineCard);
         walletCard = (CardView)findViewById(R.id.walletCard);
@@ -101,7 +149,42 @@ public class PlaceOrder extends AppCompatActivity {
         currentAddress = (TextView)findViewById(R.id.curAdd);
         //edtAddress = (TextView)findViewById(R.id.edtAddress);
         edtComment = (TextView)findViewById(R.id.edtComment);
-        pay = (TextView)findViewById(R.id.pay);
+        pay = (FButton) findViewById(R.id.pay);
+        txtTotalPrice = (TextView)findViewById(R.id.total);
+        edtAmount = (TextView)findViewById(R.id.edtAmount);
+        edtDelivery = (TextView)findViewById(R.id.edtDelivery);
+        edtDiscount = (TextView)findViewById(R.id.edtDiscount);
+
+        backBtn = (ImageView)findViewById(R.id.backBtn);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PlaceOrder.this,Cart.class);
+                startActivity(intent);
+            }
+        });
+
+        Intent intent = getIntent();
+        String total = intent.getStringExtra("Total");
+        edtAmount.setText(total);
+
+        Locale locale = new Locale("en","IN");
+        NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+
+        int a = 50,b =0;
+        edtDelivery.setText(fmt.format(a));
+        edtDiscount.setText(fmt.format(b));
+
+        try {
+            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
+                        + fmt.parse(edtDelivery.getText().toString()).intValue();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        txtTotalPrice.setText(fmt.format(payamount));
+        pay.setText("PAY ₹ " + payamount);
 
         onlineCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,6 +231,7 @@ public class PlaceOrder extends AppCompatActivity {
                 Log.e("ERROR",status.getStatusMessage());
             }
         });
+
 
         currentAddress.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,25 +287,132 @@ public class PlaceOrder extends AppCompatActivity {
 
         });
 
+
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                LatLng latLng = edtAddress.getLatLng();
-
-                if (TextUtils.isEmpty(edtAddress))
+                if (((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty())
                 {
-                    Toast.makeText(PlaceOrder.this, "Enter an Address", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PlaceOrder.this, "Please enter an Address", Toast.LENGTH_SHORT).show();
+                }
+                if ((check1.getVisibility() == View.INVISIBLE ) && (check2.getVisibility() == View.INVISIBLE ) && (check3.getVisibility() == View.INVISIBLE ))
+                {
+                    Toast.makeText(PlaceOrder.this, "Please choose a payment method", Toast.LENGTH_SHORT).show();
+                }
+                //Payment through RazorPay
+                else if (check1.getVisibility() == View.VISIBLE &&
+                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty())
+                {
+                    startPayment();
+                }
+                // COD Payment
+                else if (check3.getVisibility() == View.VISIBLE &&
+                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty())
+                {
+                    Request request = new Request(
+                            Common.currentUser.getPhone(),
+                            Common.currentUser.getName(),
+                            ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString(),
+                            "COD",
+                            txtTotalPrice.getText().toString(),
+                            "0",
+                            edtComment.getText().toString(),
+                            String.format("%s","%s",lati,longi),
+                            cart
+                    );
+
+                    String order_number = String.valueOf(System.currentTimeMillis());
+                    requests.child(order_number).setValue(request);
+
+                    new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
+                    sendNotificationOrder(order_number);
+
+                    Toast.makeText(PlaceOrder.this, "Order Placed Successful", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(PlaceOrder.this,OrderDetail.class);
+                    intent.putExtra("Total",txtTotalPrice.getText().toString());
+                    intent.putExtra("OrderId",order_number);
+                    intent.putExtra("Method","COD");
+                    startActivity(intent);
                 }
 
+                // Mangoo Wallet Payment
+                else if (check2.getVisibility() == View.VISIBLE &&
+                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty())
+                {
+                    double amount = 0;
+                    try {
+                        Locale locale = new Locale("en","IN");
+                        amount = Common.formatCurrrency(txtTotalPrice.getText().toString(), locale).doubleValue();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if (Double.parseDouble(Common.currentUser.getBalance().toString())>= amount) {
+                        Request request = new Request(
+                                Common.currentUser.getPhone(),
+                                Common.currentUser.getName(),
+                                ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString(),
+                                "Mangoo Wallet",
+                                txtTotalPrice.getText().toString(),
+                                "0",
+                                edtComment.getText().toString(),
+                                String.format("%s","%s",lati,longi),
+                                cart
+                        );
+
+                        final String order_number = String.valueOf(System.currentTimeMillis());
+                        requests.child(order_number).setValue(request);
+
+                        new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
+
+                        double balance = Double.parseDouble(Common.currentUser.getBalance().toString()) - amount;
+                        Map<String, Object> update_balance = new HashMap<>();
+                        update_balance.put("balance", balance);
+
+                        FirebaseDatabase.getInstance()
+                                .getReference("User")
+                                .child(Common.currentUser.getPhone())
+                                .updateChildren(update_balance)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            FirebaseDatabase.getInstance()
+                                                    .getReference("User")
+                                                    .child(Common.currentUser.getPhone())
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            Common.currentUser = dataSnapshot.getValue(User.class);
+                                                            sendNotificationOrder(order_number);
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    });
+                                        }
+                                    }
+                                });
+
+                        Intent intent = new Intent(PlaceOrder.this,OrderDetail.class);
+                        intent.putExtra("Total",txtTotalPrice.getText().toString());
+                        intent.putExtra("OrderId",order_number);
+                        intent.putExtra("Method","Mangoo Wallet");
+                        Toast.makeText(PlaceOrder.this, "Payment Successful", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(PlaceOrder.this, "You have insufficient wallet balance. Please choose another payment method", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
     }
 
-    @Override    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-
-                                                        int[] grantResults) {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
@@ -269,4 +460,114 @@ public class PlaceOrder extends AppCompatActivity {
     }
 
 
+    private void startPayment() {
+
+        Checkout checkout = new Checkout();
+        checkout.setImage(R.mipmap.ic_launcher);
+
+        final Activity activity = this;
+
+        try {
+            JSONObject options = new JSONObject();
+            options.put("Description", "Order #123455");
+            options.put("currency", "INR");
+            options.put("amount", payamount * 100);
+            checkout.open(activity, options);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onPaymentSuccess(String s) {
+
+        cart = new Database(this).getCarts(Common.currentUser.getPhone());
+
+        Request request = new Request(
+                Common.currentUser.getPhone(),
+                Common.currentUser.getName(),
+                ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString(),
+                "RazorPay",
+                txtTotalPrice.getText().toString(),
+                "0",
+                edtComment.getText().toString(),
+                String.format("%s","%s",lati,longi),
+                cart
+        );
+
+        String order_number = String.valueOf(System.currentTimeMillis());
+        requests.child(order_number).setValue(request);
+
+        new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
+        sendNotificationOrder(order_number);
+
+        Toast.makeText(PlaceOrder.this, "Payment Successful", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(PlaceOrder.this,OrderDetail.class);
+        intent.putExtra("Total",txtTotalPrice.getText().toString());
+        intent.putExtra("OrderId",order_number);
+        intent.putExtra("Method","RazorPay");
+        startActivity(intent);
+
+    }
+
+    @Override
+    public void onPaymentError(int i, String s) {
+
+        Toast.makeText(PlaceOrder.this, "Payment Failed", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(PlaceOrder.this,OrderFailed.class);
+        intent.putExtra("Method","RazorPay");
+        startActivity(intent);
+
+    }
+
+    private void sendNotificationOrder(final String order_number) {
+
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query data = tokens.orderByChild("isServerToken").equalTo(false);
+        data.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
+                {
+                    Token serverToken =postSnapshot.getValue(Token.class);
+                    app.mangoofood.mangooapp.Model.Notification notification = new app.mangoofood.mangooapp.Model.Notification("Mangoo","You have a new order"+order_number);
+                    Sender content = new Sender(serverToken.getToken(),notification);
+
+                    mService.sendNotification(content)
+                            .enqueue(new Callback<MyResponse>() {
+                                @Override
+                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                    if (response.code() == 200) {
+
+                                        if (response.body().success == 1) {
+                                            Toast.makeText(PlaceOrder.this, "Thank you, Order Placed", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        } else {
+                                            Toast.makeText(PlaceOrder.this, "Failed !!", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<MyResponse> call, Throwable t) {
+                                    Log.e("ERROR",t.getMessage());
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
+
 }
+

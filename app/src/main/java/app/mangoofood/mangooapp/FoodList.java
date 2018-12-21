@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -33,6 +34,7 @@ import java.util.List;
 import app.mangoofood.mangooapp.Common.Common;
 import app.mangoofood.mangooapp.Database.Database;
 import app.mangoofood.mangooapp.Interface.ItemClickListener;
+import app.mangoofood.mangooapp.Model.Favourites;
 import app.mangoofood.mangooapp.Model.Food;
 import app.mangoofood.mangooapp.Model.Order;
 import app.mangoofood.mangooapp.ViewHolder.FoodViewHolder;
@@ -43,6 +45,7 @@ public class FoodList extends AppCompatActivity {
 
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
+    ImageView homeBtn;
 
     FirebaseDatabase database;
     DatabaseReference foodList;
@@ -78,6 +81,15 @@ public class FoodList extends AppCompatActivity {
         foodList = database.getReference("Foods");
 
         localDB = new Database(this);
+
+        homeBtn = (ImageView)findViewById(R.id.backBtn);
+        homeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FoodList.this,Home.class);
+                startActivity(intent);
+            }
+        });
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
@@ -297,9 +309,20 @@ public class FoodList extends AppCompatActivity {
                 viewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+                        Favourites favourites = new Favourites();
+                        favourites.setFoodId(adapter.getRef(position).getKey());
+                        favourites.setFoodName(model.getName());
+                        favourites.setFoodDescription(model.getDescription());
+                        favourites.setFoodDiscount(model.getDiscount());
+                        favourites.setFoodImage(model.getImage());
+                        favourites.setFoodMenuId(model.getMenuId());
+                        favourites.setUserPhone(Common.currentUser.getPhone());
+                        favourites.setFoodPrice(model.getPrice());
+
                         if(!localDB.isFavourite(adapter.getRef(position).getKey(),Common.currentUser.getPhone()))
                         {
-                            localDB.addToFavourites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
+                            localDB.addToFavourites(favourites);
                             viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
                             Toast.makeText(FoodList.this, ""+model.getName()+" added to Favourites", Toast.LENGTH_SHORT).show();
                         }

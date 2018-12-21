@@ -8,49 +8,92 @@
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
         android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <ImageView
             android:src="@drawable/logo"
-            android:layout_width="200dp"
-            android:layout_height="200dp" />
+            android:layout_width="75dp"
+            android:layout_height="75dp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
         <TextView
-            android:gravity="center"
-            android:id="@+id/txtSlogan"
-            android:text="@string/slogan"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="-130dp"
+            android:text="YOUR"
             android:textColor="@android:color/black"
             android:layout_width="200dp"
             android:layout_height="wrap_content" />
 
+            <TextView
+                android:layout_marginRight="-130dp"
+                android:layout_marginLeft="10dp"
+                android:text="HUNGRY"
+                android:textColor="@android:color/black"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginRight="-130dp"
+                android:layout_marginLeft="10dp"
+                android:text="PARTNER."
+                android:textColor="@android:color/black"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:weightSum="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
         <info.hoang8f.widget.FButton
             android:id="@+id/btn_continue"
-            android:text="CONTINUE"
+            android:text="LOGIN"
             android:layout_weight="1"
-            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:fButtonColor="@color/btnSignUp"
-            app:shadowColor="@color/colorAccent"
-            app:shadowEnabled="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            app:fButtonColor="@android:color/white"
+            app:shadowEnabled="false"
             app:shadowHeight="5dp"
-            app:cornerRadius="4dp"
+            app:cornerRadius="60dp"
             />
 
+        </LinearLayout>
+
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:layout_margin="20dp"
+            android:textAlignment="center"
+            android:text="By clicking Log In, you agree to our Terms and Conditions."
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
+
+
+
 
 </RelativeLayout>
