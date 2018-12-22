@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
@@ -51,20 +53,27 @@ import java.util.Map;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Database.Database;
+import in.mangoo.mangooonlinefooddelivery.Model.DataMessage;
+import in.mangoo.mangooonlinefooddelivery.Model.MyResponse;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
 import in.mangoo.mangooonlinefooddelivery.Model.Request;
+import in.mangoo.mangooonlinefooddelivery.Model.Sender;
+import in.mangoo.mangooonlinefooddelivery.Model.Token;
 import in.mangoo.mangooonlinefooddelivery.Model.User;
 import in.mangoo.mangooonlinefooddelivery.Remote.APIService;
 import info.hoang8f.widget.FButton;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class PlaceOrder extends AppCompatActivity implements PaymentResultListener {
 
-    CardView onlineCard,walletCard,codCard;
-    ImageView check1,check2,check3;
+    CardView onlineCard, walletCard, codCard;
+    ImageView check1, check2, check3;
 
-    TextView currentAddress,edtComment,txtTotalPrice,edtAmount,edtDelivery,edtDiscount;
+    TextView currentAddress, edtComment, txtTotalPrice, edtAmount, edtDelivery, edtDiscount;
     FButton pay;
 
     Geocoder geocoder;
@@ -76,9 +85,9 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     RequestQueue requestQueue;
     APIService mService;
 
-    String lati,longi;
+    String lati, longi;
     Context mContext;
-    double latitude,longitude;
+    double latitude, longitude;
 
     Place shippingAddress;
     PlaceAutocompleteFragment edtAddress;
@@ -118,29 +127,29 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         database = FirebaseDatabase.getInstance();
         requests = database.getReference("Requests");
 
-        onlineCard = (CardView)findViewById(R.id.onlineCard);
-        walletCard = (CardView)findViewById(R.id.walletCard);
-        codCard = (CardView)findViewById(R.id.codCard);
+        onlineCard = (CardView) findViewById(R.id.onlineCard);
+        walletCard = (CardView) findViewById(R.id.walletCard);
+        codCard = (CardView) findViewById(R.id.codCard);
 
-        check1 = (ImageView)findViewById(R.id.check1);
-        check2 = (ImageView)findViewById(R.id.check2);
-        check3 = (ImageView)findViewById(R.id.check3);
+        check1 = (ImageView) findViewById(R.id.check1);
+        check2 = (ImageView) findViewById(R.id.check2);
+        check3 = (ImageView) findViewById(R.id.check3);
 
-        currentAddress = (TextView)findViewById(R.id.curAdd);
+        currentAddress = (TextView) findViewById(R.id.curAdd);
         //edtAddress = (TextView)findViewById(R.id.edtAddress);
-        edtComment = (TextView)findViewById(R.id.edtComment);
+        edtComment = (TextView) findViewById(R.id.edtComment);
         pay = (FButton) findViewById(R.id.pay);
-        txtTotalPrice = (TextView)findViewById(R.id.total);
-        edtAmount = (TextView)findViewById(R.id.edtAmount);
-        edtDelivery = (TextView)findViewById(R.id.edtDelivery);
-        edtDiscount = (TextView)findViewById(R.id.edtDiscount);
+        txtTotalPrice = (TextView) findViewById(R.id.total);
+        edtAmount = (TextView) findViewById(R.id.edtAmount);
+        edtDelivery = (TextView) findViewById(R.id.edtDelivery);
+        edtDiscount = (TextView) findViewById(R.id.edtDiscount);
 
-        backBtn = (ImageView)findViewById(R.id.backBtn);
+        backBtn = (ImageView) findViewById(R.id.backBtn);
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PlaceOrder.this,Cart.class);
+                Intent intent = new Intent(PlaceOrder.this, Cart.class);
                 startActivity(intent);
             }
         });
@@ -149,16 +158,16 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         String total = intent.getStringExtra("Total");
         edtAmount.setText(total);
 
-        Locale locale = new Locale("en","IN");
+        Locale locale = new Locale("en", "IN");
         NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
-        int a = 50,b =0;
+        int a = 50, b = 0;
         edtDelivery.setText(fmt.format(a));
         edtDiscount.setText(fmt.format(b));
 
         try {
             payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
-                        + fmt.parse(edtDelivery.getText().toString()).intValue();
+                    + fmt.parse(edtDelivery.getText().toString()).intValue();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -193,12 +202,12 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             }
         });
 
-        edtAddress = (PlaceAutocompleteFragment)getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        edtAddress = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         edtAddress.getView().findViewById(R.id.place_autocomplete_search_button).setVisibility(View.GONE);
 
-        ((EditText)edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setHint("Enter your address");
-        ((EditText)edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setTextSize(18);
+        ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setHint("Enter your address");
+        ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setTextSize(18);
 
         edtAddress.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -208,7 +217,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
             @Override
             public void onError(Status status) {
-                Log.e("ERROR",status.getStatusMessage());
+                Log.e("ERROR", status.getStatusMessage());
             }
         });
 
@@ -272,25 +281,21 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             @Override
             public void onClick(View v) {
 
-                if (((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty())
-                {
+                if (((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty()) {
                     Toast.makeText(PlaceOrder.this, "Please enter an Address", Toast.LENGTH_SHORT).show();
                 }
-                if ((check1.getVisibility() == View.INVISIBLE ) && (check2.getVisibility() == View.INVISIBLE ) && (check3.getVisibility() == View.INVISIBLE ))
-                {
+                if ((check1.getVisibility() == View.INVISIBLE) && (check2.getVisibility() == View.INVISIBLE) && (check3.getVisibility() == View.INVISIBLE)) {
                     Toast.makeText(PlaceOrder.this, "Please choose a payment method", Toast.LENGTH_SHORT).show();
                 }
                 //Payment through RazorPay
                 else if (check1.getVisibility() == View.VISIBLE &&
-                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty())
-                {
-                   // startPayment();
+                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty()) {
+                    // startPayment();
                     Toast.makeText(PlaceOrder.this, "This Payment method is currently unavailable", Toast.LENGTH_SHORT).show();
                 }
                 // COD Payment
                 else if (check3.getVisibility() == View.VISIBLE &&
-                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty())
-                {
+                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty()) {
                     cart = new Database(PlaceOrder.this).getCarts(Common.currentUser.getPhone());
 
                     Request request = new Request(
@@ -301,41 +306,38 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                             txtTotalPrice.getText().toString(),
                             "0",
                             edtComment.getText().toString(),
-                            String.format("%s","%s",lati,longi),
+                            String.format("%s", "%s", lati, longi),
                             Common.restaurantSelected,
                             cart
                     );
 
                     String order_number = String.valueOf(System.currentTimeMillis());
                     requests.child(order_number).setValue(request);
-                    Order order = new Order();
-                    requests.child(order_number).child("foods").orderByKey().equalTo(order.getProductId());
 
                     new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
-                    //sendNotificationOrder(order_number);
+                    sendNotificationOrder(order_number);
 
                     Toast.makeText(PlaceOrder.this, "Order Placed Successful", Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(PlaceOrder.this,OrderDetail.class);
-                    intent.putExtra("Total",txtTotalPrice.getText().toString());
-                    intent.putExtra("OrderId",order_number);
-                    intent.putExtra("Method","COD");
+                    Intent intent = new Intent(PlaceOrder.this, OrderDetail.class);
+                    intent.putExtra("Total", txtTotalPrice.getText().toString());
+                    intent.putExtra("OrderId", order_number);
+                    intent.putExtra("Method", "COD");
                     startActivity(intent);
                 }
 
                 // Mangoo Wallet Payment
                 else if (check2.getVisibility() == View.VISIBLE &&
-                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty())
-                {
+                        !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty()) {
                     cart = new Database(PlaceOrder.this).getCarts(Common.currentUser.getPhone());
                     double amount = 0;
                     try {
-                        Locale locale = new Locale("en","IN");
+                        Locale locale = new Locale("en", "IN");
                         amount = Common.formatCurrrency(txtTotalPrice.getText().toString(), locale).doubleValue();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                    if (Double.parseDouble(Common.currentUser.getBalance().toString())>= amount) {
+                    if (Double.parseDouble(Common.currentUser.getBalance().toString()) >= amount) {
                         Request request = new Request(
                                 Common.currentUser.getPhone(),
                                 Common.currentUser.getName(),
@@ -344,7 +346,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                                 txtTotalPrice.getText().toString(),
                                 "0",
                                 edtComment.getText().toString(),
-                                String.format("%s","%s",lati,longi),
+                                String.format("%s", "%s", lati, longi),
                                 Common.restaurantSelected,
                                 cart
                         );
@@ -385,10 +387,10 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                                     }
                                 });
 
-                        Intent intent = new Intent(PlaceOrder.this,OrderDetail.class);
-                        intent.putExtra("Total",txtTotalPrice.getText().toString());
-                        intent.putExtra("OrderId",order_number);
-                        intent.putExtra("Method","Mangoo Wallet");
+                        Intent intent = new Intent(PlaceOrder.this, OrderDetail.class);
+                        intent.putExtra("Total", txtTotalPrice.getText().toString());
+                        intent.putExtra("OrderId", order_number);
+                        intent.putExtra("Method", "Mangoo Wallet");
                         Toast.makeText(PlaceOrder.this, "Payment Successful", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(PlaceOrder.this, "You have insufficient wallet balance. Please choose another payment method", Toast.LENGTH_SHORT).show();
@@ -479,7 +481,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                 txtTotalPrice.getText().toString(),
                 "0",
                 edtComment.getText().toString(),
-                String.format("%s","%s",lati,longi),
+                String.format("%s", "%s", lati, longi),
                 Common.restaurantSelected,
                 cart
         );
@@ -492,10 +494,10 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
         Toast.makeText(PlaceOrder.this, "Payment Successful", Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(PlaceOrder.this,OrderDetail.class);
-        intent.putExtra("Total",txtTotalPrice.getText().toString());
-        intent.putExtra("OrderId",order_number);
-        intent.putExtra("Method","RazorPay");
+        Intent intent = new Intent(PlaceOrder.this, OrderDetail.class);
+        intent.putExtra("Total", txtTotalPrice.getText().toString());
+        intent.putExtra("OrderId", order_number);
+        intent.putExtra("Method", "RazorPay");
         startActivity(intent);
 
     }
@@ -504,13 +506,13 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     public void onPaymentError(int i, String s) {
 
         Toast.makeText(PlaceOrder.this, "Payment Failed", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(PlaceOrder.this,OrderFailed.class);
-        intent.putExtra("Method","RazorPay");
+        Intent intent = new Intent(PlaceOrder.this, OrderFailed.class);
+        intent.putExtra("Method", "RazorPay");
         startActivity(intent);
 
     }
 
-    /*private void sendNotificationOrder(final String order_number) {
+    private void sendNotificationOrder(final String order_number) {
 
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query data = tokens.orderByChild("isServerToken").equalTo(false);
@@ -518,13 +520,17 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
-                {
-                    Token serverToken =postSnapshot.getValue(Token.class);
-                    app.mangoofood.mangooapp.Model.Notification notification = new app.mangoofood.mangooapp.Model.Notification("Mangoo","You have a new order"+order_number);
-                    Sender content = new Sender(serverToken.getToken(),notification);
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Token serverToken = postSnapshot.getValue(Token.class);
+                    // app.mangoofood.mangooapp.Model.Notification notification = new app.mangoofood.mangooapp.Model.Notification("Mangoo","You have a new order"+order_number);
+                    // Sender content = new Sender(serverToken.getToken(),notification);
 
-                    mService.sendNotification(content)
+                    Map<String, String> dataSend = new HashMap<>();
+                    dataSend.put("title", "Mangoo");
+                    dataSend.put("message", "You have new order" + order_number);
+                    DataMessage dataMessage = new DataMessage(serverToken.getToken(), dataSend);
+
+                    mService.sendNotification(dataMessage)
                             .enqueue(new Callback<MyResponse>() {
                                 @Override
                                 public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
@@ -542,7 +548,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
                                 @Override
                                 public void onFailure(Call<MyResponse> call, Throwable t) {
-                                    Log.e("ERROR",t.getMessage());
+                                    Log.e("ERROR", t.getMessage());
                                 }
                             });
                 }
@@ -552,8 +558,9 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });*/
+        });
     }
+}
 
 
 
