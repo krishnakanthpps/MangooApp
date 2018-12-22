@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:780076537579:android:8f49909f68b0abaa",
+        "mobilesdk_app_id": "1:780076537579:android:6e5d4d4c98ecc630",
         "android_client_info": {
-          "package_name": "app.mangoofood.mangooapp"
+          "package_name": "in.mangoo.mangooonlinefooddelivery"
         }
       },
       "oauth_client": [
         {
-          "client_id": "780076537579-cn2m657vt6cu5b5jlm8a00h4oaee3g1r.apps.googleusercontent.com",
+          "client_id": "780076537579-kk76sq3qaed2vrfqsn440ne7jeo9ef8n.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "app.mangoofood.mangooapp",
+            "package_name": "in.mangoo.mangooonlinefooddelivery",
             "certificate_hash": "0b095cc90aee467a4a094f972f77e27a92fd4ca9"
           }
         },

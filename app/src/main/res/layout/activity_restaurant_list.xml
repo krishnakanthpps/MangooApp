@@ -5,22 +5,17 @@
     android:id="@+id/swipe_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fafafa"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="in.mangoo.mangooonlinefooddelivery.Home"
-    tools:showIn="@layout/app_bar_home">
+    >
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.daimajia.slider.library.SliderLayout
-            android:id="@+id/slider"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
-
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyler_menu"
+            android:id="@+id/recycler_restaurant"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

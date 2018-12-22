@@ -215,7 +215,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="330dp"
                 android:layout_marginBottom="10dp"
                 android:background="#fafafa"
                 android:orientation="vertical">
@@ -300,6 +300,16 @@
                             android:text="Credit/Debit Card | Netbanking | UPI Payments"
                             android:textColor="@android:color/black"
                             android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:text="Currently Unavailable"
+                            android:textColor="@color/red"
+                            android:textSize="12sp" />
 
 
                     </LinearLayout>

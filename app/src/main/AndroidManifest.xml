@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.mangoofood.mangooapp">
+    package="in.mangoo.mangooonlinefooddelivery">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -28,7 +28,7 @@
             android:value="@string/account_kit_client_token" />
 
         <activity android:name="com.facebook.accountkit.ui.AccountKitActivity" />
-        <activity android:name=".Splash">
+        <activity android:name="in.mangoo.mangooonlinefooddelivery.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,42 +36,37 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Home"
+            android:name="in.mangoo.mangooonlinefooddelivery.Home"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".FoodList"
+            android:name="in.mangoo.mangooonlinefooddelivery.FoodList"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FoodDetail"
+            android:name="in.mangoo.mangooonlinefooddelivery.FoodDetail"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Cart"
+            android:name="in.mangoo.mangooonlinefooddelivery.Cart"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".OrderStatus"
+            android:name="in.mangoo.mangooonlinefooddelivery.OrderStatus"
             android:screenOrientation="portrait" />
 
-        <service android:name=".Service.MyFirebaseIdService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-        <service android:name=".Service.MyFirebaseMessaging">
+        <service android:name="in.mangoo.mangooonlinefooddelivery.Service.MyFirebaseMessaging">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <activity
-            android:name=".ShowComment"
+            android:name="in.mangoo.mangooonlinefooddelivery.ShowComment"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivity"
+            android:name="in.mangoo.mangooonlinefooddelivery.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Onboard"
+            android:name="in.mangoo.mangooonlinefooddelivery.Onboard"
             android:screenOrientation="portrait" />
 
         <meta-data
@@ -79,24 +74,25 @@
             android:value="rzp_test_eXiJeMlNzXt3Yl" />
 
         <activity
-            android:name=".PlaceOrder"
+            android:name="in.mangoo.mangooonlinefooddelivery.PlaceOrder"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Payment"
+            android:name="in.mangoo.mangooonlinefooddelivery.Payment"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FavouritesActivity"
+            android:name="in.mangoo.mangooonlinefooddelivery.FavouritesActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SearchActivity"
+            android:name="in.mangoo.mangooonlinefooddelivery.SearchActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".OrderDetail"
+            android:name="in.mangoo.mangooonlinefooddelivery.OrderDetail"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".OrderFailed"
+            android:name="in.mangoo.mangooonlinefooddelivery.OrderFailed"
             android:screenOrientation="portrait" />
-        <activity android:name=".Name"></activity>
+        <activity android:name="in.mangoo.mangooonlinefooddelivery.Name"/>
+        <activity android:name="in.mangoo.mangooonlinefooddelivery.RestaurantList"></activity>
     </application>
 
 </manifest>

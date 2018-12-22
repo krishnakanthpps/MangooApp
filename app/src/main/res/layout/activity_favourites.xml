@@ -6,7 +6,7 @@
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="app.mangoofood.mangooapp.FoodList">
+    tools:context="in.mangoo.mangooonlinefooddelivery.FoodList">
 
         <FrameLayout
             android:id="@+id/order"

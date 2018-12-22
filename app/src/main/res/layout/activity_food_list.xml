@@ -6,7 +6,7 @@
     android:id="@+id/swipe_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="app.mangoofood.mangooapp.FoodList">
+    tools:context="in.mangoo.mangooonlinefooddelivery.FoodList">
 
     <LinearLayout
         android:orientation="vertical"
