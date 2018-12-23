@@ -12,7 +12,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.util.SortedList;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
@@ -57,7 +56,6 @@ import in.mangoo.mangooonlinefooddelivery.Model.DataMessage;
 import in.mangoo.mangooonlinefooddelivery.Model.MyResponse;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
 import in.mangoo.mangooonlinefooddelivery.Model.Request;
-import in.mangoo.mangooonlinefooddelivery.Model.Sender;
 import in.mangoo.mangooonlinefooddelivery.Model.Token;
 import in.mangoo.mangooonlinefooddelivery.Model.User;
 import in.mangoo.mangooonlinefooddelivery.Remote.APIService;
@@ -313,9 +311,10 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
                     String order_number = String.valueOf(System.currentTimeMillis());
                     requests.child(order_number).setValue(request);
+                    sendNotificationOrder(order_number);
 
                     new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
-                    sendNotificationOrder(order_number);
+
 
                     Toast.makeText(PlaceOrder.this, "Order Placed Successful", Toast.LENGTH_SHORT).show();
 
@@ -513,22 +512,20 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     }
 
     private void sendNotificationOrder(final String order_number) {
-
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query data = tokens.orderByChild("isServerToken").equalTo(false);
         data.addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Token serverToken = postSnapshot.getValue(Token.class);
-                    // app.mangoofood.mangooapp.Model.Notification notification = new app.mangoofood.mangooapp.Model.Notification("Mangoo","You have a new order"+order_number);
-                    // Sender content = new Sender(serverToken.getToken(),notification);
+                for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
+                {
+                    Token serverToken =postSnapshot.getValue(Token.class);
+                    Map<String,String> dataSend = new HashMap<>();
+                    dataSend.put("title","Mangoo");
+                    dataSend.put("message","You have new order"+order_number);
+                    DataMessage dataMessage = new DataMessage(serverToken.getToken(),dataSend);
 
-                    Map<String, String> dataSend = new HashMap<>();
-                    dataSend.put("title", "Mangoo");
-                    dataSend.put("message", "You have new order" + order_number);
-                    DataMessage dataMessage = new DataMessage(serverToken.getToken(), dataSend);
+
 
                     mService.sendNotification(dataMessage)
                             .enqueue(new Callback<MyResponse>() {
@@ -548,7 +545,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
                                 @Override
                                 public void onFailure(Call<MyResponse> call, Throwable t) {
-                                    Log.e("ERROR", t.getMessage());
+                                    Log.e("ERROR",t.getMessage());
                                 }
                             });
                 }

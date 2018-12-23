@@ -5,11 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,6 +26,9 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.CheckBox;
+import android.widget.GridLayout;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,10 +73,10 @@ public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     FirebaseDatabase database;
-    DatabaseReference category;
-
-
-    TextView txtFullName;
+    DatabaseReference category,mName;
+    TextView txtFullName,restaurantName;
+    ImageView menuBtn;
+    ViewPager mPager;
 
     RecyclerView recyler_menu;
     RecyclerView.LayoutManager layoutManager;
@@ -84,6 +89,8 @@ public class Home extends AppCompatActivity
 
     HashMap<String, String> image_list;
     SliderLayout mSlider;
+
+    String restName = "";
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -100,9 +107,9 @@ public class Home extends AppCompatActivity
                 .build());
         setContentView(R.layout.activity_home);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
-        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);*/
 
         swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
@@ -141,6 +148,25 @@ public class Home extends AppCompatActivity
         category = database.getReference("Restaurants").child(Common.restaurantSelected)
         .child("detail").child("Category");
 
+        mName = database.getReference("Restaurants").child(Common.restaurantSelected);
+        mName.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                restName =  (String) snapshot.getValue();
+                restaurantName = (TextView)findViewById(R.id.rest_name);
+                restaurantName.setText(restName);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //mPager = (ViewPager)findViewById(R.id.pager);
+
+
+
         FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
                 .setQuery(category,Category.class)
                 .build();
@@ -162,7 +188,7 @@ public class Home extends AppCompatActivity
             protected void onBindViewHolder(@NonNull MenuViewHolder viewHolder, int position, @NonNull Category model) {
 
                 viewHolder.txtMenuName.setText(model.getName());
-                Picasso.with(getBaseContext()).load(model.getImage()).into(viewHolder.imageView);
+                Picasso.with(getBaseContext()).load(model.getImage()).resize(300,300).into(viewHolder.imageView);
                 final Category clickItem = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
@@ -175,8 +201,6 @@ public class Home extends AppCompatActivity
 
 
             }
-
-
 
         };
 
@@ -198,11 +222,11 @@ public class Home extends AppCompatActivity
 
         fab.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        toggle.syncState();*/
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -211,11 +235,21 @@ public class Home extends AppCompatActivity
         txtFullName = (TextView)headerView.findViewById(R.id.txtFullName);
         txtFullName.setText(Common.currentUser.getName());
 
+        menuBtn = (ImageView)findViewById(R.id.menuBtn);
+        menuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.openDrawer(Gravity.START);
+            }
+        });
+
         recyler_menu = (RecyclerView)findViewById(R.id.recyler_menu);
         //recyler_menu.setHasFixedSize(true);
         //layoutManager = new LinearLayoutManager(this);
         //recyler_menu.setLayoutManager(layoutManager);
-        recyler_menu.setLayoutManager(new GridLayoutManager(this,2));
+        recyler_menu.setLayoutManager(new GridLayoutManager(Home.this,2));
+        recyler_menu.addItemDecoration(new EqualSpacingItemDecoration(20,EqualSpacingItemDecoration.GRID));
 
         LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(recyler_menu.getContext(),
                 R.anim.layout_fall_down);
@@ -268,7 +302,7 @@ public class Home extends AppCompatActivity
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        mSlider.setPresetTransformer(SliderLayout.Transformer.Background2Foreground);
+        //mSlider.setPresetTransformer(SliderLayout.Transformer.Background2Foreground);
         mSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         mSlider.setCustomAnimation(new DescriptionAnimation());
         mSlider.setDuration(4000);
@@ -313,7 +347,7 @@ public class Home extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+
         }
     }
 

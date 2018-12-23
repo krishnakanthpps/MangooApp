@@ -1,6 +1,8 @@
 package in.mangoo.mangooonlinefooddelivery;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,23 +13,31 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.FirebaseDatabase;
+import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.RestaurantViewHolder;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class RestaurantList extends AppCompatActivity {
 
     AlertDialog waitingDialog;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
+
+    TextView edtHomeAddress;
 
 
     FirebaseRecyclerOptions<Restaurant> options = new FirebaseRecyclerOptions.Builder<Restaurant>()
@@ -68,10 +78,21 @@ public class RestaurantList extends AppCompatActivity {
         }
     };
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/Product-Sans.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
         setContentView(R.layout.activity_restaurant_list);
 
 
@@ -106,6 +127,16 @@ public class RestaurantList extends AppCompatActivity {
 
         });
 
+        edtHomeAddress = (TextView)findViewById(R.id.edtHomeAddress);
+        edtHomeAddress.setText(Common.currentUser.getHomeAddress());
+
+        edtHomeAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showHomeAddressDialog();
+            }
+        });
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_restaurant);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -135,5 +166,42 @@ public class RestaurantList extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadRestaurant();
+    }
+
+    private void showHomeAddressDialog() {
+
+        android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(RestaurantList.this);
+        alertDialog.setTitle("CHANGE HOME ADDRESS");
+        alertDialog.setMessage("All fields are necessary");
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View layout_home = inflater.inflate(R.layout.home_address_layout,null);
+
+        final MaterialEditText edtHomeAddress= (MaterialEditText)layout_home.findViewById(R.id.edtHomeAddress);
+
+        alertDialog.setView(layout_home);
+
+        alertDialog.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                dialogInterface.dismiss();
+
+                Common.currentUser.setHomeAddress(edtHomeAddress.getText().toString());
+
+                FirebaseDatabase.getInstance().getReference("User")
+                        .child(Common.currentUser.getPhone())
+                        .setValue(Common.currentUser)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(RestaurantList.this, "Home Address updated successfully", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        });
+
+        edtHomeAddress.setText(Common.currentUser.getHomeAddress());
+        alertDialog.show();
+
     }
 }

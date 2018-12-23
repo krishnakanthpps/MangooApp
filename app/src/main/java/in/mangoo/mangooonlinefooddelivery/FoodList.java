@@ -2,7 +2,9 @@ package in.mangoo.mangooonlinefooddelivery;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -304,12 +306,15 @@ public class FoodList extends AppCompatActivity {
 
 
                 if(localDB.isFavourite(adapter.getRef(position).getKey(),Common.currentUser.getPhone()))
+                {
                     viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    viewHolder.fav_image.setColorFilter(ContextCompat.getColor(FoodList.this,R.color.red),PorterDuff.Mode.SRC_IN);
+                }
 
                 viewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        viewHolder.fav_image.setColorFilter(ContextCompat.getColor(FoodList.this,R.color.red),PorterDuff.Mode.SRC_IN);
                         Favourites favourites = new Favourites();
                         favourites.setFoodId(adapter.getRef(position).getKey());
                         favourites.setFoodName(model.getName());

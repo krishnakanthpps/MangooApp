@@ -27,6 +27,7 @@
             android:name="com.facebook.accountkit.ClientToken"
             android:value="@string/account_kit_client_token" />
 
+
         <activity android:name="com.facebook.accountkit.ui.AccountKitActivity" />
         <activity android:name="in.mangoo.mangooonlinefooddelivery.Splash">
             <intent-filter>
@@ -75,9 +76,6 @@
 
         <activity
             android:name="in.mangoo.mangooonlinefooddelivery.PlaceOrder"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.Payment"
             android:screenOrientation="portrait" />
         <activity
             android:name="in.mangoo.mangooonlinefooddelivery.FavouritesActivity"

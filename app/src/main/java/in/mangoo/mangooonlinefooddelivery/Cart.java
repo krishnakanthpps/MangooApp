@@ -24,8 +24,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Database.Database;
@@ -263,4 +265,6 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             snackBar.show();
         }
     }
+
+
 }

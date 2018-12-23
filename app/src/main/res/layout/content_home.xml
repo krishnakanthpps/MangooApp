@@ -9,23 +9,65 @@
     tools:context="in.mangoo.mangooonlinefooddelivery.Home"
     tools:showIn="@layout/app_bar_home">
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
+        android:background="@color/bg_color"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="TOP FOODS"
+            android:textColor="@color/darkgrey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <!--<android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_margin="10dp"
+            android:layout_height="150dp"
+            android:layout_alignParentTop="true" />-->
+
         <com.daimajia.slider.library.SliderLayout
+            android:background="@color/bg_color"
             android:id="@+id/slider"
+            android:layout_margin="10dp"
+            app:pager_animation="Default"
             android:layout_width="match_parent"
             android:layout_height="200dp" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@android:color/white"
+            android:layout_marginTop="5dp"
+            android:gravity="bottom" />
+
+        <TextView
+            android:layout_margin="10dp"
+            android:text="CATEGORIES"
+            android:textColor="@color/darkgrey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <android.support.v7.widget.RecyclerView
+            android:nestedScrollingEnabled="false"
             android:id="@+id/recyler_menu"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
         </android.support.v7.widget.RecyclerView>
+
     </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.v4.widget.SwipeRefreshLayout>
