@@ -206,6 +206,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
         ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setHint("Enter your address");
         ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setTextSize(18);
+        ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setText(Common.currentUser.getHomeAddress());
 
         edtAddress.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override

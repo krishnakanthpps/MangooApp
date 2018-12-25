@@ -168,4 +168,9 @@ public class ShowComment extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }

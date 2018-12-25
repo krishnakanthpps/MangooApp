@@ -386,4 +386,10 @@ public class FoodList extends AppCompatActivity {
         super.onResume();
         loadListFood(categoryId);
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(FoodList.this,Home.class);
+        startActivity(intent);
+    }
 }

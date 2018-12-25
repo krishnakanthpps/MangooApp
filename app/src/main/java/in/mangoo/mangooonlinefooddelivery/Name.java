@@ -24,7 +24,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class Name extends AppCompatActivity {
 
     FButton setName;
-    EditText edtName;
+    EditText edtName,edtHomeAddress;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -44,6 +44,7 @@ public class Name extends AppCompatActivity {
 
         setName = (FButton)findViewById(R.id.setName);
         edtName = (EditText)findViewById(R.id.edtName);
+        edtHomeAddress = (EditText)findViewById(R.id.edtHomeAddress);
 
         setName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,16 +60,37 @@ public class Name extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
 
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(Name.this, "Name updated successfully !!", Toast.LENGTH_SHORT).show();
-
-                                    Intent intent = new Intent(Name.this,RestaurantList.class);
-                                    startActivity(intent);
-                                }
                             }
                         });
 
-            }
-        });
+                Common.currentUser.setHomeAddress(edtHomeAddress.getText().toString());
+
+                FirebaseDatabase.getInstance().getReference("User")
+                        .child(Common.currentUser.getPhone())
+                        .setValue(Common.currentUser)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(Name.this, "Profile updated successfully !!", Toast.LENGTH_SHORT).show();
+
+                                Intent intent = new Intent(Name.this,RestaurantList.class);
+                                startActivity(intent);
+                            }
+                        });
+                            }
+
+
+                        });
+
+
+
+
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

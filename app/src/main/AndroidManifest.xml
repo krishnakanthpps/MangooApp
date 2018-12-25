@@ -89,8 +89,10 @@
         <activity
             android:name="in.mangoo.mangooonlinefooddelivery.OrderFailed"
             android:screenOrientation="portrait" />
-        <activity android:name="in.mangoo.mangooonlinefooddelivery.Name"/>
-        <activity android:name="in.mangoo.mangooonlinefooddelivery.RestaurantList"></activity>
+        <activity android:name="in.mangoo.mangooonlinefooddelivery.Name"
+            android:screenOrientation="portrait"/>
+        <activity android:name="in.mangoo.mangooonlinefooddelivery.RestaurantList"
+            android:screenOrientation="portrait" ></activity>
     </application>
 
 </manifest>

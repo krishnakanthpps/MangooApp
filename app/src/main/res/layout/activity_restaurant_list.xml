@@ -139,10 +139,11 @@
 
         <com.daimajia.slider.library.SliderLayout
             android:background="@color/bg_color"
+            android:layout_gravity="center"
             android:id="@+id/slider"
             android:layout_margin="10dp"
             app:pager_animation="Default"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="200dp" />
 
         <android.support.v7.widget.RecyclerView

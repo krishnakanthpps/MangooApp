@@ -152,4 +152,10 @@ public class OrderStatus extends AppCompatActivity {
             return "Shipped";
 
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(OrderStatus.this,Home.class);
+        startActivity(intent);
+    }
 }

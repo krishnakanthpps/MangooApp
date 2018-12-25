@@ -147,4 +147,8 @@ public class Onboard extends AppCompatActivity {
         }
     };
 
+    @Override
+    public void onBackPressed() {
+
+    }
 }

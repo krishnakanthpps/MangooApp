@@ -348,6 +348,9 @@ public class Home extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
 
+            Intent intent = new Intent(Home.this,RestaurantList.class);
+            startActivity(intent);
+
         }
     }
 

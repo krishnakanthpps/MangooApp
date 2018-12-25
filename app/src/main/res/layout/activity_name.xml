@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Set your Name"
+            android:text="Profile Setup"
             android:textColor="@android:color/black"
             android:textSize="22dp"
             />
@@ -29,7 +29,7 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -49,6 +49,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <TextView
+            android:text ="Set Delivery Address"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/edtHomeAddress"
+            android:layout_margin="20dp"
+            android:hint="Delivery Address"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
     </LinearLayout>
 
@@ -57,7 +73,7 @@
         app:cornerRadius="0dp"
         android:id="@+id/setName"
         android:layout_alignParentBottom="true"
-        android:text="SET NAME"
+        android:text="CONTINUE"
         app:fButtonColor="@color/blue"
         android:textColor="@android:color/white"
         android:textSize="18sp"

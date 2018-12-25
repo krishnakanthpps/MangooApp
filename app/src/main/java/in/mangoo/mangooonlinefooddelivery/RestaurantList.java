@@ -13,19 +13,32 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
+import in.mangoo.mangooonlinefooddelivery.Model.Banner;
 import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.RestaurantViewHolder;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -38,7 +51,10 @@ public class RestaurantList extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshLayout;
 
     TextView edtHomeAddress;
+    SliderLayout mSlider;
+    HashMap<String, String> image_list;
 
+    FirebaseDatabase database;
 
     FirebaseRecyclerOptions<Restaurant> options = new FirebaseRecyclerOptions.Builder<Restaurant>()
             .setQuery(FirebaseDatabase.getInstance()
@@ -95,6 +111,7 @@ public class RestaurantList extends AppCompatActivity {
 
         setContentView(R.layout.activity_restaurant_list);
 
+        database = FirebaseDatabase.getInstance();
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
@@ -140,6 +157,9 @@ public class RestaurantList extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_restaurant);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        setupslider();
+
     }
 
 
@@ -202,6 +222,72 @@ public class RestaurantList extends AppCompatActivity {
 
         edtHomeAddress.setText(Common.currentUser.getHomeAddress());
         alertDialog.show();
+
+    }
+
+    private void setupslider() {
+
+        mSlider = (SliderLayout)findViewById(R.id.slider);
+        image_list = new HashMap<>();
+        final DatabaseReference banners = database.getReference("Banner");
+        banners.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
+                {
+                    Banner banner = postSnapshot.getValue(Banner.class);
+                    image_list.put(banner.getName()+"@@@"+banner.getId(),banner.getImage());
+                }
+                for(String key:image_list.keySet())
+                {
+                    String[] keySplit = key.split("@@@");
+                    String nameofFood = keySplit[0];
+                    String idofFood = keySplit[1];
+                    final TextSliderView textSliderView = new TextSliderView(getBaseContext());
+                    textSliderView
+                            .description(nameofFood)
+                            .image(image_list.get(key))
+                            .setScaleType(BaseSliderView.ScaleType.Fit)
+                            .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
+                                @Override
+                                public void onSliderClick(BaseSliderView slider) {
+                                    Intent intent = new Intent(RestaurantList.this,FoodDetail.class);
+                                    intent.putExtras(textSliderView.getBundle());
+                                    startActivity(intent);
+                                }
+                            });
+                    textSliderView.bundle(new Bundle());
+                    textSliderView.getBundle().putString("FoodId",idofFood);
+                    mSlider.addSlider(textSliderView);
+                    banners.removeEventListener(this);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+        ViewTreeObserver vto = mSlider.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mSlider.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                int height  = mSlider.getMeasuredHeight();
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mSlider.getLayoutParams();
+                params.width = height ;
+                mSlider.setLayoutParams(params);
+            }
+        });
+
+        //mSlider.setPresetTransformer(SliderLayout.Transformer.Background2Foreground);
+        mSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mSlider.setCustomAnimation(new DescriptionAnimation());
+        mSlider.setDuration(4000);
+
+    }
+
+    @Override
+    public void onBackPressed() {
 
     }
 }

@@ -268,4 +268,10 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
         });*/
 
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(FoodDetail.this,FoodList.class);
+        startActivity(intent);
+    }
 }

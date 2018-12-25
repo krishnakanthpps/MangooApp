@@ -266,5 +266,9 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Cart.this,RestaurantList.class);
+        startActivity(intent);
+    }
 }

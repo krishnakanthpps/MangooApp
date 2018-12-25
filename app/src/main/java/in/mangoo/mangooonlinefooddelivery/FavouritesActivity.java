@@ -101,4 +101,10 @@ public class FavouritesActivity extends AppCompatActivity implements RecyclerIte
             snackBar.show();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(FavouritesActivity.this,Home.class);
+        startActivity(intent);
+    }
 }
