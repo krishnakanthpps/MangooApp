@@ -53,6 +53,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -188,7 +189,7 @@ public class Home extends AppCompatActivity
             protected void onBindViewHolder(@NonNull MenuViewHolder viewHolder, int position, @NonNull Category model) {
 
                 viewHolder.txtMenuName.setText(model.getName());
-                Picasso.with(getBaseContext()).load(model.getImage()).resize(300,300).into(viewHolder.imageView);
+                Picasso.with(getBaseContext()).load(model.getImage()).resize(300,200).into(viewHolder.imageView);
                 final Category clickItem = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
@@ -347,10 +348,8 @@ public class Home extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-
             Intent intent = new Intent(Home.this,RestaurantList.class);
             startActivity(intent);
-
         }
     }
 
@@ -541,4 +540,5 @@ public class Home extends AppCompatActivity
 
         alertDialog.show();
     }
+
 }

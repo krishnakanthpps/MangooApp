@@ -50,7 +50,7 @@ public class RestaurantList extends AppCompatActivity {
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
 
-    TextView edtHomeAddress;
+    TextView edtHomeAddress,edtRestaurantAddress;
     SliderLayout mSlider;
     HashMap<String, String> image_list;
 
@@ -78,6 +78,7 @@ public class RestaurantList extends AppCompatActivity {
                                         @NonNull Restaurant model) {
 
             viewHolder.txt_restaurant_name.setText(model.getName());
+            viewHolder.txt_restaurant_addr.setText(model.getAddr());
             Picasso.with(getBaseContext()).load(model.getImage())
                     .into(viewHolder.img_restaurant);
             final Restaurant clickItem = model;
@@ -122,8 +123,10 @@ public class RestaurantList extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (Common.isConnectedToInternet(getBaseContext()))
+                if (Common.isConnectedToInternet(getBaseContext())) {
+                    edtHomeAddress.setText(Common.currentUser.getHomeAddress());
                     loadRestaurant();
+                }
                 else {
                     Toast.makeText(getBaseContext(), "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
                     return;
@@ -134,8 +137,10 @@ public class RestaurantList extends AppCompatActivity {
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                if (Common.isConnectedToInternet(getBaseContext()))
+                if (Common.isConnectedToInternet(getBaseContext())) {
+                    edtHomeAddress.setText(Common.currentUser.getHomeAddress());
                     loadRestaurant();
+                }
                 else {
                     Toast.makeText(getBaseContext(), "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
                     return;
@@ -144,6 +149,7 @@ public class RestaurantList extends AppCompatActivity {
 
         });
 
+        edtRestaurantAddress = (TextView)findViewById(R.id.restaurant_addr);
         edtHomeAddress = (TextView)findViewById(R.id.edtHomeAddress);
         edtHomeAddress.setText(Common.currentUser.getHomeAddress());
 
@@ -151,6 +157,7 @@ public class RestaurantList extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showHomeAddressDialog();
+                edtHomeAddress.setText(Common.currentUser.getHomeAddress());
             }
         });
 
@@ -186,6 +193,7 @@ public class RestaurantList extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadRestaurant();
+
     }
 
     private void showHomeAddressDialog() {
@@ -204,9 +212,10 @@ public class RestaurantList extends AppCompatActivity {
         alertDialog.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
-                dialogInterface.dismiss();
 
                 Common.currentUser.setHomeAddress(edtHomeAddress.getText().toString());
+                edtHomeAddress.setText(Common.currentUser.getHomeAddress());
+                dialogInterface.dismiss();
 
                 FirebaseDatabase.getInstance().getReference("User")
                         .child(Common.currentUser.getPhone())
@@ -220,7 +229,7 @@ public class RestaurantList extends AppCompatActivity {
             }
         });
 
-        edtHomeAddress.setText(Common.currentUser.getHomeAddress());
+
         alertDialog.show();
 
     }
@@ -264,18 +273,6 @@ public class RestaurantList extends AppCompatActivity {
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-
-        ViewTreeObserver vto = mSlider.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mSlider.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                int height  = mSlider.getMeasuredHeight();
-                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mSlider.getLayoutParams();
-                params.width = height ;
-                mSlider.setLayoutParams(params);
             }
         });
 

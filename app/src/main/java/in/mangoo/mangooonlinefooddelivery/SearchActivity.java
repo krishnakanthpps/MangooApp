@@ -290,4 +290,10 @@ public class SearchActivity extends AppCompatActivity {
             searchAdapter.stopListening();
         super.onStart();
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(SearchActivity.this,Home.class);
+        startActivity(intent);
+    }
 }

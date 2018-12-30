@@ -52,39 +52,27 @@ public class Name extends AppCompatActivity {
                 Map<String,Object> update_name = new HashMap<>();
                 update_name.put("name",edtName.getText().toString());
 
-                FirebaseDatabase.getInstance()
-                        .getReference("User")
-                        .child(Common.currentUser.getPhone())
-                        .updateChildren(update_name)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-
-                            }
-                        });
-
+                Common.currentUser.setName(edtName.getText().toString());
                 Common.currentUser.setHomeAddress(edtHomeAddress.getText().toString());
 
-                FirebaseDatabase.getInstance().getReference("User")
+                FirebaseDatabase.getInstance()
+                        .getReference("User")
                         .child(Common.currentUser.getPhone())
                         .setValue(Common.currentUser)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(Name.this, "Profile updated successfully !!", Toast.LENGTH_SHORT).show();
 
+                                Toast.makeText(Name.this, "Profile updated successfully !!", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Name.this,RestaurantList.class);
                                 startActivity(intent);
                             }
+
+
                         });
                             }
 
-
                         });
-
-
-
-
 
     }
 

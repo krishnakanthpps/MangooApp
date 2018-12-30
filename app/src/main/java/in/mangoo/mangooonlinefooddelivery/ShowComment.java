@@ -1,6 +1,7 @@
 package in.mangoo.mangooonlinefooddelivery;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -169,8 +170,5 @@ public class ShowComment extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
 
-    }
 }

@@ -10,7 +10,7 @@ import in.mangoo.mangooonlinefooddelivery.R;
 
 public class RestaurantViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    public TextView txt_restaurant_name;
+    public TextView txt_restaurant_name,txt_restaurant_addr;
     public ImageView img_restaurant;
 
     private ItemClickListener itemClickListener;
@@ -20,6 +20,7 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder implements Vie
 
         txt_restaurant_name = (TextView)itemView.findViewById(R.id.restaurant_name);
         img_restaurant = (ImageView)itemView.findViewById(R.id.restaurant_image);
+        txt_restaurant_addr = (TextView)itemView.findViewById(R.id.restaurant_addr);
 
         itemView.setOnClickListener(this);
 

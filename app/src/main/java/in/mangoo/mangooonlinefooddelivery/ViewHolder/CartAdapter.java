@@ -60,7 +60,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartViewHolder>{
                 int total = 0;
                 List<Order> orders = new Database(cart).getCarts(Common.currentUser.getPhone());
                 for(Order item:orders)
-                    total += (Integer.parseInt(order.getPrice())) * (Integer.parseInt(item.getQuantity()));
+                    total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));
 
                 Locale locale = new Locale("en","IN");
                 NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
@@ -68,12 +68,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartViewHolder>{
                 cart.edtAmount.setText(fmt.format(total));
 
                 int a = 50,b =0,payamount = 0;
-                cart.edtDelivery.setText(fmt.format(a));
+                //cart.edtDelivery.setText(fmt.format(a));
                 cart.edtDiscount.setText(fmt.format(b));
 
                 try {
-                    payamount += fmt.parse(cart.edtAmount.getText().toString()).intValue() + fmt.parse(cart.edtDiscount.getText().toString()).intValue()
-                            + fmt.parse(cart.edtDelivery.getText().toString()).intValue();
+                    payamount += fmt.parse(cart.edtAmount.getText().toString()).intValue() + fmt.parse(cart.edtDiscount.getText().toString()).intValue();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -87,12 +86,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartViewHolder>{
         holder.txt_price.setText(fmt.format(price));
 
         int a = 50,b =0,payamount = 0;
-        cart.edtDelivery.setText(fmt.format(a));
+        //cart.edtDelivery.setText(fmt.format(a));
         cart.edtDiscount.setText(fmt.format(b));
 
         try {
-            payamount += fmt.parse(cart.edtAmount.getText().toString()).intValue() + fmt.parse(cart.edtDiscount.getText().toString()).intValue()
-                    + fmt.parse(cart.edtDelivery.getText().toString()).intValue();
+            payamount += fmt.parse(cart.edtAmount.getText().toString()).intValue();
         } catch (ParseException e) {
             e.printStackTrace();
         }

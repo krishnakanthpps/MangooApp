@@ -385,11 +385,12 @@ public class FoodList extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadListFood(categoryId);
+
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(FoodList.this,Home.class);
-        startActivity(intent);
+        super.onBackPressed();
+
     }
 }

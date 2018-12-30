@@ -210,6 +210,7 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
                 collapsingToolbarLayout.setTitle(currentFood.getName());
 
                 food_price.setText(currentFood.getPrice());
+                food_price.setText(String.format("₹ %s",currentFood.getPrice()));
                 food_name.setText(currentFood.getName());
                 food_description.setText(currentFood.getDescription());
 
@@ -271,7 +272,6 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(FoodDetail.this,FoodList.class);
-        startActivity(intent);
+        super.onBackPressed();
     }
 }

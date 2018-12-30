@@ -180,13 +180,12 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:paddingBottom="26dp"
-
-
                         >
 
                         <EditText
                             android:id="@+id/edtComment"
-                            android:hint="Write your comments"
+                            android:textSize="16sp"
+                            android:hint="Any Instructions? We promise to pass them on"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="#00000000"
@@ -525,9 +524,9 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Delivery "
+                            android:text="Delivery charges are applicable"
                             android:layout_marginLeft="10dp"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/blue"
                             android:textSize="16sp" />
 
                         <LinearLayout
@@ -544,6 +543,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:text="₹ 50"
+                                android:visibility="invisible"
                                 android:textColor="@android:color/black"
                                 android:textSize="16sp" />
 

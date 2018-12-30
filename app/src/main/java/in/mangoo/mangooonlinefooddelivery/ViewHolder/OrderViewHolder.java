@@ -9,7 +9,7 @@ import android.widget.TextView;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.R;
 
-public class OrderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class OrderViewHolder extends RecyclerView.ViewHolder  {
 
     public TextView txtOrderId,txtOrderStatus,txtOrderPhone,txtOrderAddress,txtOrderDate;
     private ItemClickListener itemClickListener;
@@ -29,16 +29,16 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements View.OnC
         txtOrderStatus = (TextView)itemView.findViewById(R.id.order_status);
         btn_delete = (ImageView)itemView.findViewById(R.id.btnDelete);
         txtOrderDate = (TextView)itemView.findViewById(R.id.order_date);
-        itemView.setOnClickListener(this);
+       // itemView.setOnClickListener(this);
 
 
 
     }
 
-    @Override
+    /*@Override
     public void onClick(View view) {
 
         itemClickListener.onClick(view,getAdapterPosition(),false);
 
-    }
+    }*/
 }

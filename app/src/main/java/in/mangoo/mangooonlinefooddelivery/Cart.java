@@ -68,7 +68,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
     RelativeLayout rootLayout;
 
     int payamount = 0;
-    public int total = 0;
+    int total = 0;
 
 
     @Override
@@ -106,7 +106,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
         txtTotalPrice = (TextView)findViewById(R.id.totalpay);
         btnPlace = (FButton) findViewById(R.id.btnPlaceOrder);
         edtAmount = (TextView)findViewById(R.id.edtAmount);
-        edtDelivery = (TextView)findViewById(R.id.edtDelivery);
+        //edtDelivery = (TextView)findViewById(R.id.edtDelivery);
         edtDiscount = (TextView)findViewById(R.id.edtDiscount);
         empty = (LinearLayout) findViewById(R.id.empty);
         scroll = (ScrollView)findViewById(R.id.scroll);
@@ -125,9 +125,28 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             public void onClick(View v) {
 
                 if(cart.size()>0) {
-                    Intent intent = new Intent(Cart.this, PlaceOrder.class);
-                    intent.putExtra("Total", edtAmount.getText().toString());
-                    startActivity(intent);
+
+                    /*String checkMin = edtAmount.getText().toString();
+                    checkMin.replace("₹","");
+                    int minvalue = Integer.parseInt(checkMin);*/
+
+                    Number parse = 0;
+                    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(new Locale("en","IN"));
+                    try {
+                        parse = numberFormat.parse(edtAmount.getText().toString());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (parse.intValue() < 100)
+                    {
+                        Toast.makeText(Cart.this, "Minimum Order Value is ₹ 100", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Intent intent = new Intent(Cart.this, PlaceOrder.class);
+                        intent.putExtra("Total", edtAmount.getText().toString());
+                        startActivity(intent);
+                    }
                 }
                 else
                     Toast.makeText(Cart.this, "Your cart is empty.", Toast.LENGTH_SHORT).show();
@@ -145,7 +164,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
 
-        //int total = 0;
+        total = 0;
         for(Order order:cart)
             total += (Integer.parseInt(order.getPrice())) * (Integer.parseInt(order.getQuantity()));
 
@@ -158,16 +177,15 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             empty.setVisibility(View.VISIBLE);
             btnPlace.setVisibility(View.INVISIBLE);
             scroll.setVisibility(View.INVISIBLE);
-            edtDelivery.setText(fmt.format(0));
+           // edtDelivery.setText(fmt.format(0));
         }
-        else
+        /*else
         {
-            edtDelivery.setText(fmt.format(50));
+            //edtDelivery.setText(fmt.format(50));
         }
-
+*/
         try {
-            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
-                    + fmt.parse(edtDelivery.getText().toString()).intValue();
+            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -213,12 +231,11 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             edtAmount.setText(fmt.format(total));
 
             int a = 50,b =0,payamount = 0;
-            edtDelivery.setText(fmt.format(a));
+            //edtDelivery.setText(fmt.format(a));
             edtDiscount.setText(fmt.format(b));
 
             try {
-                payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
-                        + fmt.parse(edtDelivery.getText().toString()).intValue();
+                payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -226,7 +243,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             txtTotalPrice.setText(fmt.format(payamount));
             if ((cart.size() == 0 )&& (edtAmount.getText().toString().equals("₹ 0.00")))
         {
-            edtDelivery.setText(fmt.format("0"));
+            //edtDelivery.setText(fmt.format("0"));
         }
 
             Snackbar snackBar =Snackbar.make(rootLayout,name + " removed from cart.",Snackbar.LENGTH_LONG);
@@ -247,12 +264,11 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
                     edtAmount.setText(fmt.format(total));
 
                     int a = 50,b =0, payamount = 0;
-                    edtDelivery.setText(fmt.format(a));
+                    //edtDelivery.setText(fmt.format(a));
                     edtDiscount.setText(fmt.format(b));
 
                     try {
-                        payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
-                                + fmt.parse(edtDelivery.getText().toString()).intValue();
+                        payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -268,7 +284,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(Cart.this,RestaurantList.class);
+        Intent intent = new Intent(Cart.this,Home.class);
         startActivity(intent);
     }
 }

@@ -139,7 +139,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         pay = (FButton) findViewById(R.id.pay);
         txtTotalPrice = (TextView) findViewById(R.id.total);
         edtAmount = (TextView) findViewById(R.id.edtAmount);
-        edtDelivery = (TextView) findViewById(R.id.edtDelivery);
+        //edtDelivery = (TextView) findViewById(R.id.edtDelivery);
         edtDiscount = (TextView) findViewById(R.id.edtDiscount);
 
         backBtn = (ImageView) findViewById(R.id.backBtn);
@@ -160,12 +160,11 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
         int a = 50, b = 0;
-        edtDelivery.setText(fmt.format(a));
+        //edtDelivery.setText(fmt.format(a));
         edtDiscount.setText(fmt.format(b));
 
         try {
-            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue()
-                    + fmt.parse(edtDelivery.getText().toString()).intValue();
+            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -557,6 +556,13 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(PlaceOrder.this, Cart.class);
+        startActivity(intent);
+
     }
 }
 

@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -29,6 +30,7 @@ public class OrderDetail extends AppCompatActivity {
 
     TextView paid,order,payMethod;
     FButton homeBtn;
+    ImageView backBtn;
 
     FirebaseRecyclerAdapter<Request,OrderViewHolder> adapter;
 
@@ -59,6 +61,7 @@ public class OrderDetail extends AppCompatActivity {
         order = (TextView)findViewById(R.id.order);
         payMethod = (TextView)findViewById(R.id.paymentMethod);
         homeBtn = (FButton) findViewById(R.id.home);
+        backBtn = (ImageView)findViewById(R.id.backBtn);
 
         Intent intent = getIntent();
         String total = intent.getStringExtra("Total");
@@ -67,6 +70,14 @@ public class OrderDetail extends AppCompatActivity {
         paid.setText(total);
         order.setText(orderid);
         payMethod.setText(method);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OrderDetail.this,Home.class);
+                startActivity(intent);
+            }
+        });
 
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override

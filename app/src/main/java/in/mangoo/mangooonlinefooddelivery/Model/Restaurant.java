@@ -1,14 +1,15 @@
 package in.mangoo.mangooonlinefooddelivery.Model;
 
 public class Restaurant {
-    private String name,image;
-
-    public Restaurant(String name, String image) {
-        this.name = name;
-        this.image = image;
-    }
+    private String name,image,addr;
 
     public Restaurant() {
+    }
+
+    public Restaurant(String name, String image, String addr) {
+        this.name = name;
+        this.image = image;
+        this.addr = addr;
     }
 
     public String getName() {
@@ -25,5 +26,13 @@ public class Restaurant {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String addr) {
+        this.addr = addr;
     }
 }
