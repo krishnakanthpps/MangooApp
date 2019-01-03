@@ -13,8 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +38,7 @@ import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.Model.Banner;
 import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
+import in.mangoo.mangooonlinefooddelivery.ViewHolder.BannerViewHolder;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.RestaurantViewHolder;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -47,7 +46,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class RestaurantList extends AppCompatActivity {
 
     AlertDialog waitingDialog;
-    RecyclerView recyclerView;
+    RecyclerView recyclerView,bannerList;
+    RecyclerView.LayoutManager bannerLayout;
+    FirebaseRecyclerAdapter<Banner,BannerViewHolder> bannerAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
 
     TextView edtHomeAddress,edtRestaurantAddress;
@@ -165,8 +166,52 @@ public class RestaurantList extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_restaurant);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        setupslider();
+        bannerList = (RecyclerView)findViewById(R.id.bannerList);
+        bannerList.setHasFixedSize(false);
+        bannerLayout = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        bannerList.setLayoutManager(bannerLayout);
 
+        //setupslider();
+        loadBanner();
+
+    }
+
+    private void loadBanner() {
+
+        FirebaseRecyclerOptions<Banner> banner = new FirebaseRecyclerOptions.Builder<Banner>()
+                .setQuery(FirebaseDatabase.getInstance()
+                                .getReference()
+                                .child("Banner")
+                        ,Banner.class)
+                .build();
+
+       bannerAdapter = new FirebaseRecyclerAdapter<Banner, BannerViewHolder>(banner) {
+           @NonNull
+           @Override
+           public BannerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+               View itemView = LayoutInflater.from(parent.getContext())
+                       .inflate(R.layout.banner_layout, parent, false);
+               return new BannerViewHolder(itemView);
+           }
+
+           @Override
+           protected void onBindViewHolder(@NonNull BannerViewHolder viewHolder, int position, @NonNull Banner model) {
+               Picasso.with(getBaseContext()).load(model.getImage())
+                       .into(viewHolder.bannerImage);
+               //final Restaurant clickItem = model;
+               viewHolder.setItemClickListener(new ItemClickListener() {
+                   @Override
+                   public void onClick(View view, int position, boolean isLongClick) {
+                       Intent foodList = new Intent(RestaurantList.this, Home.class);
+                       Common.restaurantSelected = adapter.getRef(position).getKey();
+                       startActivity(foodList);
+                   }
+
+               });
+           }
+       };
+        bannerAdapter.startListening();
+        bannerList.setAdapter(bannerAdapter);
     }
 
 
@@ -236,7 +281,7 @@ public class RestaurantList extends AppCompatActivity {
 
     private void setupslider() {
 
-        mSlider = (SliderLayout)findViewById(R.id.slider);
+       // mSlider = (SliderLayout)findViewById(R.id.slider);
         image_list = new HashMap<>();
         final DatabaseReference banners = database.getReference("Banner");
         banners.addValueEventListener(new ValueEventListener() {

@@ -27,21 +27,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-
-        <!--<android.support.v4.view.ViewPager
-            android:id="@+id/pager"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/bannerList"
             android:layout_width="match_parent"
-            android:layout_margin="10dp"
-            android:layout_height="150dp"
-            android:layout_alignParentTop="true" />-->
+            android:layout_height="200dp">
+        </android.support.v7.widget.RecyclerView>
 
-        <com.daimajia.slider.library.SliderLayout
+
+        <!--<com.daimajia.slider.library.SliderLayout
             android:background="@color/bg_color"
             android:id="@+id/slider"
             android:layout_margin="10dp"
             app:pager_animation="Default"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="200dp" />-->
 
         <View
             android:layout_width="match_parent"

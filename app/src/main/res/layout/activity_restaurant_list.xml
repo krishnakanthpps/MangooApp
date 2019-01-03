@@ -137,14 +137,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.daimajia.slider.library.SliderLayout
-            android:background="@color/bg_color"
-            android:layout_gravity="center"
+        <!--<com.daimajia.slider.library.SliderLayout
             android:id="@+id/slider"
-            android:layout_margin="10dp"
-            app:pager_animation="Default"
             android:layout_width="wrap_content"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:background="@color/bg_color"
+            app:pager_animation="Default" />-->
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/bannerList"
+            android:layout_width="match_parent"
+            android:layout_height="180dp">
+
+        </android.support.v7.widget.RecyclerView>
 
         <android.support.v7.widget.RecyclerView
             android:nestedScrollingEnabled="false"
