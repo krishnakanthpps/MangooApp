@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -57,7 +58,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
 
     public TextView edtAmount,edtDelivery,edtDiscount;
     LinearLayout empty;
-    ScrollView scroll;
+    NestedScrollView scroll;
     ImageView backBtn;
 
     List<Order> cart = new ArrayList<>();
@@ -109,13 +110,13 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
         //edtDelivery = (TextView)findViewById(R.id.edtDelivery);
         edtDiscount = (TextView)findViewById(R.id.edtDiscount);
         empty = (LinearLayout) findViewById(R.id.empty);
-        scroll = (ScrollView)findViewById(R.id.scroll);
+        scroll = (NestedScrollView)findViewById(R.id.scroll);
         backBtn = (ImageView)findViewById(R.id.backBtn);
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Cart.this,Home.class);
+                Intent intent = new Intent(Cart.this,RestaurantList.class);
                 startActivity(intent);
             }
         });
@@ -284,7 +285,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(Cart.this,Home.class);
+        Intent intent = new Intent(Cart.this,RestaurantList.class);
         startActivity(intent);
     }
 }

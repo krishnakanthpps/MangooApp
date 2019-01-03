@@ -100,6 +100,11 @@ public class OrderStatus extends AppCompatActivity {
                     public void onClick(View v) {
                         if(adapter.getItem(position).getStatus().equals("0"))
                             deleteOrder(adapter.getRef(position).getKey());
+                        else if (adapter.getItemCount() == 0)
+                        {
+                            Intent intent = new Intent(OrderStatus.this,RestaurantList.class);
+                            startActivity(intent);
+                        }
                         else
                             Toast.makeText(OrderStatus.this, "This order cannot be deleted", Toast.LENGTH_SHORT).show();
                     }

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andremion.counterfab.CounterFab;
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
@@ -37,6 +39,7 @@ import com.squareup.picasso.Picasso;
 import java.util.HashMap;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
+import in.mangoo.mangooonlinefooddelivery.Database.Database;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.Model.Banner;
 import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
@@ -55,6 +58,8 @@ public class RestaurantList extends AppCompatActivity {
     HashMap<String, String> image_list;
 
     FirebaseDatabase database;
+
+    CounterFab fab;
 
     FirebaseRecyclerOptions<Restaurant> options = new FirebaseRecyclerOptions.Builder<Restaurant>()
             .setQuery(FirebaseDatabase.getInstance()
@@ -113,6 +118,19 @@ public class RestaurantList extends AppCompatActivity {
         setContentView(R.layout.activity_restaurant_list);
 
         database = FirebaseDatabase.getInstance();
+
+        fab = (CounterFab) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent cartIntent = new Intent(RestaurantList.this, Cart.class);
+                startActivity(cartIntent);
+
+            }
+        });
+
+        fab.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
@@ -245,28 +263,19 @@ public class RestaurantList extends AppCompatActivity {
                 for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
                 {
                     Banner banner = postSnapshot.getValue(Banner.class);
-                    image_list.put(banner.getName()+"@@@"+banner.getId(),banner.getImage());
+                    image_list.put(banner.getId(),banner.getImage());
                 }
                 for(String key:image_list.keySet())
                 {
                     String[] keySplit = key.split("@@@");
-                    String nameofFood = keySplit[0];
-                    String idofFood = keySplit[1];
+                   // String nameofFood = keySplit[0];
+                   // String idofFood = keySplit[1];
                     final TextSliderView textSliderView = new TextSliderView(getBaseContext());
                     textSliderView
-                            .description(nameofFood)
                             .image(image_list.get(key))
-                            .setScaleType(BaseSliderView.ScaleType.Fit)
-                            .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
-                                @Override
-                                public void onSliderClick(BaseSliderView slider) {
-                                    Intent intent = new Intent(RestaurantList.this,FoodDetail.class);
-                                    intent.putExtras(textSliderView.getBundle());
-                                    startActivity(intent);
-                                }
-                            });
-                    textSliderView.bundle(new Bundle());
-                    textSliderView.getBundle().putString("FoodId",idofFood);
+                            .setScaleType(BaseSliderView.ScaleType.Fit);
+                    //textSliderView.bundle(new Bundle());
+                    //textSliderView.getBundle().putString("FoodId",idofFood);
                     mSlider.addSlider(textSliderView);
                     banners.removeEventListener(this);
                 }
@@ -283,8 +292,48 @@ public class RestaurantList extends AppCompatActivity {
 
     }
 
+    boolean doubleBackToExitPressedOnce = false;
+
     @Override
     public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
 
+        this.doubleBackToExitPressedOnce = true;
+
+        onShowQuitDialog();
+
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+    }
+
+    public void onShowQuitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+
+        builder.setMessage("Do You Want To Quit?");
+        builder.setPositiveButton(android.R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                        moveTaskToBack(true);
+                    }
+                });
+        builder.setNegativeButton(android.R.string.no,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        builder.create().show();
     }
 }

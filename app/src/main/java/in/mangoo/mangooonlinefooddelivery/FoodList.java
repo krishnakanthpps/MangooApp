@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.andremion.counterfab.CounterFab;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -59,6 +60,8 @@ public class FoodList extends AppCompatActivity {
     List<String> suggestList = new ArrayList<>();
     MaterialSearchBar materialSearchBar;
     Database localDB;
+
+    CounterFab fab;
 
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -130,7 +133,6 @@ public class FoodList extends AppCompatActivity {
 
                 }
 
-
         /*recyclerView = (RecyclerView)findViewById(R.id.recyler_food);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -191,6 +193,20 @@ public class FoodList extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        fab = (CounterFab) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent cartIntent = new Intent(FoodList.this, Cart.class);
+                startActivity(cartIntent);
+
+            }
+        });
+
+        fab.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
+
     }
 
 
@@ -301,6 +317,7 @@ public class FoodList extends AppCompatActivity {
                                 new Database(getBaseContext()).increaseCart(Common.currentUser.getPhone(),adapter.getRef(position).getKey());
                             }
                             Toast.makeText(FoodList.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
+                            fab.setCount(new Database(FoodList.this).getCountCart(Common.currentUser.getPhone()));
                         }
                 });
 

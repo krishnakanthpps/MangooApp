@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RestaurantList">
+
+
+<android.support.v4.widget.SwipeRefreshLayout
     android:id="@+id/swipe_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -132,33 +138,44 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <com.daimajia.slider.library.SliderLayout
-            android:background="@color/bg_color"
-            android:layout_gravity="center"
-            android:id="@+id/slider"
-            android:layout_margin="10dp"
-            app:pager_animation="Default"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp" />
+                <com.daimajia.slider.library.SliderLayout
+                    android:id="@+id/slider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:background="@color/bg_color"
+                    app:pager_animation="Default" />
 
-        <android.support.v7.widget.RecyclerView
-            android:nestedScrollingEnabled="false"
-            android:background="#efeeee"
-            android:id="@+id/recycler_restaurant"
-            android:scrollbars="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_restaurant"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#efeeee"
+                    android:nestedScrollingEnabled="false"
+                    android:scrollbars="vertical">
 
-        </android.support.v7.widget.RecyclerView>
-    </LinearLayout>
+                </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
 
         </android.support.v4.widget.NestedScrollView>
 
     </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>
+
+    <com.andremion.counterfab.CounterFab
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@android:color/white"
+        app:srcCompat="@drawable/ic_shopping_cart_black_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

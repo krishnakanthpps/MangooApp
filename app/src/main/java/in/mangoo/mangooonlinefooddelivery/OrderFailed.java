@@ -45,7 +45,7 @@ public class OrderFailed extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(OrderFailed.this,Home.class);
+                Intent intent = new Intent(OrderFailed.this,RestaurantList.class);
                 startActivity(intent);
             }
         });
@@ -53,7 +53,7 @@ public class OrderFailed extends AppCompatActivity {
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(OrderFailed.this,Home.class);
+                Intent intent = new Intent(OrderFailed.this,RestaurantList.class);
                 startActivity(intent);
             }
         });
