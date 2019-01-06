@@ -36,6 +36,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
@@ -79,20 +83,37 @@ public class RestaurantList extends AppCompatActivity {
         }
 
         @Override
-        protected void onBindViewHolder(@NonNull RestaurantViewHolder viewHolder, int position,
-                                        @NonNull Restaurant model) {
-
+        protected void onBindViewHolder(@NonNull final RestaurantViewHolder viewHolder, int position,
+                                        @NonNull final Restaurant model) {
             viewHolder.txt_restaurant_name.setText(model.getName());
             viewHolder.txt_restaurant_addr.setText(model.getAddr());
+            viewHolder.txt_opening_time.setText(model.getOpeningTime());
+            viewHolder.txt_closing_time.setText(model.getClosingTime());
             Picasso.with(getBaseContext()).load(model.getImage())
                     .into(viewHolder.img_restaurant);
             final Restaurant clickItem = model;
             viewHolder.setItemClickListener(new ItemClickListener() {
                 @Override
                 public void onClick(View view, int position, boolean isLongClick) {
-                    Intent foodList = new Intent(RestaurantList.this,Home.class);
-                    Common.restaurantSelected = adapter.getRef(position).getKey();
-                    startActivity(foodList);
+
+                    Calendar cal = Calendar.getInstance();
+                    SimpleDateFormat form = new SimpleDateFormat("hh:mm aa");
+                    String current = form.format(cal.getTime());
+                    Date open=null,close = null,now=null;
+                    try {
+                        now = form.parse(current);
+                        open = form.parse(viewHolder.txt_opening_time.getText().toString());
+                        close = form.parse(viewHolder.txt_closing_time.getText().toString());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if (open.getTime()<now.getTime() && close.getTime()>now.getTime()) {
+                        Intent foodList = new Intent(RestaurantList.this, Home.class);
+                        Common.restaurantSelected = adapter.getRef(position).getKey();
+                        startActivity(foodList);
+                    }
+                    else
+                        Toast.makeText(RestaurantList.this, "Restaurant closed now!", Toast.LENGTH_SHORT).show();
                 }
             });
 
