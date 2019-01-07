@@ -1,171 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipe_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#e1e1e1"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    >
+    android:background="#e1e1e1">
 
-    <LinearLayout
-        android:background="#efeeee"
-        android:orientation="vertical"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:background="@android:color/white"
-        android:layout_height="70dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:background="#e1e1e1"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:background="#efeeee"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/backBtn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="5dp"
-                android:src="@drawable/logo" />
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:background="@android:color/white"
+            android:layout_height="70dp">
 
-            <LinearLayout
-                android:layout_gravity="center"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="-130dp"
-                    android:textSize="11sp"
-                    android:text="YOUR"
-                    android:textColor="@android:color/black"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_marginRight="-130dp"
-                    android:layout_marginLeft="10dp"
-                    android:text="HUNGRY"
-                    android:textSize="11sp"
-                    android:textColor="@android:color/black"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_marginRight="-130dp"
-                    android:layout_marginLeft="10dp"
-                    android:text="PARTNER."
-                    android:textSize="11sp"
-                    android:textColor="@android:color/black"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-
             <LinearLayout
-                android:layout_marginRight="20dp"
-                android:layout_alignParentRight="true"
-                android:gravity="center"
-                android:layout_centerVertical="true"
                 android:orientation="horizontal"
+                android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/backBtn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/logo" />
 
                 <LinearLayout
+                    android:layout_gravity="center"
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:text="Your Delivery Address"
-                        android:textColor="@color/darkgrey"
-                        android:textSize="10sp"
-                        />
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="-130dp"
+                        android:textSize="11sp"
+                        android:text="YOUR"
+                        android:textColor="@android:color/black"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content" />
 
                     <TextView
-                        android:id="@+id/edtHomeAddress"
-                        android:gravity="left"
-                        android:layout_width="150dp"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:layout_gravity="left"
-                        android:text="NIT Puducherry"
+                        android:layout_marginRight="-130dp"
+                        android:layout_marginLeft="10dp"
+                        android:text="HUNGRY"
+                        android:textSize="11sp"
                         android:textColor="@android:color/black"
-                        android:textSize="18sp"
-                        />
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginRight="-130dp"
+                        android:layout_marginLeft="10dp"
+                        android:text="PARTNER."
+                        android:textSize="11sp"
+                        android:textColor="@android:color/black"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
-                <ImageView
-                    android:layout_marginLeft="3dp"
-                    android:layout_gravity="bottom"
-                    android:tint="@android:color/black"
-                    android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp" />
 
             </LinearLayout>
 
-        </RelativeLayout>
 
-    </android.support.v7.widget.Toolbar>
+                <LinearLayout
+                    android:layout_marginRight="20dp"
+                    android:layout_alignParentRight="true"
+                    android:gravity="center"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-        <android.support.v4.widget.NestedScrollView
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:text="Your Delivery Address"
+                            android:textColor="@color/darkgrey"
+                            android:textSize="10sp"
+                            />
+
+                        <TextView
+                            android:id="@+id/edtHomeAddress"
+                            android:gravity="left"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:layout_gravity="left"
+                            android:text="NIT Puducherry"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_marginLeft="3dp"
+                        android:layout_gravity="bottom"
+                        android:tint="@android:color/black"
+                        android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+            <android.support.v4.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:orientation="vertical"
+            <!--<com.daimajia.slider.library.SliderLayout
+                android:id="@+id/slider"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:background="@color/bg_color"
+                app:pager_animation="Default" />-->
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/bannerList"
+                android:layout_width="match_parent"
+                android:layout_height="180dp">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+                app:shimmer_demo_child_count="10"
+                app:shimmer_demo_grid_child_count="1"
+                app:shimmer_demo_layout="@layout/shimmer_layout"
+                app:shimmer_demo_layout_manager_type="linear_vertical"
+                app:shimmer_demo_angle="20"
+                android:nestedScrollingEnabled="false"
+                android:background="#efeeee"
+                android:id="@+id/recycler_restaurant"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </com.cooltechworks.views.shimmer.ShimmerRecyclerView>
+        </LinearLayout>
+
+            </android.support.v4.widget.NestedScrollView>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottom_navbar"
+        android:background="#ffffff"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp"
+        app:bb_tabXmlResource="@xml/bottom_menu"
+        app:bb_behavior="iconsOnly"
+        app:bb_activeTabColor="@color/dark_red"
+        app:bb_badgeBackgroundColor="@color/orange"
+        app:bb_showShadow="true"
+        />
 
-        <!--<com.daimajia.slider.library.SliderLayout
-            android:id="@+id/slider"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:background="@color/bg_color"
-            app:pager_animation="Default" />-->
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/bannerList"
-            android:layout_width="match_parent"
-            android:layout_height="180dp">
-
-        </android.support.v7.widget.RecyclerView>
-
-        <android.support.v7.widget.RecyclerView
-            android:nestedScrollingEnabled="false"
-            android:background="#efeeee"
-            android:id="@+id/recycler_restaurant"
-            android:scrollbars="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </android.support.v7.widget.RecyclerView>
-    </LinearLayout>
-
-        </android.support.v4.widget.NestedScrollView>
-
-    </LinearLayout>
-
-</android.support.v4.widget.SwipeRefreshLayout>
+</RelativeLayout>

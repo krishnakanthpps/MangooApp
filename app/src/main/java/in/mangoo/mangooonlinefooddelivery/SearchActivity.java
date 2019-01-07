@@ -159,7 +159,7 @@ public class SearchActivity extends AppCompatActivity {
 
 
                 if(localDB.isFavourite(adapter.getRef(position).getKey(),Common.currentUser.getPhone()))
-                    viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    //viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
 
                 viewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -178,13 +178,13 @@ public class SearchActivity extends AppCompatActivity {
                         if(!localDB.isFavourite(adapter.getRef(position).getKey(),Common.currentUser.getPhone()))
                         {
                             localDB.addToFavourites(favourites);
-                            viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
+                            //viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_black_24dp);
                             Toast.makeText(SearchActivity.this, ""+model.getName()+" added to Favourites", Toast.LENGTH_SHORT).show();
                         }
                         else
                         {
                             localDB.removeFromFavourites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
-                            viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                            //viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                             Toast.makeText(SearchActivity.this, ""+model.getName()+" removed from Favourites", Toast.LENGTH_SHORT).show();
                         }
                     }

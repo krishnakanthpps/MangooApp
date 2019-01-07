@@ -91,7 +91,7 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
                 .child("detail").child("Foods");
         ratingTb1 = database.getReference("Rating");
 
-        numberButton = (ElegantNumberButton)findViewById(R.id.number_button);
+        numberButton = (ElegantNumberButton) findViewById(R.id.number_button);
         btnCart = (CounterFab) findViewById(R.id.btnCart);
         btnRating=(FloatingActionButton)findViewById(R.id.btn_rating);
         ratingBar=(RatingBar)findViewById(R.id.ratingBar);
@@ -119,7 +119,6 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
                 Toast.makeText(FoodDetail.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
             }
         });
-
         btnCart.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
         food_description = (TextView)findViewById(R.id.food_description);

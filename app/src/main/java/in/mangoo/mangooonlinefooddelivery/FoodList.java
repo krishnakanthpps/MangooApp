@@ -3,7 +3,9 @@ package in.mangoo.mangooonlinefooddelivery;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -13,11 +15,13 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.andremion.counterfab.CounterFab;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -26,7 +30,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -39,8 +48,11 @@ import in.mangoo.mangooonlinefooddelivery.Model.Favourites;
 import in.mangoo.mangooonlinefooddelivery.Model.Food;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.FoodViewHolder;
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import xyz.hanks.library.bang.SmallBangView;
 
 public class FoodList extends AppCompatActivity {
 
@@ -59,6 +71,12 @@ public class FoodList extends AppCompatActivity {
     List<String> suggestList = new ArrayList<>();
     MaterialSearchBar materialSearchBar;
     Database localDB;
+
+    CounterFab fab;
+    BottomNavigationViewEx bnve;
+    SmallBangView smallBangView;
+    BottomBar bottomBar;
+    BottomBarTab cart;
 
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -130,7 +148,6 @@ public class FoodList extends AppCompatActivity {
 
                 }
 
-
         /*recyclerView = (RecyclerView)findViewById(R.id.recyler_food);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -187,12 +204,59 @@ public class FoodList extends AppCompatActivity {
             }
         });
 
+        bottomBar = (BottomBar)findViewById(R.id.bottom_navbar);
+        bottomBar.setDefaultTab(R.id.tab_menu);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int id) {
+                if (id == R.id.tab_menu) {
+
+
+                } else if (id == R.id.tab_search) {
+
+
+                } else if (id == R.id.tab_cart) {
+
+                    Intent orderIntent = new Intent(FoodList.this,Cart.class);
+                    startActivity(orderIntent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+
+                } else if (id == R.id.tab_profile) {
+
+                }
+
+            }
+        });
+        bottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+            @Override
+            public void onTabReSelected(int id) {
+                if (id == R.id.tab_menu) {
+                    Intent intent = new Intent(FoodList.this,RestaurantList.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                } else if (id == R.id.tab_search) {
+
+
+                } else if (id == R.id.tab_cart) {
+
+
+                } else if (id == R.id.tab_profile) {
+
+                }
+            }
+        });
+        cart = bottomBar.getTabWithId(R.id.tab_cart);
+        cart.setBadgeCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
+
+
         recyclerView = (RecyclerView)findViewById(R.id.recyler_food);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-    }
 
+    }
 
 
     private void startSearch(CharSequence text) {
@@ -276,6 +340,9 @@ public class FoodList extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull final FoodViewHolder viewHolder,final int position, @NonNull final Food model) {
 
+                //smallBangView = (SmallBangView)findViewById(R.id.bang_view);
+                viewHolder.bangView.isAttachedToWindow();
+
                 viewHolder.food_name.setText(model.getName());
                 viewHolder.food_price.setText(String.format("₹ %s",model.getPrice().toString()));
                 Picasso.with(getBaseContext()).load(model.getImage())
@@ -285,6 +352,7 @@ public class FoodList extends AppCompatActivity {
                 viewHolder.quick_cart.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            viewHolder.button_bang.likeAnimation();
                             if(!isExists) {
                                 new Database(getBaseContext()).addToCart(new Order(
                                         Common.currentUser.getPhone(),
@@ -301,6 +369,7 @@ public class FoodList extends AppCompatActivity {
                                 new Database(getBaseContext()).increaseCart(Common.currentUser.getPhone(),adapter.getRef(position).getKey());
                             }
                             Toast.makeText(FoodList.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
+                            cart.setBadgeCount(new Database(FoodList.this).getCountCart(Common.currentUser.getPhone()));
                         }
                 });
 
@@ -314,6 +383,7 @@ public class FoodList extends AppCompatActivity {
                 viewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        viewHolder.bangView.likeAnimation();
                         viewHolder.fav_image.setColorFilter(ContextCompat.getColor(FoodList.this,R.color.red),PorterDuff.Mode.SRC_IN);
                         Favourites favourites = new Favourites();
                         favourites.setFoodId(adapter.getRef(position).getKey());
@@ -335,6 +405,7 @@ public class FoodList extends AppCompatActivity {
                         {
                             localDB.removeFromFavourites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
                             viewHolder.fav_image.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                            viewHolder.fav_image.setColorFilter(ContextCompat.getColor(FoodList.this,R.color.black),PorterDuff.Mode.SRC_IN);
                             Toast.makeText(FoodList.this, ""+model.getName()+" removed from Favourites", Toast.LENGTH_SHORT).show();
                         }
                     }

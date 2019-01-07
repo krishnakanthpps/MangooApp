@@ -3,8 +3,11 @@ package in.mangoo.mangooonlinefooddelivery;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -50,8 +53,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.PrintWriter;
@@ -68,6 +76,8 @@ import in.mangoo.mangooonlinefooddelivery.ViewHolder.BannerViewHolder;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.MenuViewHolder;
 import dmax.dialog.SpotsDialog;
 import io.paperdb.Paper;
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -90,6 +100,8 @@ public class Home extends AppCompatActivity
     SwipeRefreshLayout swipeRefreshLayout;
 
     CounterFab fab;
+    BottomBar bottomBar;
+    BottomBarTab cart_badge;
 
     HashMap<String, String> image_list;
     SliderLayout mSlider;
@@ -216,25 +228,57 @@ public class Home extends AppCompatActivity
 
        // Paper.init(this);
 
-
-        fab = (CounterFab) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                    Intent cartIntent = new Intent(Home.this, Cart.class);
-                    startActivity(cartIntent);
-
-            }
-        });
-
-        fab.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
-
         /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();*/
+
+        bottomBar = (BottomBar)findViewById(R.id.bottom_navbar);
+        bottomBar.setDefaultTab(R.id.tab_menu);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int id) {
+                if (id == R.id.tab_menu) {
+
+
+                } else if (id == R.id.tab_search) {
+
+
+                } else if (id == R.id.tab_cart) {
+
+                    Intent orderIntent = new Intent(Home.this,Cart.class);
+                    startActivity(orderIntent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+
+                } else if (id == R.id.tab_profile) {
+
+                }
+
+            }
+        });
+        bottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+            @Override
+            public void onTabReSelected(int id) {
+                if (id == R.id.tab_menu) {
+                    Intent intent = new Intent(Home.this,RestaurantList.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                } else if (id == R.id.tab_search) {
+
+
+                } else if (id == R.id.tab_cart) {
+
+
+                } else if (id == R.id.tab_profile) {
+
+                }
+            }
+        });
+        cart_badge = bottomBar.getTabWithId(R.id.tab_cart);
+        cart_badge.setBadgeCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -242,15 +286,6 @@ public class Home extends AppCompatActivity
         View headerView = navigationView.getHeaderView(0);
         txtFullName = (TextView)headerView.findViewById(R.id.txtFullName);
         txtFullName.setText(Common.currentUser.getName());
-
-        menuBtn = (ImageView)findViewById(R.id.menuBtn);
-        menuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.openDrawer(Gravity.START);
-            }
-        });
 
         recyler_menu = (RecyclerView)findViewById(R.id.recyler_menu);
         //recyler_menu.setHasFixedSize(true);
@@ -311,6 +346,11 @@ public class Home extends AppCompatActivity
         bannerList.setAdapter(bannerAdapter);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
 
     private void setupslider() {
 
@@ -389,7 +429,7 @@ public class Home extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         loadMenu();
-        fab.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
+
     }
 
         @Override

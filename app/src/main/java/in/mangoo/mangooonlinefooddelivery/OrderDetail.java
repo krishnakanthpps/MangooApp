@@ -74,7 +74,7 @@ public class OrderDetail extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(OrderDetail.this,Home.class);
+                Intent intent = new Intent(OrderDetail.this,RestaurantList.class);
                 startActivity(intent);
             }
         });
@@ -82,7 +82,7 @@ public class OrderDetail extends AppCompatActivity {
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(OrderDetail.this,Home.class);
+                Intent intent = new Intent(OrderDetail.this,RestaurantList.class);
                 startActivity(intent);
             }
         });

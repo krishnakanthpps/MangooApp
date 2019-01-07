@@ -34,5 +34,6 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder implements Vie
     public void onClick(View view){
 
         itemClickListener.onClick(view,getAdapterPosition(),false);
+
     }
 }

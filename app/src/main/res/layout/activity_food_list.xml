@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipe_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="in.mangoo.mangooonlinefooddelivery.FoodList">
+    tools:context=".FoodList">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/swipe_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:background="@color/bg_color"
@@ -52,6 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/searchBar"
+        android:layout_marginBottom="60dp"
         >
 
     </android.support.v7.widget.RecyclerView>
@@ -59,3 +64,18 @@
     </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>
+
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottom_navbar"
+        android:background="#ffffff"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:bb_tabXmlResource="@xml/bottom_menu"
+        app:bb_behavior="iconsOnly"
+        app:bb_activeTabColor="@color/dark_red"
+        app:bb_badgeBackgroundColor="@color/orange"
+        app:bb_showShadow="true"
+        />
+
+</RelativeLayout>

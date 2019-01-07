@@ -3,7 +3,9 @@ package in.mangoo.mangooonlinefooddelivery;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.annotation.IdRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +22,10 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -57,8 +63,10 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
 
     public TextView edtAmount,edtDelivery,edtDiscount;
     LinearLayout empty;
-    ScrollView scroll;
+    NestedScrollView scroll;
     ImageView backBtn;
+    BottomBar bottomBar;
+    BottomBarTab cart_badge;
 
     List<Order> cart = new ArrayList<>();
     CartAdapter adapter;
@@ -109,13 +117,37 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
         //edtDelivery = (TextView)findViewById(R.id.edtDelivery);
         edtDiscount = (TextView)findViewById(R.id.edtDiscount);
         empty = (LinearLayout) findViewById(R.id.empty);
-        scroll = (ScrollView)findViewById(R.id.scroll);
+        scroll = (NestedScrollView)findViewById(R.id.scroll);
         backBtn = (ImageView)findViewById(R.id.backBtn);
+
+        bottomBar = (BottomBar)findViewById(R.id.bottom_navbar);
+        cart_badge = bottomBar.getTabWithId(R.id.tab_cart);
+        cart_badge.setBadgeCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
+        bottomBar.setDefaultTab(R.id.tab_cart);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(int id) {
+                if (id == R.id.tab_menu) {
+
+                    Intent intent = new Intent(Cart.this,RestaurantList.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+
+                } else if (id == R.id.tab_search) {
+
+
+                } else if (id == R.id.tab_cart) {
+
+
+                } else if (id == R.id.tab_profile) {
+
+                }
+            }
+        });
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Cart.this,Home.class);
+                Intent intent = new Intent(Cart.this,RestaurantList.class);
                 startActivity(intent);
             }
         });
@@ -284,7 +316,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(Cart.this,Home.class);
+        Intent intent = new Intent(Cart.this,RestaurantList.class);
         startActivity(intent);
     }
 }
