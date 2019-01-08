@@ -2,6 +2,7 @@ package in.mangoo.mangooonlinefooddelivery;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -349,10 +350,19 @@ public class FoodList extends AppCompatActivity {
                         .into(viewHolder.food_image);
 
                 final boolean isExists = new Database(getBaseContext()).checkExist(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
+                if (isExists)
+                {
+                    viewHolder.quick_cart.setBackgroundResource(R.drawable.green_box);
+                    viewHolder.quick_cart.setTextColor(Color.parseColor("#ffffff"));
+                    viewHolder.quick_cart.setText("ADDED");
+                }
                 viewHolder.quick_cart.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             viewHolder.button_bang.likeAnimation();
+                            viewHolder.quick_cart.setBackgroundResource(R.drawable.green_box);
+                            viewHolder.quick_cart.setTextColor(Color.parseColor("#ffffff"));
+                            viewHolder.quick_cart.setText("ADDED");
                             if(!isExists) {
                                 new Database(getBaseContext()).addToCart(new Order(
                                         Common.currentUser.getPhone(),
@@ -364,10 +374,10 @@ public class FoodList extends AppCompatActivity {
                                         model.getImage()
                                 ));
                             }
-                            else
+                            /*else
                             {
                                 new Database(getBaseContext()).increaseCart(Common.currentUser.getPhone(),adapter.getRef(position).getKey());
-                            }
+                            }*/
                             Toast.makeText(FoodList.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
                             cart.setBadgeCount(new Database(FoodList.this).getCountCart(Common.currentUser.getPhone()));
                         }

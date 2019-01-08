@@ -10,7 +10,7 @@ import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 
 public class MenuViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    public TextView txtMenuName;
+    public TextView txtMenuName,restName,restAddr;
     public ImageView imageView;
 
     private ItemClickListener itemClickListener;
@@ -20,6 +20,8 @@ public class MenuViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
         txtMenuName = (TextView)itemView.findViewById(R.id.menu_name);
         imageView = (ImageView)itemView.findViewById(R.id.menu_image);
+        restName = (TextView)itemView.findViewById(R.id.rest_name);
+        restAddr = (TextView)itemView.findViewById(R.id.rest_addr);
 
         itemView.setOnClickListener(this);
 

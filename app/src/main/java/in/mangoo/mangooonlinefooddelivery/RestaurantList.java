@@ -48,6 +48,10 @@ import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabSelectListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
@@ -79,6 +83,7 @@ public class RestaurantList extends AppCompatActivity {
     BottomBar bottomBar;
     BottomBarTab cart_badge;
 
+    Bundle mBundleRecyclerViewState;
     FirebaseDatabase database;
     Query query;
 
@@ -103,11 +108,12 @@ public class RestaurantList extends AppCompatActivity {
         }
 
         @Override
-        protected void onBindViewHolder(@NonNull RestaurantViewHolder viewHolder, int position,
-                                        @NonNull Restaurant model) {
-
+        protected void onBindViewHolder(@NonNull final RestaurantViewHolder viewHolder, int position,
+                                        @NonNull final Restaurant model) {
             viewHolder.txt_restaurant_name.setText(model.getName());
             viewHolder.txt_restaurant_addr.setText(model.getAddr());
+            viewHolder.txt_opening_time.setText(model.getOpeningTime());
+            viewHolder.txt_closing_time.setText(model.getClosingTime());
             Picasso.with(getBaseContext()).load(model.getImage())
                     .into(viewHolder.img_restaurant);
             final Restaurant clickItem = model;
@@ -118,6 +124,25 @@ public class RestaurantList extends AppCompatActivity {
                     Common.restaurantSelected = adapter.getRef(position).getKey();
                     startActivity(foodList);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                    Calendar cal = Calendar.getInstance();
+                    SimpleDateFormat form = new SimpleDateFormat("hh:mm aa");
+                    String current = form.format(cal.getTime());
+                    Date open=null,close = null,now=null;
+                    try {
+                        now = form.parse(current);
+                        open = form.parse(viewHolder.txt_opening_time.getText().toString());
+                        close = form.parse(viewHolder.txt_closing_time.getText().toString());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if (open.getTime()<now.getTime() && close.getTime()>now.getTime()) {
+                        Intent intent = new Intent(RestaurantList.this, Home.class);
+                        Common.restaurantSelected = adapter.getRef(position).getKey();
+                        startActivity(intent);
+                    }
+                    else
+                        Toast.makeText(RestaurantList.this, "Restaurant closed now!", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -256,7 +281,7 @@ public class RestaurantList extends AppCompatActivity {
            @Override
            public BannerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
                View itemView = LayoutInflater.from(parent.getContext())
-                       .inflate(R.layout.banner_layout, parent, false);
+                       .inflate(R.layout.home_banner, parent, false);
                return new BannerViewHolder(itemView);
            }
 
@@ -298,6 +323,11 @@ public class RestaurantList extends AppCompatActivity {
         super.onStop();
         if (adapter != null)
             adapter.stopListening();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override

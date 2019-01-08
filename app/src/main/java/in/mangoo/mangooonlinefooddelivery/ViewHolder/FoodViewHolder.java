@@ -3,6 +3,7 @@ package in.mangoo.mangooonlinefooddelivery.ViewHolder;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,7 +16,7 @@ public class FoodViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     public TextView food_name,food_price;
     public ImageView food_image,fav_image;
-    public FButton quick_cart;
+    public Button quick_cart;
     public SmallBangView bangView,button_bang;
 
     private ItemClickListener itemClickListener;
@@ -31,7 +32,7 @@ public class FoodViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         food_image = (ImageView)itemView.findViewById(R.id.food_image);
         fav_image = (ImageView) itemView.findViewById(R.id.fav);
         food_price = (TextView)itemView.findViewById(R.id.food_price);
-        quick_cart = (FButton)itemView.findViewById(R.id.btn_quick_cart);
+        quick_cart = (Button) itemView.findViewById(R.id.btn_quick_cart);
         bangView = (SmallBangView)itemView.findViewById(R.id.bang_view);
         button_bang = (SmallBangView)itemView.findViewById(R.id.button_bang);
 

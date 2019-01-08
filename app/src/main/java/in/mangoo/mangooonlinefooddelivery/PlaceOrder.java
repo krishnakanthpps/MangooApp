@@ -2,6 +2,8 @@ package in.mangoo.mangooonlinefooddelivery;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +11,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -525,9 +528,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                     dataSend.put("message","You have new order"+order_number);
                     DataMessage dataMessage = new DataMessage(serverToken.getToken(),dataSend);
 
-
-
-                    mService.sendNotification(dataMessage)
+                    /*mService.sendNotification(dataMessage)
                             .enqueue(new Callback<MyResponse>() {
                                 @Override
                                 public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
@@ -547,7 +548,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                                 public void onFailure(Call<MyResponse> call, Throwable t) {
                                     Log.e("ERROR",t.getMessage());
                                 }
-                            });
+                            });*/
                 }
             }
 

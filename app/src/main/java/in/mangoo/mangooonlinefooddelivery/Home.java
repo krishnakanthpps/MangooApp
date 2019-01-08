@@ -3,6 +3,7 @@ package in.mangoo.mangooonlinefooddelivery;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.ImageFormat;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -71,6 +72,7 @@ import in.mangoo.mangooonlinefooddelivery.Database.Database;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.Model.Banner;
 import in.mangoo.mangooonlinefooddelivery.Model.Category;
+import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
 import in.mangoo.mangooonlinefooddelivery.Model.Token;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.BannerViewHolder;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.MenuViewHolder;
@@ -86,9 +88,9 @@ public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     FirebaseDatabase database;
-    DatabaseReference category,mName;
-    TextView txtFullName,restaurantName;
-    ImageView menuBtn;
+    DatabaseReference category,mName,mAddr,mImage;
+    TextView txtFullName,restaurantName,restaurantAddr;
+    ImageView menuBtn,restaurantImage;
 
 
     RecyclerView recyler_menu,bannerList;
@@ -106,7 +108,7 @@ public class Home extends AppCompatActivity
     HashMap<String, String> image_list;
     SliderLayout mSlider;
 
-    String restName = "";
+    String restName = "",restAddr ="",restImage="";
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -137,7 +139,10 @@ public class Home extends AppCompatActivity
             @Override
             public void onRefresh() {
                 if(Common.isConnectedToInternet(getBaseContext()))
+                {
                     loadMenu();
+                    loadBanner();
+                }
                 else
                 {
                     Toast.makeText(getBaseContext(), "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
@@ -150,7 +155,10 @@ public class Home extends AppCompatActivity
             @Override
             public void run() {
                 if(Common.isConnectedToInternet(getBaseContext()))
+                {
                     loadMenu();
+                    loadBanner();
+                }
                 else
                 {
                     Toast.makeText(getBaseContext(), "Check your Internet Connection.", Toast.LENGTH_SHORT).show();
@@ -179,11 +187,41 @@ public class Home extends AppCompatActivity
             }
         });
 
+        mImage = database.getReference("Restaurants").child(Common.restaurantSelected);
+        mImage.child("image").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                restImage =  (String) snapshot.getValue();
+                restaurantImage = (ImageView)findViewById(R.id.rest_image);
+                Picasso.with(Home.this).load(restImage).into(restaurantImage);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mAddr = database.getReference("Restaurants").child(Common.restaurantSelected);
+        mAddr.child("addr").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                restAddr =  (String) snapshot.getValue();
+                restaurantAddr = (TextView)findViewById(R.id.rest_addr);
+                restaurantAddr.setText(restAddr);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         bannerList = (RecyclerView)findViewById(R.id.bannerList);
         bannerList.setHasFixedSize(true);
         bannerLayout = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         bannerList.setLayoutManager(bannerLayout);
-
 
         loadBanner();
 
@@ -330,7 +368,8 @@ public class Home extends AppCompatActivity
                 Picasso.with(getBaseContext()).load(model.getImage())
                         .fit()
                         .into(viewHolder.bannerImage);
-                //final Restaurant clickItem = model;
+                viewHolder.foodName.setText(model.getName());
+                //final Banner clickItem = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {

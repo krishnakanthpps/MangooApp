@@ -3,6 +3,7 @@ package in.mangoo.mangooonlinefooddelivery.ViewHolder;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -14,7 +15,8 @@ import in.mangoo.mangooonlinefooddelivery.R;
 public class FavouriteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public TextView food_name,food_price;
-    public ImageView food_image,fav_image,quick_cart;
+    public ImageView food_image,fav_image;
+    public Button quick_cart;
 
     private ItemClickListener itemClickListener;
 
@@ -32,7 +34,7 @@ public class FavouriteViewHolder extends RecyclerView.ViewHolder implements View
         food_image = (ImageView)itemView.findViewById(R.id.food_image);
         fav_image = (ImageView)itemView.findViewById(R.id.fav);
         food_price = (TextView)itemView.findViewById(R.id.food_price);
-        quick_cart = (ImageView)itemView.findViewById(R.id.btn_quick_cart);
+        quick_cart = (Button)itemView.findViewById(R.id.btn_quick_cart);
 
         view_background=(RelativeLayout)itemView.findViewById(R.id.view_background);
         view_foreground=(LinearLayout)itemView.findViewById(R.id.view_foreground);
