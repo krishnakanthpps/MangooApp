@@ -27,9 +27,21 @@ public class Common {
     public static final String INTENT_FOOD_ID = "FoodId";
 
     public static String restaurantSelected="";
+    public static String restName = "";
 
     private static final String BASE_URL="https://fcm.googleapis.com/";
     private static final String GOOGLE_API_URL="https://maps.googleapis.com/";
+
+    public static String convertCodetoStatus(String status) {
+
+        if(status.equals("0"))
+            return "Placed";
+        else if(status.equals("1"))
+            return "On the Way";
+        else
+            return "Shipped";
+
+    }
 
     public static APIService getFCMService()
     {

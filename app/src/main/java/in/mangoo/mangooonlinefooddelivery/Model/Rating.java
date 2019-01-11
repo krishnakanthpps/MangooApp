@@ -5,16 +5,18 @@ public class Rating {
     private String foodId;
     private String rateValue;
     private String comment;
+    private String restaurantId;
 
 
     public Rating() {
     }
 
-    public Rating(String userPhone, String foodId, String rateValue, String comment) {
+    public Rating(String userPhone, String foodId, String rateValue, String comment, String restaurantId) {
         this.userPhone = userPhone;
         this.foodId = foodId;
         this.rateValue = rateValue;
         this.comment = comment;
+        this.restaurantId = restaurantId;
     }
 
     public String getUserPhone() {
@@ -47,5 +49,13 @@ public class Rating {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
     }
 }

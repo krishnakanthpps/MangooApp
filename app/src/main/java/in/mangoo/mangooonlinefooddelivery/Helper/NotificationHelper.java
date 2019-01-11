@@ -15,7 +15,7 @@ import in.mangoo.mangooonlinefooddelivery.R;
 public class NotificationHelper extends ContextWrapper {
 
     private static final String MANGOO_CHANNEL_ID = "in.mangoo.mangooonlinefooddelivery";
-    private static final String MANGOO_CHANNEL_NAME = "Mangoo Food";
+    private static final String MANGOO_CHANNEL_NAME = "Mangoo";
 
     private NotificationManager manager;
 

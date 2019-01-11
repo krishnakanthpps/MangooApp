@@ -12,6 +12,7 @@ import java.util.List;
 
 import in.mangoo.mangooonlinefooddelivery.Model.Favourites;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
+import in.mangoo.mangooonlinefooddelivery.Model.RestaurantID;
 
 public class Database extends SQLiteAssetHelper {
     private static final String DB_NAME = "MangooDB.db";
@@ -40,44 +41,49 @@ public class Database extends SQLiteAssetHelper {
         SQLiteDatabase db = getReadableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        String[] sqlSelect = {"UserPhone","ProductName","ProductId","Quantity","Price","Discount","Image"};
+        String[] sqlSelect = {"UserPhone","ProductName","ProductId","Quantity","Price","Discount","Image","RestaurantId","Status"};
         String sqlTable = "OrderDetail";
 
         qb.setTables(sqlTable);
         Cursor c = qb.query(db,sqlSelect,"UserPhone=?",new String[]{userPhone},null,null,null);
 
-        final List<Order> result = new ArrayList<>();
+        final List<Order> order = new ArrayList<>();
         if(c.moveToFirst())
         {
             do {
-                result.add(new Order(
-                        c.getString(c.getColumnIndex("UserPhone")),
-                        c.getString(c.getColumnIndex("ProductId")),
-                        c.getString(c.getColumnIndex("ProductName")),
-                        c.getString(c.getColumnIndex("Quantity")),
-                        c.getString(c.getColumnIndex("Price")),
-                        c.getString(c.getColumnIndex("Discount")),
-                        c.getString(c.getColumnIndex("Image"))
+                order.add(
+                        new Order(
+                                c.getString(c.getColumnIndex("UserPhone")),
+                                c.getString(c.getColumnIndex("ProductId")),
+                                c.getString(c.getColumnIndex("ProductName")),
+                                c.getString(c.getColumnIndex("Quantity")),
+                                c.getString(c.getColumnIndex("Price")),
+                                c.getString(c.getColumnIndex("Discount")),
+                                c.getString(c.getColumnIndex("Image")),
+                                c.getString(c.getColumnIndex("RestaurantId")),
+                                c.getString(c.getColumnIndex("Status"))
                 ));
             }while(c.moveToNext());
 
 
         }
-        return result;
+        return order;
     }
 
     public void addToCart(Order order)
     {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format("INSERT OR REPLACE INTO OrderDetail(UserPhone,ProductId,ProductName,Quantity,Price,Discount,Image) " +
-                        "VALUES('%s','%s','%s','%s','%s','%s','%s')",
+        String query = String.format("INSERT OR REPLACE INTO OrderDetail(UserPhone,ProductId,ProductName,Quantity,Price,Discount,Image,RestaurantId,Status) " +
+                        "VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
                 order.getUserPhone(),
                 order.getProductId(),
                 order.getProductName(),
                 order.getQuantity(),
                 order.getPrice(),
                 order.getDiscount(),
-                order.getImage());
+                order.getImage(),
+                order.getRestaurantId(),
+                order.getStatus());
         db.execSQL(query);
     }
 

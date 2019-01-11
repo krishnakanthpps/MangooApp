@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,12 +54,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Database.Database;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.Model.Banner;
 import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
+import in.mangoo.mangooonlinefooddelivery.Service.ListenOrder;
+import in.mangoo.mangooonlinefooddelivery.Service.MyFirebaseMessaging;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.BannerViewHolder;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.RestaurantViewHolder;
 import q.rorbin.badgeview.Badge;
@@ -85,6 +89,7 @@ public class RestaurantList extends AppCompatActivity {
 
     Bundle mBundleRecyclerViewState;
     FirebaseDatabase database;
+    DatabaseReference restaurantId;
     Query query;
 
     final int limit = 50;
@@ -120,10 +125,6 @@ public class RestaurantList extends AppCompatActivity {
             viewHolder.setItemClickListener(new ItemClickListener() {
                 @Override
                 public void onClick(View view, int position, boolean isLongClick) {
-                    Intent foodList = new Intent(RestaurantList.this,Home.class);
-                    Common.restaurantSelected = adapter.getRef(position).getKey();
-                    startActivity(foodList);
-                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 
                     Calendar cal = Calendar.getInstance();
                     SimpleDateFormat form = new SimpleDateFormat("hh:mm aa");
@@ -139,7 +140,20 @@ public class RestaurantList extends AppCompatActivity {
                     if (open.getTime()<now.getTime() && close.getTime()>now.getTime()) {
                         Intent intent = new Intent(RestaurantList.this, Home.class);
                         Common.restaurantSelected = adapter.getRef(position).getKey();
+                        restaurantId = database.getReference().child("Restaurants").child(Common.restaurantSelected);
+                        restaurantId.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Common.restName = (String) dataSnapshot.getValue();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                         startActivity(intent);
+                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     }
                     else
                         Toast.makeText(RestaurantList.this, "Restaurant closed now!", Toast.LENGTH_SHORT).show();
@@ -245,6 +259,9 @@ public class RestaurantList extends AppCompatActivity {
 
                 } else if (id == R.id.tab_profile) {
 
+                    Intent intent = new Intent(RestaurantList.this,Profile.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                    cart_badge.setBadgeCount(new Database(RestaurantList.this).getCountCart(Common.currentUser.getPhone()));
                 }
 
             }
@@ -263,6 +280,9 @@ public class RestaurantList extends AppCompatActivity {
 
         //setupslider();
         loadBanner();
+
+        Intent service = new Intent(RestaurantList.this,MyFirebaseMessaging.class);
+        startService(service);
 
     }
 

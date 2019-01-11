@@ -4,25 +4,15 @@ import java.util.List;
 
 public class RestaurantID {
 
-    private String UserPhone;
     private String restaurantName;
     private List<Order> restaurantList;
 
     public RestaurantID() {
     }
 
-    public RestaurantID(String userPhone, String restaurantName, List<Order> restaurantList) {
-        UserPhone = userPhone;
+    public RestaurantID(String restaurantName, List<Order> restaurantList) {
         this.restaurantName = restaurantName;
         this.restaurantList = restaurantList;
-    }
-
-    public String getUserPhone() {
-        return UserPhone;
-    }
-
-    public void setUserPhone(String userPhone) {
-        UserPhone = userPhone;
     }
 
     public String getRestaurantName() {

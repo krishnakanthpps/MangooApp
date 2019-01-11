@@ -95,6 +95,7 @@ dependencies {
 
     implementation 'com.github.sharish:ShimmerRecyclerView:v1.3'
     implementation 'com.github.armcha:ColoredShadowImageView:1.1.0'
+    implementation 'com.pkmmte.view:circularimageview:1.1'
 
 }
 apply plugin: 'com.google.gms.google-services'

@@ -113,7 +113,9 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
                         numberButton.getNumber(),
                         currentFood.getPrice(),
                         currentFood.getDiscount(),
-                        currentFood.getImage()
+                        currentFood.getImage(),
+                        Common.restaurantSelected,
+                        "1"
                 ));
 
                 Toast.makeText(FoodDetail.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
@@ -233,7 +235,8 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
         final Rating rating=new Rating(Common.currentUser.getPhone(),
                 foodId,
                 String.valueOf(value),
-                comments);
+                comments,
+                Common.restaurantSelected);
 
         ratingTb1.push()
                 .setValue(rating)

@@ -40,6 +40,7 @@ import in.mangoo.mangooonlinefooddelivery.Database.Database;
 import in.mangoo.mangooonlinefooddelivery.Helper.RecyclerItemTouchHelper;
 import in.mangoo.mangooonlinefooddelivery.Interface.RecyclerItemTouchHelperListener;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
+import in.mangoo.mangooonlinefooddelivery.Model.RestaurantID;
 import in.mangoo.mangooonlinefooddelivery.Remote.APIService;
 import in.mangoo.mangooonlinefooddelivery.Remote.IGoogleService;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.CartAdapter;
@@ -192,7 +193,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
     private void loadListFood() {
 
         cart = new Database(this).getCarts(Common.currentUser.getPhone());
-        adapter = new CartAdapter(cart,this);
+        adapter = new CartAdapter(cart,Cart.this);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
 
@@ -235,8 +236,8 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
     private void deleteCart(int pos) {
         cart.remove(pos);
         new Database(this).cleanCart(Common.currentUser.getPhone());
-        for(Order item:cart)
-            new Database(this).addToCart(item);
+        /*for(RestaurantID item:cart)
+            new Database(this).addToCart(item);*/
         loadListFood();
     }
 
@@ -282,13 +283,13 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             snackBar.setAction("UNDO", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    adapter.restoreItem(deleteItem,deleteIndex);
+                    //adapter.restoreItem(deleteItem,deleteIndex);
                     new Database(getBaseContext()).addToCart(deleteItem);
 
                     total = 0;
-                    List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
-                    for(Order item:orders)
-                        total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));
+                    //List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+                    /*for(Order item:orders)
+                        total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));*/
 
                     Locale locale = new Locale("en","IN");
                     NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);

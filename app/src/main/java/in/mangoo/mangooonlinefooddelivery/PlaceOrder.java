@@ -4,11 +4,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
@@ -38,9 +40,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,6 +63,8 @@ import in.mangoo.mangooonlinefooddelivery.Model.DataMessage;
 import in.mangoo.mangooonlinefooddelivery.Model.MyResponse;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
 import in.mangoo.mangooonlinefooddelivery.Model.Request;
+import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
+import in.mangoo.mangooonlinefooddelivery.Model.RestaurantID;
 import in.mangoo.mangooonlinefooddelivery.Model.Token;
 import in.mangoo.mangooonlinefooddelivery.Model.User;
 import in.mangoo.mangooonlinefooddelivery.Remote.APIService;
@@ -98,6 +104,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     DatabaseReference requests;
 
     ImageView backBtn;
+    String coordinates,addr;
 
     int payamount = 0;
 
@@ -210,6 +217,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setTextSize(18);
         ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setText(Common.currentUser.getHomeAddress());
 
+        addr = Common.currentUser.getHomeAddress() + " Karaikal ";
+
         edtAddress.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -226,61 +235,16 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         currentAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(mContext,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-
-                        != PackageManager.PERMISSION_GRANTED
-
-                        && ActivityCompat.checkSelfPermission(mContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-
-                        != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(PlaceOrder.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-                } else {
-
-                    gps = new GPSTracker(mContext, PlaceOrder.this);
-                    // Check if GPS enabled
-                    if (gps.canGetLocation()) {
-                        latitude = gps.getLatitude();
-                        longitude = gps.getLongitude();
-                        // \n is for new line
-                        Toast.makeText(getApplicationContext(),
-                                "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-                        lati = Double.toString(latitude);
-                        longi = Double.toString(longitude);
-
-                        try {
-                            addressList = geocoder.getFromLocation(latitude, longitude, 1);
-
-                            String addressStr = addressList.get(0).getAddressLine(0);
-                            String areaStr = addressList.get(0).getLocality();
-                            String cityStr = addressList.get(0).getAdminArea();
-                            String countryStr = addressList.get(0).getCountryName();
-                            String postalcodeStr = addressList.get(0).getPostalCode();
-
-                            String fullAddress = addressStr + ", " + areaStr + ", " + cityStr + ", " + countryStr + ", " + postalcodeStr;
-
-                            edtAddress.setText(fullAddress);
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        // Can't get location.
-                        gps.showSettingsAlert();
-
-                    }
-                }
+                getCurrentLocation();
             }
-
         });
 
 
-        pay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        pay.setOnClickListener(new View.OnClickListener()
+
+            {
+                @Override
+                public void onClick (View v){
 
                 if (((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty()) {
                     Toast.makeText(PlaceOrder.this, "Please enter an Address", Toast.LENGTH_SHORT).show();
@@ -294,10 +258,24 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                     // startPayment();
                     Toast.makeText(PlaceOrder.this, "This Payment method is currently unavailable", Toast.LENGTH_SHORT).show();
                 }
+
                 // COD Payment
                 else if (check3.getVisibility() == View.VISIBLE &&
                         !((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString().isEmpty()) {
+
                     cart = new Database(PlaceOrder.this).getCarts(Common.currentUser.getPhone());
+
+                    Geocoder geocoder = new Geocoder(PlaceOrder.this, Locale.getDefault());
+                    List<Address> addresses = null;
+                    try {
+                        addresses = geocoder.getFromLocationName(addr, 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Address address = addresses.get(0);
+                    double longitude = address.getLongitude();
+                    double latitude = address.getLatitude();
+                    getAddress(latitude,longitude);
 
                     Request request = new Request(
                             Common.currentUser.getPhone(),
@@ -305,10 +283,10 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                             ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString(),
                             "COD",
                             txtTotalPrice.getText().toString(),
-                            "0",
+                            "1",
                             edtComment.getText().toString(),
-                            String.format("%s", "%s", lati, longi),
-                            Common.restaurantSelected,
+                            String.format("%s, %s",latitude,longitude),
+                            "Not assigned",
                             cart
                     );
 
@@ -323,7 +301,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
                     Intent intent = new Intent(PlaceOrder.this, OrderDetail.class);
                     intent.putExtra("Total", txtTotalPrice.getText().toString());
-                    intent.putExtra("OrderId", order_number);
+                    //intent.putExtra("OrderId", order_number);
                     intent.putExtra("Method", "COD");
                     startActivity(intent);
                 }
@@ -346,10 +324,10 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                                 ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString(),
                                 "Mangoo Wallet",
                                 txtTotalPrice.getText().toString(),
-                                "0",
+                                "1",
                                 edtComment.getText().toString(),
-                                String.format("%s", "%s", lati, longi),
-                                Common.restaurantSelected,
+                                coordinates,
+                                "Not assigned",
                                 cart
                         );
 
@@ -399,8 +377,24 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                     }
                 }
             }
-        });
 
+    });
+    }
+
+    public void getAddress(double lat, double lng) {
+        Geocoder geocoder = new Geocoder(PlaceOrder.this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            Address obj = addresses.get(0);
+            String add = obj.getAddressLine(1);
+            Log.v("TAG", "Address" + add);
+            Toast.makeText(this, "Address=>" + add, Toast.LENGTH_SHORT).show();
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -481,10 +475,10 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                 ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).getText().toString(),
                 "RazorPay",
                 txtTotalPrice.getText().toString(),
-                "0",
+                "1",
                 edtComment.getText().toString(),
-                String.format("%s", "%s", lati, longi),
-                Common.restaurantSelected,
+                coordinates,
+                "Not assigned",
                 cart
         );
 
@@ -516,7 +510,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
     private void sendNotificationOrder(final String order_number) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query data = tokens.orderByChild("isServerToken").equalTo(false);
+        Query data = tokens.orderByChild("isServerToken").equalTo(true);
         data.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -528,7 +522,10 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                     dataSend.put("message","You have new order"+order_number);
                     DataMessage dataMessage = new DataMessage(serverToken.getToken(),dataSend);
 
-                    /*mService.sendNotification(dataMessage)
+                    String test = new Gson().toJson(dataMessage);
+                    Log.d("Context",test);
+
+                    mService.sendNotification(dataMessage)
                             .enqueue(new Callback<MyResponse>() {
                                 @Override
                                 public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
@@ -548,7 +545,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                                 public void onFailure(Call<MyResponse> call, Throwable t) {
                                     Log.e("ERROR",t.getMessage());
                                 }
-                            });*/
+                            });
                 }
             }
 
@@ -565,6 +562,58 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         startActivity(intent);
 
     }
+
+    public void getCurrentLocation() {
+
+        if (ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+
+                != PackageManager.PERMISSION_GRANTED
+
+                && ActivityCompat.checkSelfPermission(mContext,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(PlaceOrder.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+        } else {
+
+            gps = new GPSTracker(mContext, PlaceOrder.this);
+            // Check if GPS enabled
+            if (gps.canGetLocation()) {
+                latitude = gps.getLatitude();
+                longitude = gps.getLongitude();
+                // \n is for new line
+                Toast.makeText(getApplicationContext(),
+                        "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+                lati = Double.toString(latitude);
+                longi = Double.toString(longitude);
+
+                try {
+                    addressList = geocoder.getFromLocation(latitude, longitude, 1);
+
+                    String addressStr = addressList.get(0).getAddressLine(0);
+                    String areaStr = addressList.get(0).getLocality();
+                    String cityStr = addressList.get(0).getAdminArea();
+                    String countryStr = addressList.get(0).getCountryName();
+                    String postalcodeStr = addressList.get(0).getPostalCode();
+
+                    String fullAddress = addressStr + ", " + areaStr + ", " + cityStr + ", " + countryStr + ", " + postalcodeStr;
+
+                    edtAddress.setText(fullAddress);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // Can't get location.
+                gps.showSettingsAlert();
+
+            }
+        }
+    }
+
 }
 
 

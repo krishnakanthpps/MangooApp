@@ -9,11 +9,13 @@ public class Order {
     private String Price;
     private String Discount;
     private String Image;
+    private String RestaurantId;
+    private String Status;
 
     public Order() {
     }
 
-    public Order(String userPhone, String productId, String productName, String quantity, String price, String discount, String image) {
+    public Order(String userPhone, String productId, String productName, String quantity, String price, String discount, String image, String restaurantId, String status) {
         UserPhone = userPhone;
         ProductId = productId;
         ProductName = productName;
@@ -21,6 +23,8 @@ public class Order {
         Price = price;
         Discount = discount;
         Image = image;
+        RestaurantId = restaurantId;
+        Status = status;
     }
 
     public String getUserPhone() {
@@ -77,5 +81,21 @@ public class Order {
 
     public void setImage(String image) {
         Image = image;
+    }
+
+    public String getRestaurantId() {
+        return RestaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        RestaurantId = restaurantId;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
     }
 }

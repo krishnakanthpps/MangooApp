@@ -27,9 +27,8 @@
             android:name="com.facebook.accountkit.ClientToken"
             android:value="@string/account_kit_client_token" />
 
-
         <activity android:name="com.facebook.accountkit.ui.AccountKitActivity" />
-        <activity android:name="in.mangoo.mangooonlinefooddelivery.Splash">
+        <activity android:name=".Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,62 +36,81 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.Home"
+            android:name=".Home"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.FoodList"
+            android:name=".FoodList"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.FoodDetail"
+            android:name=".FoodDetail"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.Cart"
+            android:name=".Cart"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.OrderStatus"
+            android:name=".OrderStatus"
             android:screenOrientation="portrait" />
 
-        <service android:name="in.mangoo.mangooonlinefooddelivery.Service.MyFirebaseMessaging">
+        <service android:name=".Service.MyFirebaseMessaging">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.ShowComment"
+            android:name=".ShowComment"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.MainActivity"
+            android:name=".MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.Onboard"
+            android:name=".Onboard"
             android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.razorpay.ApiKey"
             android:value="rzp_test_eXiJeMlNzXt3Yl" />
 
+        <!--
+     Set custom default icon. This is used when no icon is set for incoming notification messages.
+     See README(https://goo.gl/l4GJaQ) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/logo" />
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.PlaceOrder"
+            android:name=".PlaceOrder"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.FavouritesActivity"
+            android:name=".FavouritesActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.SearchActivity"
+            android:name=".SearchActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.OrderDetail"
+            android:name=".OrderDetail"
             android:screenOrientation="portrait" />
         <activity
-            android:name="in.mangoo.mangooonlinefooddelivery.OrderFailed"
+            android:name=".OrderFailed"
             android:screenOrientation="portrait" />
-        <activity android:name="in.mangoo.mangooonlinefooddelivery.Name"
-            android:screenOrientation="portrait"/>
-        <activity android:name="in.mangoo.mangooonlinefooddelivery.RestaurantList"
-            android:screenOrientation="portrait" ></activity>
+        <activity
+            android:name=".Name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RestaurantList"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Profile" />
+        <activity android:name=".EditProfile"></activity>
     </application>
 
 </manifest>

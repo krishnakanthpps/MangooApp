@@ -3,17 +3,21 @@ package in.mangoo.mangooonlinefooddelivery.Service;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONObject;
 
 import java.util.Map;
 import java.util.Random;
@@ -24,11 +28,14 @@ import in.mangoo.mangooonlinefooddelivery.MainActivity;
 import in.mangoo.mangooonlinefooddelivery.Model.Token;
 import in.mangoo.mangooonlinefooddelivery.OrderStatus;
 import in.mangoo.mangooonlinefooddelivery.R;
+import in.mangoo.mangooonlinefooddelivery.RestaurantList;
 
 public class MyFirebaseMessaging extends FirebaseMessagingService {
+
+    public static  int NOTIFICATION_ID = 1;
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
         if(remoteMessage.getData() !=null) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 sendNotificationAPI26(remoteMessage);

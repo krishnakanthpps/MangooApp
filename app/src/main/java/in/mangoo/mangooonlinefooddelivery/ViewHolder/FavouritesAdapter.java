@@ -58,7 +58,9 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouriteViewHolder>
                             "1",
                             favouritesList.get(position).getFoodPrice(),
                             favouritesList.get(position).getFoodDiscount(),
-                            favouritesList.get(position).getFoodImage()
+                            favouritesList.get(position).getFoodImage(),
+                            Common.restaurantSelected,
+                            "1"
                     ));
                 }
                 else

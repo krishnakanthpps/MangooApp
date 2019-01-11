@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+
+    <android.support.v4.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none">
+
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_marginTop="14dp"
+            android:layout_marginRight="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_gravity="right"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_gravity="center"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="85dp"
+            android:layout_height="95.7dp"
+            android:src="@drawable/avatar" />
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Name"
+            android:textColor="#3b3b3b"
+            android:textSize="23dp"/>
+
+        <TextView
+            android:id="@+id/userPhone"
+            android:layout_gravity="center"
+            android:layout_marginTop="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+91 1234567890"
+            android:textColor="#a9a9b0"
+            android:textSize="14.3sp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="17dp"
+            android:layout_marginRight="17dp"
+            android:background="#33979797"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <LinearLayout
+            android:id="@+id/editProfile"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_edit_black_24dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#3b3b3b"
+                    android:text="Edit Profile"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_gravity="right"
+                    android:tint="#a9a0b0"
+                    android:layout_marginTop="-14dp"
+                    android:layout_marginBottom="-3dp"
+                    android:layout_marginRight="10dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#a9a9b0"
+                    android:text="Edit your profile details " />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#1A979797"/>
+
+        <LinearLayout
+            android:id="@+id/myOrders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:id="@+id/inbox"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_access_time_black_24dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#3b3b3b"
+                    android:text="My Orders"/>
+
+                <ImageView
+                    android:id="@+id/arrow"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_gravity="right"
+                    android:tint="#a9a0b0"
+                    android:layout_marginTop="-14dp"
+                    android:layout_marginBottom="-3dp"
+                    android:layout_marginRight="10dp"/>
+
+                <TextView
+                    android:id="@+id/txthistory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#a9a9b0"
+                    android:text="Check your current order status and previous orders" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#1A979797"/>
+
+        <LinearLayout
+            android:id="@+id/wallet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_account_balance_wallet_black_24dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#3b3b3b"
+                    android:text="Mangoo Wallet"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_gravity="right"
+                    android:tint="#a9a0b0"
+                    android:layout_marginTop="-14dp"
+                    android:layout_marginBottom="-3dp"
+                    android:layout_marginRight="10dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#a9a9b0"
+                    android:text="Check your wallet details and balance" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#1A979797"/>
+
+        <LinearLayout
+            android:id="@+id/Offers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_local_offer_black_24dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#3b3b3b"
+                    android:text="Offers"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_gravity="right"
+                    android:tint="#a9a0b0"
+                    android:layout_marginTop="-14dp"
+                    android:layout_marginBottom="-3dp"
+                    android:layout_marginRight="10dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#a9a9b0"
+                    android:text="Offers and other discounts details" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#1A979797"/>
+
+        <LinearLayout
+            android:id="@+id/Terms"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_info_outline_black_24dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#3b3b3b"
+                    android:text="About"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    android:layout_gravity="right"
+                    android:tint="#a9a0b0"
+                    android:layout_marginTop="-14dp"
+                    android:layout_marginBottom="-3dp"
+                    android:layout_marginRight="10dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#a9a9b0"
+                    android:text="About us and Terms and Conditions" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#1A979797"/>
+
+        <LinearLayout
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:id="@+id/logOut"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="13dp">
+
+            <ImageView
+                android:layout_marginLeft="20dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_exit_to_app_black_24dp"/>
+
+            <LinearLayout
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#3b3b3b"
+                    android:text="Log Out"/>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginBottom="50dp"
+            android:layout_height="0.7dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#1A979797"/>
+
+    </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottom_navbar"
+        android:background="#ffffff"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:bb_tabXmlResource="@xml/bottom_menu"
+        app:bb_behavior="iconsOnly"
+        app:bb_activeTabColor="@color/dark_red"
+        app:bb_badgeBackgroundColor="@color/orange"
+        app:bb_showShadow="true"
+        />
+
+</RelativeLayout>

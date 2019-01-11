@@ -350,6 +350,7 @@ public class FoodList extends AppCompatActivity {
                         .into(viewHolder.food_image);
 
                 final boolean isExists = new Database(getBaseContext()).checkExist(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
+
                 if (isExists)
                 {
                     viewHolder.quick_cart.setBackgroundResource(R.drawable.green_box);
@@ -371,7 +372,9 @@ public class FoodList extends AppCompatActivity {
                                         "1",
                                         model.getPrice(),
                                         model.getDiscount(),
-                                        model.getImage()
+                                        model.getImage(),
+                                        Common.restName,
+                                        "1"
                                 ));
                             }
                             /*else
