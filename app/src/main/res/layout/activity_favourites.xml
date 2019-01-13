@@ -28,46 +28,34 @@
                     android:gravity="center"
                     android:padding="16dp"/>
 
-                <LinearLayout
-                    android:layout_width="45dp"
-                    android:layout_height="58dp">
-
-                        <ImageView
-                            android:id="@+id/backBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_keyboard_arrow_left_black_24dp"
-                            android:paddingLeft="16dp"/>
-                </LinearLayout>
-
         </FrameLayout>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:id="@+id/empty"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="invisible">
+    <LinearLayout
+        android:id="@+id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="invisible">
 
-                <ImageView
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_favorite_black_24dp"
-                    android:tint="@color/red"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp" />
+        <ImageView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_favorite_black_24dp"
+            android:tint="@color/red" />
 
-                <TextView
-                    android:text="You have no favourites "
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="center"
-                    android:textSize="20sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="You have no favourites "
+            android:textSize="20sp" />
 
-        </LinearLayout>
+    </LinearLayout>
 
         <ScrollView
             android:id="@+id/scroll"
@@ -76,7 +64,7 @@
             android:scrollbars="none"
             android:layout_below="@+id/order"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="52.5dp">
+            android:layout_marginBottom="50dp">
 
 
         <android.support.v7.widget.RecyclerView
@@ -90,5 +78,18 @@
         </android.support.v7.widget.RecyclerView>
 
         </ScrollView>
+
+        <com.roughike.bottombar.BottomBar
+            android:id="@+id/bottom_navbar"
+            android:background="#ffffff"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:bb_tabXmlResource="@xml/bottom_menu"
+            app:bb_behavior="iconsOnly"
+            app:bb_activeTabColor="@color/dark_red"
+            app:bb_badgeBackgroundColor="@color/orange"
+            app:bb_showShadow="true"
+            />
 
 </RelativeLayout>

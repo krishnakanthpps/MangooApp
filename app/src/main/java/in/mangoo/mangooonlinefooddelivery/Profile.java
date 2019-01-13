@@ -89,17 +89,21 @@ public class Profile extends AppCompatActivity {
             public void onTabSelected(@IdRes int id) {
                 if (id == R.id.tab_menu) {
 
-                    Intent intent = new Intent(Profile.this,RestaurantList.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    Intent intent = new Intent(Profile.this,RestaurantList.class);
                     startActivity(intent);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 
 
                 } else if (id == R.id.tab_search) {
 
+                    Intent intent = new Intent(Profile.this,FavouritesActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
 
                 } else if (id == R.id.tab_cart) {
 
-                    Intent intent = new Intent(Profile.this,Cart.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    Intent intent = new Intent(Profile.this,Cart.class);
                     startActivity(intent);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 

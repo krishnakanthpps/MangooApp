@@ -524,9 +524,9 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Delivery charges are applicable"
+                            android:text="Delivery"
                             android:layout_marginLeft="10dp"
-                            android:textColor="@color/blue"
+                            android:textColor="@android:color/black"
                             android:textSize="16sp" />
 
                         <LinearLayout
@@ -543,7 +543,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:text="₹ 50"
-                                android:visibility="invisible"
+                                android:visibility="visible"
                                 android:textColor="@android:color/black"
                                 android:textSize="16sp" />
 
@@ -624,14 +624,6 @@
                         </LinearLayout>
 
                     </RelativeLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="-10dp"
-                        android:text="(Prices are inclusive of GST)"
-                        android:textSize="10sp" />
 
                 </LinearLayout>
 

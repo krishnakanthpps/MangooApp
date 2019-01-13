@@ -9,6 +9,9 @@ import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -64,11 +67,14 @@ import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
 import in.mangoo.mangooonlinefooddelivery.Service.ListenOrder;
 import in.mangoo.mangooonlinefooddelivery.Service.MyFirebaseMessaging;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.BannerViewHolder;
+import in.mangoo.mangooonlinefooddelivery.ViewHolder.NewsViewHolder;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.RestaurantViewHolder;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static in.mangoo.mangooonlinefooddelivery.Notification.CHANNEL_1_ID;
 
 public class RestaurantList extends AppCompatActivity {
 
@@ -76,7 +82,7 @@ public class RestaurantList extends AppCompatActivity {
     ShimmerRecyclerView recyclerView;
     RecyclerView bannerList;
     RecyclerView.LayoutManager bannerLayout;
-    FirebaseRecyclerAdapter<Banner,BannerViewHolder> bannerAdapter;
+    FirebaseRecyclerAdapter<Banner,NewsViewHolder> bannerAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
 
     TextView edtHomeAddress,edtRestaurantAddress;
@@ -91,6 +97,8 @@ public class RestaurantList extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference restaurantId;
     Query query;
+
+    NotificationManagerCompat notificationManager;
 
     final int limit = 50;
     int start = 0;
@@ -232,14 +240,6 @@ public class RestaurantList extends AppCompatActivity {
             }
         });
 
-        /*cart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RestaurantList.this,Cart.class);
-                startActivity(intent);
-            }
-        });*/
-
         bottomBar = (BottomBar)findViewById(R.id.bottom_navbar);
         bottomBar.setDefaultTab(R.id.tab_menu);
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
@@ -250,17 +250,22 @@ public class RestaurantList extends AppCompatActivity {
 
                 } else if (id == R.id.tab_search) {
 
+                    Intent orderIntent = new Intent(RestaurantList.this,FavouritesActivity.class);
+                    startActivity(orderIntent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 
                 } else if (id == R.id.tab_cart) {
 
-                    Intent orderIntent = new Intent(RestaurantList.this,Cart.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    Intent orderIntent = new Intent(RestaurantList.this,Cart.class);
                     startActivity(orderIntent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     cart_badge.setBadgeCount(new Database(RestaurantList.this).getCountCart(Common.currentUser.getPhone()));
 
                 } else if (id == R.id.tab_profile) {
 
-                    Intent intent = new Intent(RestaurantList.this,Profile.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    Intent intent = new Intent(RestaurantList.this,Profile.class);
                     startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     cart_badge.setBadgeCount(new Database(RestaurantList.this).getCountCart(Common.currentUser.getPhone()));
                 }
 
@@ -281,11 +286,12 @@ public class RestaurantList extends AppCompatActivity {
         //setupslider();
         loadBanner();
 
-        Intent service = new Intent(RestaurantList.this,MyFirebaseMessaging.class);
+        Intent service = new Intent(RestaurantList.this,ListenOrder.class);
         startService(service);
 
-    }
+        //ContextCompat.startForegroundService(this,service);
 
+    }
 
     private void loadBanner() {
 
@@ -296,31 +302,21 @@ public class RestaurantList extends AppCompatActivity {
                         ,Banner.class)
                 .build();
 
-       bannerAdapter = new FirebaseRecyclerAdapter<Banner, BannerViewHolder>(banner) {
+       bannerAdapter = new FirebaseRecyclerAdapter<Banner, NewsViewHolder>(banner) {
            @NonNull
            @Override
-           public BannerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+           public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
                View itemView = LayoutInflater.from(parent.getContext())
                        .inflate(R.layout.home_banner, parent, false);
-               return new BannerViewHolder(itemView);
+               return new NewsViewHolder(itemView);
            }
 
            @Override
-           protected void onBindViewHolder(@NonNull BannerViewHolder viewHolder, int position, @NonNull Banner model) {
+           protected void onBindViewHolder(@NonNull NewsViewHolder viewHolder, int position, @NonNull Banner model) {
                Picasso.with(getBaseContext()).load(model.getImage())
                        .into(viewHolder.bannerImage);
-               //final Restaurant clickItem = model;
-               viewHolder.setItemClickListener(new ItemClickListener() {
-                   @Override
-                   public void onClick(View view, int position, boolean isLongClick) {
-                       Intent foodList = new Intent(RestaurantList.this, Home.class);
-                       Common.restaurantSelected = adapter.getRef(position).getKey();
-                       startActivity(foodList);
-                   }
-
-               });
-           }
-       };
+               }
+           };
         bannerAdapter.startListening();
         bannerList.setAdapter(bannerAdapter);
     }

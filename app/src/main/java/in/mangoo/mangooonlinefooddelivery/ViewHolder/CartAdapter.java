@@ -91,7 +91,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartViewHolder>{
         cart.edtDiscount.setText(fmt.format(b));
 
         try {
-            payamount += fmt.parse(cart.edtAmount.getText().toString()).intValue();
+            payamount += fmt.parse(cart.edtAmount.getText().toString()).intValue() + fmt.parse(cart.edtDelivery.getText().toString()).intValue();
         } catch (ParseException e) {
             e.printStackTrace();
         }

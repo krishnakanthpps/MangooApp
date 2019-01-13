@@ -14,6 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
+import com.roughike.bottombar.OnTabSelectListener;
+
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Database.Database;
 import in.mangoo.mangooonlinefooddelivery.Helper.RecyclerItemTouchHelper;
@@ -30,9 +34,11 @@ public class FavouritesActivity extends AppCompatActivity implements RecyclerIte
     FavouritesAdapter adapter;
     RelativeLayout rootLayout;
 
-    ImageView homeBtn;
     ScrollView scrollView;
     LinearLayout linearLayout;
+    BottomBar bottomBar;
+    BottomBarTab cart_badge;
+
 
 
     @Override
@@ -41,17 +47,38 @@ public class FavouritesActivity extends AppCompatActivity implements RecyclerIte
         setContentView(R.layout.activity_favourites);
 
         rootLayout = (RelativeLayout)findViewById(R.id.root_layout);
-        homeBtn = (ImageView)findViewById(R.id.backBtn);
         scrollView = (ScrollView)findViewById(R.id.scroll);
         linearLayout = (LinearLayout)findViewById(R.id.empty);
 
-        homeBtn.setOnClickListener(new View.OnClickListener() {
+
+        bottomBar = (BottomBar)findViewById(R.id.bottom_navbar);
+        bottomBar.setDefaultTab(R.id.tab_search);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FavouritesActivity.this,Home.class);
-                startActivity(intent);
+            public void onTabSelected(int id) {
+                if (id == R.id.tab_menu) {
+
+                    Intent intent = new Intent(FavouritesActivity.this,RestaurantList.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                } else if (id == R.id.tab_search) {
+
+                } else if (id == R.id.tab_cart) {
+                    Intent intent = new Intent(FavouritesActivity.this,Cart.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                } else if (id == R.id.tab_profile) {
+                    Intent intent = new Intent(FavouritesActivity.this,Profile.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                }
             }
         });
+        cart_badge = bottomBar.getTabWithId(R.id.tab_cart);
+        cart_badge.setBadgeCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
         recyclerView = (RecyclerView)findViewById(R.id.recycler_fav);
         recyclerView.setHasFixedSize(true);

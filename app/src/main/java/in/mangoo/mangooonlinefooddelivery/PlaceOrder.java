@@ -8,12 +8,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +35,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -75,6 +79,8 @@ import retrofit2.Response;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static in.mangoo.mangooonlinefooddelivery.Notification.CHANNEL_1_ID;
+
 public class PlaceOrder extends AppCompatActivity implements PaymentResultListener {
 
     CardView onlineCard, walletCard, codCard;
@@ -103,6 +109,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     FirebaseDatabase database;
     DatabaseReference requests;
 
+    NotificationManagerCompat notificationManager;
+
     ImageView backBtn;
     String coordinates,addr;
 
@@ -130,6 +138,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
         geocoder = new Geocoder(this, Locale.getDefault());
 
+        notificationManager = NotificationManagerCompat.from(this);
+
         client = LocationServices.getFusedLocationProviderClient(this);
 
         database = FirebaseDatabase.getInstance();
@@ -149,7 +159,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         pay = (FButton) findViewById(R.id.pay);
         txtTotalPrice = (TextView) findViewById(R.id.total);
         edtAmount = (TextView) findViewById(R.id.edtAmount);
-        //edtDelivery = (TextView) findViewById(R.id.edtDelivery);
+        edtDelivery = (TextView) findViewById(R.id.edtDelivery);
         edtDiscount = (TextView) findViewById(R.id.edtDiscount);
 
         backBtn = (ImageView) findViewById(R.id.backBtn);
@@ -168,19 +178,6 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
         Locale locale = new Locale("en", "IN");
         NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
-
-        int a = 50, b = 0;
-        //edtDelivery.setText(fmt.format(a));
-        edtDiscount.setText(fmt.format(b));
-
-        try {
-            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        txtTotalPrice.setText(fmt.format(payamount));
-        pay.setText("PAY ₹ " + payamount);
 
         onlineCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,8 +214,6 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setTextSize(18);
         ((EditText) edtAddress.getView().findViewById(R.id.place_autocomplete_search_input)).setText(Common.currentUser.getHomeAddress());
 
-        addr = Common.currentUser.getHomeAddress() + " Karaikal ";
-
         edtAddress.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -239,6 +234,21 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             }
         });
 
+        addr = Common.currentUser.getHomeAddress() + " Karaikal ";
+
+        int deliveryCharge = 0,b=0;
+        deliveryCharge = calculateDelivery();
+        edtDelivery.setText(fmt.format(deliveryCharge));
+        edtDiscount.setText(fmt.format(b));
+
+        try {
+            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDelivery.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        txtTotalPrice.setText(fmt.format(payamount));
+        pay.setText("PAY ₹ " + payamount);
 
         pay.setOnClickListener(new View.OnClickListener()
 
@@ -292,7 +302,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
                     String order_number = String.valueOf(System.currentTimeMillis());
                     requests.child(order_number).setValue(request);
-                    sendNotificationOrder(order_number);
+                    //sendNotificationOrder(order_number);
+                    notifyUser(v,order_number);
 
                     new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
 
@@ -379,6 +390,88 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             }
 
     });
+    }
+
+    public void notifyUser(View v,String order_number) {
+
+        String title = "Mangoo";
+        String message = "Your order #"+order_number+" has been successfully placed ";
+
+        Intent activityIntent = new Intent(this,OrderStatus.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,0,activityIntent,0);
+
+        android.app.Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setSmallIcon(R.drawable.ic_logo)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setColor(Color.RED)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(message)
+                        .setBigContentTitle(title))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .build();
+
+        notificationManager.notify(1, notification);
+    }
+
+    public int calculateDelivery() {
+
+        Geocoder geocoder = new Geocoder(PlaceOrder.this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocationName(addr, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Address address = addresses.get(0);
+        double longitude = address.getLongitude();
+        double latitude = address.getLatitude();
+
+        double latA = 10.924956,lngA = 79.832238,latB = latitude,lngB = longitude;
+
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(latB - latA);
+        double lonDistance = Math.toRadians(lngB - lngA);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(latA)) * Math.cos(Math.toRadians(latB))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double dist = R * c * 1000; // convert to meters
+
+        dist = Math.sqrt(Math.pow(dist, 2))/1000 + 1;
+
+        int rate = 0,delCharge = 0;
+
+        if (dist>=0.00 && dist<2.00)
+            rate = 10;
+        else if (dist>=2.00 && dist<4.00)
+            rate = 20;
+        else if (dist>=4.00 && dist<6.00)
+            rate = 30;
+        else if (dist>=6.00 && dist<9.00)
+            rate = 40;
+        else if (dist>=9.00 && dist<11.00)
+            rate = 50;
+        else if (dist>=11.00 && dist<12.00)
+            rate = 60;
+        else if (dist>=12.00 && dist<14.00)
+            rate = 70;
+        else if (dist>=14.00 && dist<23.00)
+            rate = 100;
+        else
+            rate = 150;
+
+        Log.d("TAG","Rate = "+rate);
+        Log.d("TAG","Dist = "+dist);
+
+        delCharge = ( (new Database(PlaceOrder.this).getRestaurantCount(Common.currentUser.getPhone()) - 1) * 10) + rate;
+
+        return delCharge;
+
     }
 
     public void getAddress(double lat, double lng) {

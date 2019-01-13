@@ -2,6 +2,7 @@ package in.mangoo.mangooonlinefooddelivery;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,8 +21,17 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
+import com.roughike.bottombar.OnTabSelectListener;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
+import in.mangoo.mangooonlinefooddelivery.Database.Database;
+import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
+import in.mangoo.mangooonlinefooddelivery.Model.Order;
 import in.mangoo.mangooonlinefooddelivery.Model.Request;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.OrderViewHolder;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -38,6 +48,9 @@ public class OrderStatus extends AppCompatActivity {
 
     FirebaseDatabase database;
     DatabaseReference requests;
+
+    BottomBar bottomBar;
+    BottomBarTab cart_badge;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -67,10 +80,39 @@ public class OrderStatus extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(OrderStatus.this,Home.class);
+                Intent intent = new Intent(OrderStatus.this,Profile.class);
                 startActivity(intent);
             }
         });
+
+        bottomBar = (BottomBar)findViewById(R.id.bottom_navbar);
+        bottomBar.setDefaultTab(R.id.tab_profile);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(int id) {
+                if (id == R.id.tab_menu) {
+
+                    Intent intent = new Intent(OrderStatus.this,RestaurantList.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                } else if (id == R.id.tab_search) {
+                    Intent intent = new Intent(OrderStatus.this,FavouritesActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                } else if (id == R.id.tab_cart) {
+                    Intent intent = new Intent(OrderStatus.this,Cart.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                } else if (id == R.id.tab_profile) {
+
+                }
+            }
+        });
+        cart_badge = bottomBar.getTabWithId(R.id.tab_cart);
+        cart_badge.setBadgeCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
         loadOrders(Common.currentUser.getPhone());
 
@@ -88,12 +130,11 @@ public class OrderStatus extends AppCompatActivity {
         adapter = new FirebaseRecyclerAdapter<Request, OrderViewHolder>(orderOptions) {
 
             @Override
-            protected void onBindViewHolder(@NonNull OrderViewHolder viewHolder,final int position, @NonNull Request model) {
+            protected void onBindViewHolder(@NonNull OrderViewHolder viewHolder,final int position, @NonNull final Request model) {
 
-                viewHolder.txtOrderId.setText(adapter.getRef(position).getKey());
+                viewHolder.txtOrderId.setText("Order #" + adapter.getRef(position).getKey());
                 viewHolder.txtOrderStatus.setText(convertCodetoStatus(model.getStatus()));
-                viewHolder.txtOrderAddress.setText(model.getAddress());
-                viewHolder.txtOrderPhone.setText(model.getPhone());
+                viewHolder.txtOrderTotal.setText(model.getTotal());
                 viewHolder.txtOrderDate.setText(Common.getDate(Long.parseLong(adapter.getRef(position).getKey())));
                 viewHolder.btn_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -107,6 +148,22 @@ public class OrderStatus extends AppCompatActivity {
                         }
                         else
                             Toast.makeText(OrderStatus.this, "This order cannot be deleted", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                viewHolder.setItemClickListener(new ItemClickListener() {
+                    @Override
+                    public void onClick(View view, int position, boolean isLongClick) {
+                        Intent intent = new Intent(OrderStatus.this,TrackOrder.class);
+                        intent.putExtra("OrderNo",adapter.getRef(position).getKey());
+                        intent.putExtra("Address",model.getAddress());
+                        intent.putExtra("DeliveryBoy",model.getDeliverBoy());
+                        intent.putExtra("Total",model.getTotal());
+                        intent.putExtra("Status",model.getStatus());
+                        intent.putExtra("Payment",model.getPaymentMethod());
+                        //Bundle bundle = new Bundle();
+                        //bundle.putSerializable("Foods",(Serializable)model.getFoods());
+                        //intent.putExtra("Foods",bundle);
+                        startActivity(intent);
                     }
                 });
             }
@@ -144,14 +201,25 @@ public class OrderStatus extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        adapter.stopListening();
+        if (adapter!=null)
+            adapter.stopListening();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadOrders(Common.currentUser.getPhone());
     }
 
     private String convertCodetoStatus(String status) {
 
-        if(status.equals("0"))
+        if(status.equals("1"))
             return "Placed";
-        else if(status.equals("1"))
+        else if(status.equals("2"))
+            return "Confirmed";
+        else if(status.equals("3"))
+            return "Cooking";
+        else if(status.equals("4"))
             return "On the Way";
         else
             return "Shipped";
@@ -160,7 +228,7 @@ public class OrderStatus extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(OrderStatus.this,Home.class);
+        Intent intent = new Intent(OrderStatus.this,Profile.class);
         startActivity(intent);
     }
 }

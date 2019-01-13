@@ -214,7 +214,9 @@ public class FoodList extends AppCompatActivity {
 
 
                 } else if (id == R.id.tab_search) {
-
+                    Intent intent = new Intent(FoodList.this,FavouritesActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 
                 } else if (id == R.id.tab_cart) {
 
@@ -224,7 +226,9 @@ public class FoodList extends AppCompatActivity {
 
 
                 } else if (id == R.id.tab_profile) {
-
+                    Intent intent = new Intent(FoodList.this,Profile.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 }
 
             }

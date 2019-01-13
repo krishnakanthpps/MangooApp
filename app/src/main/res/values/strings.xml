@@ -10,6 +10,8 @@
     <string name="action_settings">Settings</string>
     <string name="forgot_pwd"><u>Forgot Password?</u></string>
 
+    <string name="about"></string>
+
     <string name="facebook_app_id">575447299545226</string>
     <string name="facebook_login_protocol_name">fb575447299545226</string>
     <string name="account_kit_client_token">3e84a41acf3d8ec8980bc7fd16965635</string>

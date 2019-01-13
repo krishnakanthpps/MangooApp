@@ -28,6 +28,7 @@ public class Common {
 
     public static String restaurantSelected="";
     public static String restName = "";
+    public static String statusCode = "";
 
     private static final String BASE_URL="https://fcm.googleapis.com/";
     private static final String GOOGLE_API_URL="https://maps.googleapis.com/";

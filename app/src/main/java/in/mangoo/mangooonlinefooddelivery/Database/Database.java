@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -110,6 +111,24 @@ public class Database extends SQLiteAssetHelper {
 
         return count;
 
+    }
+
+    public int getRestaurantCount(String userPhone)
+    {
+        int count = 0;
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format("SELECT COUNT (DISTINCT RestaurantId) FROM OrderDetail WHERE UserPhone='%s'",userPhone);
+        Cursor cursor = db.rawQuery(query,null);
+        if(cursor.moveToFirst())
+        {
+            do {
+                count = cursor.getInt(0);
+            }while (cursor.moveToNext());
+        }
+
+        Log.d("TAG","Restaurant Count = "+count);
+
+        return count;
     }
 
 

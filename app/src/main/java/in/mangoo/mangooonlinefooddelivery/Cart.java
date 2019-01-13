@@ -3,6 +3,8 @@ package in.mangoo.mangooonlinefooddelivery;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.annotation.IdRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.NestedScrollView;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +30,7 @@ import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -78,6 +82,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
 
     int payamount = 0;
     int total = 0;
+    String addr ="";
 
 
     @Override
@@ -115,7 +120,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
         txtTotalPrice = (TextView)findViewById(R.id.totalpay);
         btnPlace = (FButton) findViewById(R.id.btnPlaceOrder);
         edtAmount = (TextView)findViewById(R.id.edtAmount);
-        //edtDelivery = (TextView)findViewById(R.id.edtDelivery);
+        edtDelivery = (TextView)findViewById(R.id.edtDelivery);
         edtDiscount = (TextView)findViewById(R.id.edtDiscount);
         empty = (LinearLayout) findViewById(R.id.empty);
         scroll = (NestedScrollView)findViewById(R.id.scroll);
@@ -130,17 +135,22 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             public void onTabSelected(int id) {
                 if (id == R.id.tab_menu) {
 
-                    Intent intent = new Intent(Cart.this,RestaurantList.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    Intent intent = new Intent(Cart.this,RestaurantList.class);
                     startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 
                 } else if (id == R.id.tab_search) {
-
+                    Intent intent = new Intent(Cart.this,FavouritesActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 
                 } else if (id == R.id.tab_cart) {
 
 
                 } else if (id == R.id.tab_profile) {
-
+                    Intent intent = new Intent(Cart.this,Profile.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 }
             }
         });
@@ -185,6 +195,12 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
                     Toast.makeText(Cart.this, "Your cart is empty.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        Locale locale = new Locale("en","IN");
+        NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+
+        addr = Common.currentUser.getHomeAddress() + " Karaikal ";
+        edtDelivery.setText(fmt.format(0));
         
         loadListFood();
         
@@ -212,13 +228,15 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             scroll.setVisibility(View.INVISIBLE);
            // edtDelivery.setText(fmt.format(0));
         }
-        /*else
+        else
         {
-            //edtDelivery.setText(fmt.format(50));
+            int deliveryCharge = 0;
+            deliveryCharge = calculateDelivery();
+            edtDelivery.setText(fmt.format(deliveryCharge));
+            edtDiscount.setText(fmt.format(b));
         }
-*/
         try {
-            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
+            payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtAmount.getText().toString()).intValue() +  fmt.parse(edtDelivery.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -226,6 +244,65 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
         txtTotalPrice.setText(fmt.format(payamount));
 
     }
+
+    private int calculateDelivery() {
+
+        Geocoder geocoder = new Geocoder(Cart.this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocationName(addr, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Address address = addresses.get(0);
+        double longitude = address.getLongitude();
+        double latitude = address.getLatitude();
+
+        double latA = 10.924956,lngA = 79.832238,latB = latitude,lngB = longitude;
+
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(latB - latA);
+        double lonDistance = Math.toRadians(lngB - lngA);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(latA)) * Math.cos(Math.toRadians(latB))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double dist = R * c * 1000; // convert to meters
+
+        dist = Math.sqrt(Math.pow(dist, 2))/1000 + 1;
+
+        int rate = 0,delCharge = 0;
+
+        if (dist>=0.00 && dist<2.00)
+            rate = 10;
+        else if (dist>=2.00 && dist<4.00)
+            rate = 20;
+        else if (dist>=4.00 && dist<6.00)
+            rate = 30;
+        else if (dist>=6.00 && dist<9.00)
+            rate = 40;
+        else if (dist>=9.00 && dist<11.00)
+            rate = 50;
+        else if (dist>=11.00 && dist<12.00)
+            rate = 60;
+        else if (dist>=12.00 && dist<14.00)
+            rate = 70;
+        else if (dist>=14.00 && dist<23.00)
+            rate = 100;
+        else
+            rate = 150;
+
+        Log.d("TAG","Rate = "+rate);
+        Log.d("TAG","Dist = "+dist);
+
+        delCharge = ( (new Database(Cart.this).getRestaurantCount(Common.currentUser.getPhone()) - 1) * 10) + rate;
+
+        return delCharge;
+
+
+    }
+
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if(item.getTitle().equals(Common.DELETE))
@@ -263,45 +340,61 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
 
             edtAmount.setText(fmt.format(total));
 
-            int a = 50,b =0,payamount = 0;
-            //edtDelivery.setText(fmt.format(a));
+            int deliveryCharge = 0,b=0;
+            deliveryCharge = calculateDelivery();
+            edtDelivery.setText(fmt.format(deliveryCharge));
             edtDiscount.setText(fmt.format(b));
 
+            payamount = 0;
+
             try {
-                payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
+                payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDelivery.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
             txtTotalPrice.setText(fmt.format(payamount));
             if ((cart.size() == 0 )&& (edtAmount.getText().toString().equals("₹ 0.00")))
-        {
-            //edtDelivery.setText(fmt.format("0"));
-        }
+            {
+                empty.setVisibility(View.VISIBLE);
+                btnPlace.setVisibility(View.INVISIBLE);
+                scroll.setVisibility(View.INVISIBLE);
+                edtDelivery.setText(fmt.format(0));
+            }
 
             Snackbar snackBar =Snackbar.make(rootLayout,name + " removed from cart.",Snackbar.LENGTH_LONG);
             snackBar.setAction("UNDO", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //adapter.restoreItem(deleteItem,deleteIndex);
+                    adapter.restoreItem(deleteItem,deleteIndex);
                     new Database(getBaseContext()).addToCart(deleteItem);
 
                     total = 0;
-                    //List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
-                    /*for(Order item:orders)
-                        total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));*/
+                    List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+                    for(Order item:orders)
+                        total += (Integer.parseInt(item.getPrice())) * (Integer.parseInt(item.getQuantity()));
 
                     Locale locale = new Locale("en","IN");
                     NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
+                    if ((cart.size() == 0 )&& (edtAmount.getText().toString().equals("₹ 0.00")))
+                    {
+                        empty.setVisibility(View.VISIBLE);
+                        btnPlace.setVisibility(View.INVISIBLE);
+                        scroll.setVisibility(View.INVISIBLE);
+                        edtDelivery.setText(fmt.format(0));
+                    }
+
                     edtAmount.setText(fmt.format(total));
 
-                    int a = 50,b =0, payamount = 0;
-                    //edtDelivery.setText(fmt.format(a));
+                    int deliveryCharge = 0,b=0;
+                    deliveryCharge = calculateDelivery();
+                    edtDelivery.setText(fmt.format(deliveryCharge));
                     edtDiscount.setText(fmt.format(b));
 
+                    payamount = 0;
                     try {
-                        payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
+                        payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDelivery.getText().toString()).intValue() +fmt.parse(edtDiscount.getText().toString()).intValue();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }

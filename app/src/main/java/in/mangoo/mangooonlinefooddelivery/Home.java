@@ -16,6 +16,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,7 @@ import in.mangoo.mangooonlinefooddelivery.Database.Database;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.Model.Banner;
 import in.mangoo.mangooonlinefooddelivery.Model.Category;
+import in.mangoo.mangooonlinefooddelivery.Model.Food;
 import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
 import in.mangoo.mangooonlinefooddelivery.Model.Token;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.BannerViewHolder;
@@ -281,7 +283,9 @@ public class Home extends AppCompatActivity
 
 
                 } else if (id == R.id.tab_search) {
-
+                    Intent orderIntent = new Intent(Home.this,FavouritesActivity.class);
+                    startActivity(orderIntent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 
                 } else if (id == R.id.tab_cart) {
 
@@ -291,7 +295,9 @@ public class Home extends AppCompatActivity
 
 
                 } else if (id == R.id.tab_profile) {
-
+                    Intent orderIntent = new Intent(Home.this,Profile.class);
+                    startActivity(orderIntent);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 }
 
             }
@@ -364,18 +370,20 @@ public class Home extends AppCompatActivity
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull BannerViewHolder viewHolder, int position, @NonNull Banner model) {
+            protected void onBindViewHolder(@NonNull BannerViewHolder viewHolder, int position, @NonNull final Banner model) {
                 Picasso.with(getBaseContext()).load(model.getImage())
                         .fit()
                         .into(viewHolder.bannerImage);
                 viewHolder.foodName.setText(model.getName());
-                //final Banner clickItem = model;
+                //final Banner local = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-                        Intent foodList = new Intent(Home.this, FoodDetail.class);
-                        Common.restaurantSelected = adapter.getRef(position).getKey();
-                        startActivity(foodList);
+                        Intent foodDetail = new Intent(Home.this,FoodDetail.class);
+                        String foodId = model.getId();
+                        Log.d("TAG","Food id = "+foodId);
+                        foodDetail.putExtra("FoodId",foodId);
+                        startActivity(foodDetail);
                     }
 
                 });
