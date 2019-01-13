@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardElevation="4dp"
+    app:cardElevation="1dp"
+    app:cardCornerRadius="8dp"
     >
 
     <LinearLayout
@@ -33,12 +34,12 @@
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/order_status"
+                android:id="@+id/order_date"
                 android:layout_marginLeft="10dp"
                 android:gravity="center_vertical|start"
                 android:textAllCaps="true"
                 android:textStyle="italic"
-                android:text="Status"
+                android:text="Order Date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -62,10 +63,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+            <LinearLayout
+                android:layout_margin="10dp"
+                android:padding="5dp"
+                android:background="@color/orange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <TextView
+                android:background="@color/orange"
+                android:id="@+id/order_status"
+                android:gravity="center_vertical|start"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textStyle="italic"
+                android:text="Status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/btn_delete"
+            android:id="@+id/btnDelete"
             android:src="@drawable/ic_delete_black_24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="8dp"

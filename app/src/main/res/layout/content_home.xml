@@ -6,26 +6,145 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="app.mangoofood.mangooapp.Home"
-    tools:showIn="@layout/app_bar_home">
+    tools:context="in.mangoo.mangooonlinefooddelivery.Home"
+    tools:showIn="@layout/app_bar_home"
+    >
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
 
     <LinearLayout
+
+        android:background="@color/bg_color"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.daimajia.slider.library.SliderLayout
-            android:id="@+id/slider"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="wrap_content">
+
+
+
+            <ImageView
+                android:id="@+id/rest_image"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:src="@drawable/background"/>
+
+
+            <ImageView
+                android:id="@+id/btnSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="end"
+                android:layout_marginStart="300dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="8dp"
+                android:accessibilityHeading="false"
+                android:src="@drawable/ic_search_black_24dp" />
+
+
+
+            <android.support.v7.widget.CardView
+                android:layout_below="@+id/rest_image"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="-30dp"
+                android:layout_marginBottom="10dp"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="1dp"
+                android:background="@android:color/white"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+
+                <LinearLayout
+                    android:layout_margin="10dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/rest_name"
+                        android:text="Restaurant Name"
+                        android:textSize="26sp"
+                        android:textColor="@android:color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/rest_addr"
+                        android:layout_marginTop="5dp"
+                        android:text="Address of the Restaurant"
+                        android:textColor="#616161"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="TOP FOODS"
+            android:textColor="@color/darkgrey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <android.support.v7.widget.RecyclerView
+            android:layout_margin="5dp"
+            android:id="@+id/bannerList"
+            android:layout_width="match_parent"
+            android:layout_height="260dp">
+        </android.support.v7.widget.RecyclerView>
+
+
+        <!--<com.daimajia.slider.library.SliderLayout
+            android:background="@color/bg_color"
+            android:id="@+id/slider"
+            android:layout_margin="10dp"
+            app:pager_animation="Default"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />-->
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@android:color/white"
+            android:layout_marginTop="5dp"
+            android:gravity="bottom" />
+
+        <TextView
+            android:layout_margin="10dp"
+            android:text="CATEGORIES"
+            android:textColor="@color/darkgrey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_marginBottom="50dp"
+            android:nestedScrollingEnabled="false"
             android:id="@+id/recyler_menu"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
         </android.support.v7.widget.RecyclerView>
+
     </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.v4.widget.SwipeRefreshLayout>

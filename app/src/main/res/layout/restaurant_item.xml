@@ -3,9 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="#e6e6e6"
     android:layout_height="200dp"
     android:layout_margin="12dp"
-    app:cardElevation="20dp"
+    app:cardElevation="1dp"
     app:cardCornerRadius="10dp"
     >
 
@@ -15,21 +16,86 @@
 
         <ImageView
             android:id="@+id/restaurant_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:src="@drawable/background" />
 
-        <TextView
-            android:id="@+id/restaurant_name"
-            android:text="Name of Restaurant"
-            android:textColor="@android:color/white"
-            android:background="#aa000000"
-            android:textSize="30sp"
-            android:gravity="center"
-            android:layout_centerInParent="true"
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/round_edge"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/restaurant_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="left"
+                    android:text="Name of Restaurant"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/restaurant_addr"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:gravity="left"
+                    android:text="Address of Restaurant"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/opening_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:gravity="left"
+                        android:text="Opening Time"
+                        android:textColor="@android:color/black"
+                        android:textSize="12sp"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/hiphon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:gravity="left"
+                        android:text=" - "
+                        android:textColor="@android:color/black"
+                        android:textSize="12sp"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/closing_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:gravity="left"
+                        android:text="Closing Time"
+                        android:textColor="@android:color/black"
+                        android:textSize="12sp"
+                        android:textStyle="italic" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

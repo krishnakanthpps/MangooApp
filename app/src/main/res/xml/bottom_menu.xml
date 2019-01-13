@@ -1,0 +1,30 @@
+<tabs xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <tab
+        id="@+id/tab_menu"
+        icon="@drawable/ic_restaurant_black_24dp"
+        iconOnly="true"
+        inActiveColor="@android:color/black"
+        activeColor="@color/dark_red"/>
+
+    <tab
+        id="@+id/tab_search"
+        icon="@drawable/ic_favorite_black_24dp"
+        iconOnly="true"
+        inActiveColor="@android:color/black"
+        activeColor="@color/dark_red"/>
+
+    <tab
+        id="@+id/tab_cart"
+        icon="@drawable/ic_shopping_cart_black_24dp"
+        iconOnly="true"
+        inActiveColor="@android:color/black"
+        activeColor="@color/dark_red"/>
+
+    <tab
+        id="@+id/tab_profile"
+        icon="@drawable/ic_account_circle_black_24dp"
+        iconOnly="true"
+        inActiveColor="@android:color/black"
+        activeColor="@color/dark_red"/>
+</tabs>

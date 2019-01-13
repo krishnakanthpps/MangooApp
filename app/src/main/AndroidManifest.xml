@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.mangoofood.mangooapp">
+    package="in.mangoo.mangooonlinefooddelivery">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDqoRcNfgEgsglHA_ToFZR9medvr0NU3Tk" />
+            android:value="AIzaSyBV7tEIs2KQ4n6YfB5_vdpBibLkitgX7Vo" />
         <meta-data
             android:name="com.facebook.accountkit.ApplicationName"
             android:value="@string/app_name" />
@@ -35,16 +35,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LogIn" />
-        <activity android:name=".SignUp" />
         <activity
             android:name=".Home"
             android:label="@string/title_activity_home"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".FoodList" />
-        <activity android:name=".FoodDetail" />
-        <activity android:name=".Cart" />
-        <activity android:name=".OrderStatus" />
+        <activity
+            android:name=".FoodList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FoodDetail"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Cart"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrderStatus"
+            android:screenOrientation="portrait" />
 
         <service android:name=".Service.MyFirebaseMessaging">
             <intent-filter>
@@ -52,17 +59,44 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ShowComment" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".Onboard" />
+        <activity
+            android:name=".ShowComment"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Onboard"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.razorpay.ApiKey"
             android:value="rzp_test_eXiJeMlNzXt3Yl" />
 
-        <activity android:name=".FavouritesActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".RestaurantList"></activity>
+        <activity
+            android:name=".PlaceOrder"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FavouritesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrderDetail"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrderFailed"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RestaurantList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".TrackingORder"
+            android:label="@string/title_activity_tracking_order" />
     </application>
 
 </manifest>
