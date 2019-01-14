@@ -12,6 +12,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +61,7 @@ import java.util.Map;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Database.Database;
+import in.mangoo.mangooonlinefooddelivery.Model.Coupon;
 import in.mangoo.mangooonlinefooddelivery.Model.DataMessage;
 import in.mangoo.mangooonlinefooddelivery.Model.MyResponse;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
@@ -78,9 +81,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class PlaceOrder extends AppCompatActivity implements PaymentResultListener {
 
     CardView onlineCard, walletCard, codCard;
-    ImageView check1, check2, check3;
+    ImageView check1, check2, check3, coupon_delete, coupon_select;
+    RelativeLayout apply_coupon_rlyt;
 
-    TextView currentAddress, edtComment, txtTotalPrice, edtAmount, edtDelivery, edtDiscount;
+    TextView currentAddress, edtComment, txtTotalPrice, edtAmount, edtDelivery, edtDiscount,coupon_detail;
     FButton pay;
 
     Geocoder geocoder;
@@ -92,7 +96,9 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     RequestQueue requestQueue;
     APIService mService;
 
+    String coupon_delivery="";
     String lati, longi;
+    boolean coupon_applied = false;
     Context mContext;
     double latitude, longitude;
 
@@ -106,7 +112,10 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     ImageView backBtn;
     String coordinates,addr;
 
-    int payamount = 0;
+    int payamount = 0,discount=0;
+    int couponRequestCode = 1234;
+    Locale locale = new Locale("en", "IN");
+    NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
 
     @Override
@@ -143,6 +152,12 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         check2 = (ImageView) findViewById(R.id.check2);
         check3 = (ImageView) findViewById(R.id.check3);
 
+        coupon_select = findViewById(R.id.coupon_next_img);
+        coupon_delete = findViewById(R.id.cancel_coupon_img);
+        coupon_detail = findViewById(R.id.coupon_detail);
+
+        apply_coupon_rlyt = findViewById(R.id.apply_coupon_rlyt);
+
         currentAddress = (TextView) findViewById(R.id.curAdd);
         //edtAddress = (TextView)findViewById(R.id.edtAddress);
         edtComment = (TextView) findViewById(R.id.edtComment);
@@ -163,15 +178,21 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         });
 
         Intent intent = getIntent();
-        String total = intent.getStringExtra("Total");
+        final String total = intent.getStringExtra("Total");
         edtAmount.setText(total);
+        coupon_applied = intent.getBooleanExtra("Status",false);
+        if(coupon_applied) {
+            coupon_delete.setVisibility(View.VISIBLE);
+            coupon_select.setVisibility(View.GONE);
+            coupon_delivery = intent.getStringExtra("Delivery_Coupon");
+            coupon_detail.setText("Coupon Applied for Free Delivery :"+coupon_delivery);
+        }
 
-        Locale locale = new Locale("en", "IN");
-        NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
-        int a = 50, b = 0;
+        int a = 50;
+        edtDiscount.setText(fmt.format(discount));
         //edtDelivery.setText(fmt.format(a));
-        edtDiscount.setText(fmt.format(b));
+
 
         try {
             payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
@@ -206,6 +227,31 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                 check3.setVisibility(View.VISIBLE);
                 check1.setVisibility(View.INVISIBLE);
                 check2.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        apply_coupon_rlyt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!coupon_applied) {
+                    Intent intent1 = new Intent(PlaceOrder.this,CouponsActivity.class);
+                    intent1.putExtra("apply",true);
+                    intent1.putExtra("total",payamount);
+                    startActivityForResult(intent1,couponRequestCode);
+                }
+            }
+        });
+
+        coupon_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                coupon_detail.setText("Apply Coupon");
+                txtTotalPrice.setText(fmt.format(payamount));
+                edtDiscount.setText(fmt.format(discount));
+                pay.setText("PAY ₹ " + payamount);
+                coupon_delete.setVisibility(View.GONE);
+                coupon_select.setVisibility(View.VISIBLE);
+                coupon_applied = false;
             }
         });
 
@@ -287,7 +333,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                             edtComment.getText().toString(),
                             String.format("%s, %s",latitude,longitude),
                             "Not assigned",
-                            cart
+                            cart,
+                            coupon_delivery
                     );
 
                     String order_number = String.valueOf(System.currentTimeMillis());
@@ -328,7 +375,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                                 edtComment.getText().toString(),
                                 coordinates,
                                 "Not assigned",
-                                cart
+                                cart,
+                                coupon_delivery
                         );
 
                         final String order_number = String.valueOf(System.currentTimeMillis());
@@ -445,6 +493,42 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == couponRequestCode){
+            if (resultCode == Activity.RESULT_OK){
+                coupon_applied = true;
+                coupon_delete.setVisibility(View.VISIBLE);
+                coupon_select.setVisibility(View.GONE);
+                if (data != null) {
+                    int tot = 0,disc=0;
+                    Coupon coupon = (Coupon) data.getSerializableExtra("coupon");
+                    if(coupon.getType().equals("Price cut")) {
+                        tot = payamount - Integer.parseInt(coupon.getOff());
+                        disc = Integer.parseInt(coupon.getOff());
+                    }
+                    else if(coupon.getType().equals("Percentage off"))
+                    {
+                        tot = payamount -((payamount*Integer.parseInt(coupon.getOff()))/100);
+                        disc = Integer.parseInt(coupon.getOff());
+                    }
+                    else if(coupon.getType().equals("Free Delivery"))
+                    {
+                        tot=payamount;
+                        disc=0;
+                    }
+                    coupon_detail.setText("Coupon Used :"+coupon.getCode());
+                    coupon_delivery=coupon.getCode();
+                    txtTotalPrice.setText(fmt.format(tot));
+                    edtDiscount.setText(fmt.format(disc));
+                    pay.setText("PAY ₹ " + tot);
+                }
+            }
+        }
+
+    }
 
     private void startPayment() {
 
@@ -479,7 +563,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                 edtComment.getText().toString(),
                 coordinates,
                 "Not assigned",
-                cart
+                cart,
+                coupon_delivery
         );
 
         String order_number = String.valueOf(System.currentTimeMillis());

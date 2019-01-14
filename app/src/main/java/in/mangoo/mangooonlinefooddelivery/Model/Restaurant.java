@@ -1,6 +1,5 @@
 package in.mangoo.mangooonlinefooddelivery.Model;
 
-import java.sql.Time;
 
 public class Restaurant {
     private String name,image,addr,openingTime,closingTime;
