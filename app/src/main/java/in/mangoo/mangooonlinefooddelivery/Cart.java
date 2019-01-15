@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -23,8 +24,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabReselectListener;
@@ -43,7 +48,9 @@ import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Database.Database;
 import in.mangoo.mangooonlinefooddelivery.Helper.RecyclerItemTouchHelper;
 import in.mangoo.mangooonlinefooddelivery.Interface.RecyclerItemTouchHelperListener;
+import in.mangoo.mangooonlinefooddelivery.Model.Coupon;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
+import in.mangoo.mangooonlinefooddelivery.Model.Request;
 import in.mangoo.mangooonlinefooddelivery.Model.RestaurantID;
 import in.mangoo.mangooonlinefooddelivery.Remote.APIService;
 import in.mangoo.mangooonlinefooddelivery.Remote.IGoogleService;
@@ -63,6 +70,8 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
     
     public TextView txtTotalPrice;
     public String address;
+    boolean coupon_applied = false;
+    String coupon_code;
 
     FButton btnPlace;
 
@@ -109,7 +118,43 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
 
         database = FirebaseDatabase.getInstance();
         requests = database.getReference("Requests");
-        
+
+        DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference("coupons");
+        Query query = mFirebaseDatabaseReference.orderByChild("type").equalTo("Free Delivery");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data:dataSnapshot.getChildren()){
+                    coupon_applied = true;
+                    Coupon coupon = data.getValue(Coupon.class);
+                    coupon_code = coupon.getCode();
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Requests");
+                    Query query1 = databaseReference.orderByChild("phone").equalTo(Common.currentUser.getPhone());
+                    query1.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
+                            for(DataSnapshot data1:dataSnapshot1.getChildren())
+                            {
+                                Request request = data1.getValue(Request.class);
+                                if(request.getCoupon().equals(coupon_code))
+                                    coupon_applied = false;
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         recyclerView = (RecyclerView)findViewById(R.id.listCart);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -188,6 +233,10 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
                     else {
                         Intent intent = new Intent(Cart.this, PlaceOrder.class);
                         intent.putExtra("Total", edtAmount.getText().toString());
+                        intent.putExtra("Status",coupon_applied);
+                        if(coupon_applied) {
+                            intent.putExtra("Delivery_Coupon",coupon_code);
+                        }
                         startActivity(intent);
                     }
                 }

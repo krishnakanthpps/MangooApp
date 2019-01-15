@@ -216,7 +216,9 @@ public class SearchActivity extends AppCompatActivity {
                                     "1",
                                     model.getPrice(),
                                     model.getDiscount(),
-                                    model.getImage()
+                                    model.getImage(),
+                                    Common.restName,
+                                    "1"
                             ));
                         }
                         else

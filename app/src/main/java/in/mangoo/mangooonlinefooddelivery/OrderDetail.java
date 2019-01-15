@@ -1,21 +1,28 @@
 package in.mangoo.mangooonlinefooddelivery;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import in.mangoo.mangooonlinefooddelivery.Common.Common;
+import in.mangoo.mangooonlinefooddelivery.Model.Feedback;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
 import in.mangoo.mangooonlinefooddelivery.Model.Request;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.OrderViewHolder;
@@ -87,6 +94,47 @@ public class OrderDetail extends AppCompatActivity {
             }
         });
 
+        showFeedbackDialog();
+
+    }
+
+    private void showFeedbackDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(OrderDetail.this);
+        alertDialog.setTitle("Feedback");
+        alertDialog.setMessage("Please let us know if any changes are required");
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View layout_feed = inflater.inflate(R.layout.feedback_layout,null);
+
+        final MaterialEditText edtFeed = (MaterialEditText)layout_feed.findViewById(R.id.edtFeedback);
+
+        alertDialog.setView(layout_feed);
+
+        alertDialog.setPositiveButton("SEND", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                DatabaseReference feedbacks =FirebaseDatabase.getInstance().getReference("Feedback");
+                Feedback feedback = new Feedback(
+                        Common.currentUser.getPhone(),
+                        edtFeed.getText().toString()
+                );
+
+                String feedback_number = String.valueOf(System.currentTimeMillis());
+                feedbacks.child(feedback_number).setValue(feedback);
+
+                Toast.makeText(OrderDetail.this, "Feedback Sent", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+
+                dialogInterface.dismiss();
+
+            }
+        });
+        alertDialog.show();
     }
 
     @Override

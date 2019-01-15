@@ -116,6 +116,9 @@
         <activity android:name=".EditProfile" />
         <activity android:name=".TrackOrder" />
         <activity android:name=".About"></activity>
+        <activity android:name=".EditProfile"></activity>
+        <activity android:name=".CouponsActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

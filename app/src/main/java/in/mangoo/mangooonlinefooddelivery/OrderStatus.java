@@ -2,17 +2,16 @@ package in.mangoo.mangooonlinefooddelivery;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -25,13 +24,9 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabSelectListener;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Database.Database;
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
-import in.mangoo.mangooonlinefooddelivery.Model.Order;
 import in.mangoo.mangooonlinefooddelivery.Model.Request;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.OrderViewHolder;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -130,7 +125,7 @@ public class OrderStatus extends AppCompatActivity {
         adapter = new FirebaseRecyclerAdapter<Request, OrderViewHolder>(orderOptions) {
 
             @Override
-            protected void onBindViewHolder(@NonNull OrderViewHolder viewHolder,final int position, @NonNull final Request model) {
+            protected void onBindViewHolder(@NonNull OrderViewHolder viewHolder, final int position, @NonNull final Request model) {
 
                 viewHolder.txtOrderId.setText("Order #" + adapter.getRef(position).getKey());
                 viewHolder.txtOrderStatus.setText(convertCodetoStatus(model.getStatus()));

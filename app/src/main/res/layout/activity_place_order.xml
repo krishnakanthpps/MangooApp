@@ -465,6 +465,45 @@
 
             </LinearLayout>
 
+            <RelativeLayout
+                android:id="@+id/apply_coupon_rlyt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#fff"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/img1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_card_giftcard_black_24dp"/>
+
+                <TextView
+                    android:id="@+id/coupon_detail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/img1"
+                    android:text="Apply Coupon"
+                    android:textStyle="bold"
+                    android:layout_marginStart="10dp"/>
+
+                <ImageView
+                    android:id="@+id/coupon_next_img"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"/>
+
+                <ImageView
+                    android:id="@+id/cancel_coupon_img"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_close_black_24dp"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
