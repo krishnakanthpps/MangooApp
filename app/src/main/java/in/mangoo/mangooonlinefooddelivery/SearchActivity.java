@@ -1,18 +1,23 @@
 package in.mangoo.mangooonlinefooddelivery;
 
 import android.content.Intent;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.andremion.counterfab.CounterFab;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -21,11 +26,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Database.Database;
@@ -34,6 +46,7 @@ import in.mangoo.mangooonlinefooddelivery.Model.Favourites;
 import in.mangoo.mangooonlinefooddelivery.Model.Food;
 import in.mangoo.mangooonlinefooddelivery.Model.Order;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.FoodViewHolder;
+import xyz.hanks.library.bang.SmallBangView;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -45,10 +58,21 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
 
+    String queryText = "";
+    String searchtext = "";
+
     FirebaseDatabase database;
     DatabaseReference foodList;
 
+    CounterFab fab;
+    BottomNavigationViewEx bnve;
+    SmallBangView smallBangView;
+    BottomBar bottomBar;
+    BottomBarTab cart;
+
     Database localDB;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +80,15 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         database = FirebaseDatabase.getInstance();
-        foodList = database.getReference("Foods");
+        foodList = database.getReference("Restaurants").child(Common.restaurantSelected).child("detail").child("Foods");
 
         localDB = new Database(this);
 
 
-        recyclerView = (RecyclerView)findViewById(R.id.recycler_search);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
 
         materialSearchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
         materialSearchBar.setHint("Search Food..");
-        loadSuggest();
+//        loadSuggest();
         materialSearchBar.setCardViewElevation(10);
         materialSearchBar.addTextChangeListener(new TextWatcher() {
             @Override
@@ -84,10 +104,15 @@ public class SearchActivity extends AppCompatActivity {
                         suggest.add(search);
                 }
                 materialSearchBar.setLastSuggestions(suggest);
+                startSearch(s);
+
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+
+
 
             }
         });
@@ -112,18 +137,63 @@ public class SearchActivity extends AppCompatActivity {
             public void onButtonClicked(int buttonCode) {
 
             }
+
         });
 
+
+
+        recyclerView = (RecyclerView)findViewById(R.id.recycler_search);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+
         loadAllFoods();
+
+
     }
+
+    public static String toTitleCase(String str) {
+
+        if (str == null) {
+            return null;
+        }
+
+        boolean space = true;
+        StringBuilder builder = new StringBuilder(str);
+        final int len = builder.length();
+
+        for (int i = 0; i < len; ++i) {
+            char c = builder.charAt(i);
+            if (space) {
+                if (!Character.isWhitespace(c)) {
+                    // Convert to title case and switch out of whitespace mode.
+                    builder.setCharAt(i, Character.toTitleCase(c));
+                    space = false;
+                }
+            } else if (Character.isWhitespace(c)) {
+                space = true;
+            } else {
+                builder.setCharAt(i, Character.toLowerCase(c));
+            }
+        }
+
+        return builder.toString();
+    }
+
+
 
     private void loadAllFoods() {
 
-        Query searchByName = foodList;
+        queryText = materialSearchBar.getText().toString();
+
+        Query searchByName = foodList.orderByChild("Name").startAt(queryText).endAt(queryText+"\uf8ff");
 
         FirebaseRecyclerOptions<Food> foodOptions = new FirebaseRecyclerOptions.Builder<Food>()
                 .setQuery(searchByName,Food.class)
                 .build();
+
+
 
         adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(foodOptions) {
             @Override
@@ -146,9 +216,7 @@ public class SearchActivity extends AppCompatActivity {
                                     "1",
                                     model.getPrice(),
                                     model.getDiscount(),
-                                    model.getImage(),
-                                    Common.restaurantSelected,
-                                    "1"
+                                    model.getImage()
                             ));
                         }
                         else
@@ -156,6 +224,7 @@ public class SearchActivity extends AppCompatActivity {
                             new Database(getBaseContext()).increaseCart(Common.currentUser.getPhone(),adapter.getRef(position).getKey());
                         }
                         Toast.makeText(SearchActivity.this, "Added to Cart !", Toast.LENGTH_SHORT).show();
+                        cart.setBadgeCount(new Database(SearchActivity.this).getCountCart(Common.currentUser.getPhone()));
                     }
                 });
 
@@ -221,8 +290,16 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+
     private void startSearch(CharSequence text) {
-        Query searchByName = foodList.orderByChild("Name").equalTo(text.toString());
+
+        queryText = materialSearchBar.getText();
+
+        searchtext =  toTitleCase(queryText);
+
+
+        Query searchByName = foodList.orderByChild("Name").startAt(searchtext).endAt(searchtext+"\uf8ff");
+
 
         FirebaseRecyclerOptions<Food> foodOptions = new FirebaseRecyclerOptions.Builder<Food>()
                 .setQuery(searchByName,Food.class)
@@ -263,35 +340,46 @@ public class SearchActivity extends AppCompatActivity {
         recyclerView.setAdapter(searchAdapter);
     }
 
-    private void loadSuggest() {
-        foodList.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//    private void loadSuggest() {
+//        foodList.addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                        for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
+//                        {
+//                            Food item = postSnapshot.getValue(Food.class);
+//                            suggestList.add(item.getName());
+//                        }
+//                        materialSearchBar.setLastSuggestions(suggestList);
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+//    }
 
-                        for(DataSnapshot postSnapshot:dataSnapshot.getChildren())
-                        {
-                            Food item = postSnapshot.getValue(Food.class);
-                            suggestList.add(item.getName());
-                        }
-                        materialSearchBar.setLastSuggestions(suggestList);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(adapter != null) {
+            adapter.stopListening();
+        }
+        if(searchAdapter != null) {
+            searchAdapter.stopListening();
+        }
 
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
     }
 
     @Override
-    protected void onStart() {
-        if(adapter!=null)
-            adapter.stopListening();
-        if(searchAdapter!=null)
-            searchAdapter.stopListening();
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+        loadAllFoods();
+
     }
+
 
     @Override
     public void onBackPressed() {
