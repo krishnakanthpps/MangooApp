@@ -128,24 +128,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
                     coupon_applied = true;
                     Coupon coupon = data.getValue(Coupon.class);
                     coupon_code = coupon.getCode();
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Requests");
-                    Query query1 = databaseReference.orderByChild("phone").equalTo(Common.currentUser.getPhone());
-                    query1.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
-                            for(DataSnapshot data1:dataSnapshot1.getChildren())
-                            {
-                                Request request = data1.getValue(Request.class);
-                                if(request.getCoupon().equals(coupon_code))
-                                    coupon_applied = false;
-                            }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
                 }
             }
 

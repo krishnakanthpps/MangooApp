@@ -34,6 +34,7 @@ public class CouponsActivity extends AppCompatActivity {
     boolean show_apply = false;
     boolean used=false;
     RecyclerView recyclerView;
+    Intent intent = getIntent();
     int payAmount = 0;
 
     FirebaseRecyclerOptions<Coupon> options = new FirebaseRecyclerOptions.Builder<Coupon>()
@@ -42,7 +43,6 @@ public class CouponsActivity extends AppCompatActivity {
                             .child("coupons")
                     ,Coupon.class)
             .build();
-
     FirebaseRecyclerAdapter<Coupon,CouponViewHolder> adapter = new FirebaseRecyclerAdapter<Coupon, CouponViewHolder>(options) {
         @Override
         public CouponViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -85,12 +85,14 @@ public class CouponsActivity extends AppCompatActivity {
                             }
                             else
                             {
-                                if (payAmount < Integer.parseInt(model.getMaxprice()) && payAmount > Integer.parseInt(model.getMinprice())) {
+                                if (payAmount <Integer.parseInt(model.getMaxprice()) && payAmount > Integer.parseInt(model.getMinprice())) {
                                     Intent returnIntent = new Intent();
                                     returnIntent.putExtra("coupon", model);
                                     setResult(Activity.RESULT_OK, returnIntent);
                                     finish();
                                 }
+                                else
+                                    Toast.makeText(CouponsActivity.this, "Coupon Not Applicable", Toast.LENGTH_SHORT).show();
                             }
                         }
 

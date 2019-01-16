@@ -128,6 +128,7 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     CheckBox normal,schedule;
     String deliveryType = "",freeDelivery = "false";
 
+    int PAYAMOUNT = 0;
     int payamount = 0,discount=0;
     int couponRequestCode = 1234;
     Locale locale = new Locale("en", "IN");
@@ -460,13 +461,19 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
     });
 
+        try {
+            PAYAMOUNT = fmt.parse(txtTotalPrice.getText().toString()).intValue();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        final int finalPAYAMOUNT = PAYAMOUNT;
         apply_coupon_rlyt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!coupon_applied) {
                     Intent intent1 = new Intent(PlaceOrder.this,CouponsActivity.class);
                     intent1.putExtra("apply",true);
-                    intent1.putExtra("total",payamount);
+                    intent1.putExtra("total", finalPAYAMOUNT);
                     startActivityForResult(intent1,couponRequestCode);
                 }
             }
@@ -476,9 +483,9 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             @Override
             public void onClick(View view) {
                 coupon_detail.setText("Apply Coupon");
-                txtTotalPrice.setText(fmt.format(payamount));
+                txtTotalPrice.setText(fmt.format(finalPAYAMOUNT));
                 edtDiscount.setText(fmt.format(discount));
-                pay.setText("PAY ₹ " + payamount);
+                pay.setText("PAY ₹ " + finalPAYAMOUNT);
                 coupon_delete.setVisibility(View.GONE);
                 coupon_select.setVisibility(View.VISIBLE);
                 coupon_applied = false;
@@ -664,12 +671,12 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                     int tot = 0,disc=0;
                     Coupon coupon = (Coupon) data.getSerializableExtra("coupon");
                     if(coupon.getType().equals("Price cut")) {
-                        tot = payamount - Integer.parseInt(coupon.getOff());
+                        tot = PAYAMOUNT - Integer.parseInt(coupon.getOff());
                         disc = Integer.parseInt(coupon.getOff());
                     }
                     else if(coupon.getType().equals("Percentage off"))
                     {
-                        tot = payamount -((payamount*Integer.parseInt(coupon.getOff()))/100);
+                        tot = PAYAMOUNT -((payamount*Integer.parseInt(coupon.getOff()))/100);
                         disc = Integer.parseInt(coupon.getOff());
                     }
                     coupon_detail.setText("Coupon Used :"+coupon.getCode());
