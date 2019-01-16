@@ -4,7 +4,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.gms.vision.text.Line;
 
 import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.R;
@@ -13,6 +16,8 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     public TextView txtOrderId,txtOrderStatus,txtOrderTotal,txtOrderDate;
     private ItemClickListener itemClickListener;
+
+    public static LinearLayout statusCOlor;
 
     public ImageView btn_delete;
 
@@ -28,6 +33,7 @@ public class OrderViewHolder extends RecyclerView.ViewHolder implements View.OnC
         txtOrderStatus = (TextView)itemView.findViewById(R.id.order_status);
         btn_delete = (ImageView)itemView.findViewById(R.id.btnDelete);
         txtOrderDate = (TextView)itemView.findViewById(R.id.order_date);
+        statusCOlor = (LinearLayout)itemView.findViewById(R.id.StatusColor);
         itemView.setOnClickListener(this);
 
 

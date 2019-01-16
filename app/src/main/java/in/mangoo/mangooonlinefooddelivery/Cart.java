@@ -71,7 +71,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
     public TextView txtTotalPrice;
     public String address;
     boolean coupon_applied = false;
-    String coupon_code;
+    String coupon_code,freeDelivery = "false";
 
     FButton btnPlace;
 
@@ -233,6 +233,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
                     else {
                         Intent intent = new Intent(Cart.this, PlaceOrder.class);
                         intent.putExtra("Total", edtAmount.getText().toString());
+                        intent.putExtra("payamount",txtTotalPrice.getText().toString());
                         intent.putExtra("Status",coupon_applied);
                         if(coupon_applied) {
                             intent.putExtra("Delivery_Coupon",coupon_code);
@@ -244,6 +245,8 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
                     Toast.makeText(Cart.this, "Your cart is empty.", Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
         Locale locale = new Locale("en","IN");
         NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
@@ -267,7 +270,7 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
             total += (Integer.parseInt(order.getPrice())) * (Integer.parseInt(order.getQuantity()));
 
         Locale locale = new Locale("en","IN");
-        NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+        final NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
         edtAmount.setText(fmt.format(total));
         int a = 50,b =0;
@@ -279,9 +282,25 @@ public class Cart extends AppCompatActivity implements  RecyclerItemTouchHelperL
         }
         else
         {
-            int deliveryCharge = 0;
-            deliveryCharge = calculateDelivery();
-            edtDelivery.setText(fmt.format(deliveryCharge));
+            database.getReference("FD").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    freeDelivery = (String) dataSnapshot.getValue();
+                    if (freeDelivery.equals("true"))
+                        edtDelivery.setText(fmt.format(0));
+                    else {
+                        int deliveryCharge = 0;
+                        deliveryCharge = calculateDelivery();
+                        edtDelivery.setText(fmt.format(deliveryCharge));
+                    }
+                    Log.d("TAG","ORDER FREE "+freeDelivery );
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
             edtDiscount.setText(fmt.format(b));
         }
         try {

@@ -30,7 +30,8 @@
             android:value="@string/account_kit_client_token" />
 
         <activity android:name="com.facebook.accountkit.ui.AccountKitActivity" />
-        <activity android:name=".Splash">
+        <activity android:name=".Splash"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -112,11 +113,14 @@
         <activity
             android:name=".RestaurantList"
             android:screenOrientation="portrait" />
-        <activity android:name=".Profile" />
-        <activity android:name=".EditProfile" />
-        <activity android:name=".TrackOrder" />
-        <activity android:name=".About"></activity>
-        <activity android:name=".EditProfile"></activity>
+        <activity android:name=".Profile"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".EditProfile"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".TrackOrder"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".About"
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".CouponsActivity"
             android:screenOrientation="portrait"/>
     </application>

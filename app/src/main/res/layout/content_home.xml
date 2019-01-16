@@ -30,18 +30,6 @@
                 android:layout_height="170dp"
                 android:src="@drawable/background"/>
 
-            <ImageView
-                android:id="@+id/btnSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_gravity="end"
-                android:layout_marginStart="300dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="8dp"
-                android:accessibilityHeading="false"
-                android:src="@drawable/ic_search_black_24dp" />
-
             <android.support.v7.widget.CardView
                 android:layout_below="@+id/rest_image"
                 android:layout_marginRight="10dp"
@@ -62,6 +50,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:textAlignment="center"
                         android:id="@+id/rest_name"
                         android:text="Restaurant Name"
                         android:textSize="26sp"
@@ -70,6 +59,7 @@
                         android:layout_height="wrap_content" />
 
                     <TextView
+                        android:textAlignment="center"
                         android:id="@+id/rest_addr"
                         android:layout_marginTop="5dp"
                         android:text="Address of the Restaurant"
@@ -82,6 +72,19 @@
             </android.support.v7.widget.CardView>
 
         </RelativeLayout>
+
+        <com.mancj.materialsearchbar.MaterialSearchBar
+            android:layout_margin="10dp"
+            android:id="@+id/btnSearch"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="end"
+            android:layout_marginStart="300dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginEnd="8dp"
+            android:accessibilityHeading="false"
+            android:src="@drawable/ic_search_black_24dp" />
 
         <TextView
             android:layout_marginLeft="10dp"

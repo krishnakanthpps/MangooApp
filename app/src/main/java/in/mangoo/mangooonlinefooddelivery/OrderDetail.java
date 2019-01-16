@@ -101,7 +101,7 @@ public class OrderDetail extends AppCompatActivity {
     private void showFeedbackDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(OrderDetail.this);
         alertDialog.setTitle("Feedback");
-        alertDialog.setMessage("Please let us know if any changes are required");
+        alertDialog.setMessage("How was you experience ordering your favourite food using Mangoo? Please provide feedback below");
 
         LayoutInflater inflater = LayoutInflater.from(this);
         View layout_feed = inflater.inflate(R.layout.feedback_layout,null);

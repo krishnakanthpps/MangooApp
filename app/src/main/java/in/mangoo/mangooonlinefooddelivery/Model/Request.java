@@ -15,11 +15,12 @@ public class Request {
     private String deliverBoy;
     private List<Order> foods;
     private String coupon;
+    private String deliveryType;
 
     public Request() {
     }
 
-    public Request(String phone, String name, String address, String paymentMethod, String total, String status, String comment, String latLng, String deliverBoy, List<Order> foods,String coupon) {
+    public Request(String phone, String name, String address, String paymentMethod, String total, String status, String comment, String latLng, String deliverBoy, List<Order> foods, String coupon, String deliveryType) {
         this.phone = phone;
         this.name = name;
         this.address = address;
@@ -31,14 +32,7 @@ public class Request {
         this.deliverBoy = deliverBoy;
         this.foods = foods;
         this.coupon = coupon;
-    }
-
-    public String getCoupon() {
-        return coupon;
-    }
-
-    public void setCoupon(String coupon) {
-        this.coupon = coupon;
+        this.deliveryType = deliveryType;
     }
 
     public String getPhone() {
@@ -119,5 +113,21 @@ public class Request {
 
     public void setFoods(List<Order> foods) {
         this.foods = foods;
+    }
+
+    public String getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(String coupon) {
+        this.coupon = coupon;
+    }
+
+    public String getDeliveryType() {
+        return deliveryType;
+    }
+
+    public void setDeliveryType(String deliveryType) {
+        this.deliveryType = deliveryType;
     }
 }

@@ -28,6 +28,29 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:layout_margin="15dp"
+                android:text="@string/about"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_margin="15dp"
+                android:text="Delivery Terms"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_margin="15dp"
+                android:text="@string/Weather"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_margin="15dp"
+                android:text="@string/Cancellation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

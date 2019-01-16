@@ -35,6 +35,8 @@ import com.transferwise.sequencelayout.SequenceStep;
 
 import org.w3c.dom.Text;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
@@ -158,10 +160,38 @@ public class TrackOrder extends AppCompatActivity {
         deliveryName.setText(intent.getStringExtra("DeliveryBoy"));
         final String status_code = intent.getStringExtra("Status");
 
+        order.child(order_number).child("status").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                String code = (String) dataSnapshot.getValue();
+                setStatus(code);
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         delivery = db.getReference("Driverpool");
         if (deliveryName.getText().toString().equals("Not Assigned"))
         {
-            deliveryPhone.setVisibility(View.INVISIBLE);
+            deliveryPhone.setVisibility(View.GONE);
         }
         else {
             Query query = delivery.orderByChild("name").equalTo(intent.getStringExtra("DeliveryBoy"));

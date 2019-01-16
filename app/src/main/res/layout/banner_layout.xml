@@ -38,7 +38,7 @@
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content" />
 
-                   <xyz.hanks.library.bang.SmallBangView
+                   <!--xyz.hanks.library.bang.SmallBangView
                        android:layout_gravity="center"
                        android:id="@+id/button_bang"
                        android:layout_width="60dp"
@@ -53,7 +53,7 @@
                            android:textColor="@android:color/black"
                            />
 
-                   </xyz.hanks.library.bang.SmallBangView>
+                   </xyz.hanks.library.bang.SmallBangView>-->
 
             </LinearLayout>
 

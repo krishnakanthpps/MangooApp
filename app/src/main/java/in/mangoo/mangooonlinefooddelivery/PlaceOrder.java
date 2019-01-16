@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,10 +25,13 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -58,6 +62,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -120,6 +125,9 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
     ImageView backBtn;
     String coordinates,addr;
 
+    CheckBox normal,schedule;
+    String deliveryType = "",freeDelivery = "false";
+
     int payamount = 0,discount=0;
     int couponRequestCode = 1234;
     Locale locale = new Locale("en", "IN");
@@ -162,6 +170,9 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         check2 = (ImageView) findViewById(R.id.check2);
         check3 = (ImageView) findViewById(R.id.check3);
 
+        normal = (CheckBox)findViewById(R.id.normalDelivery);
+        schedule = (CheckBox) findViewById(R.id.scheduleDelivery);
+
         coupon_select = findViewById(R.id.coupon_next_img);
         coupon_delete = findViewById(R.id.cancel_coupon_img);
         coupon_detail = findViewById(R.id.coupon_detail);
@@ -176,6 +187,21 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
         edtAmount = (TextView) findViewById(R.id.edtAmount);
         edtDelivery = (TextView) findViewById(R.id.edtDelivery);
         edtDiscount = (TextView) findViewById(R.id.edtDiscount);
+
+        if (normal.isChecked())
+            deliveryType = "Normal Delivery";
+        else if (schedule.isChecked())
+            showScheduleDialog();
+
+        schedule.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                showScheduleDialog();
+                //deliveryType = schedule.getText().toString();
+                normal.setChecked(false);
+                schedule.setChecked(true);
+            }
+        });
 
         backBtn = (ImageView) findViewById(R.id.backBtn);
 
@@ -228,31 +254,6 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             }
         });
 
-        apply_coupon_rlyt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!coupon_applied) {
-                    Intent intent1 = new Intent(PlaceOrder.this,CouponsActivity.class);
-                    intent1.putExtra("apply",true);
-                    intent1.putExtra("total",payamount);
-                    startActivityForResult(intent1,couponRequestCode);
-                }
-            }
-        });
-
-        coupon_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                coupon_detail.setText("Apply Coupon");
-                txtTotalPrice.setText(fmt.format(payamount));
-                edtDiscount.setText(fmt.format(discount));
-                pay.setText("PAY ₹ " + payamount);
-                coupon_delete.setVisibility(View.GONE);
-                coupon_select.setVisibility(View.VISIBLE);
-                coupon_applied = false;
-            }
-        });
-
         edtAddress = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         edtAddress.getView().findViewById(R.id.place_autocomplete_search_button).setVisibility(View.GONE);
@@ -283,10 +284,26 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
 
         addr = Common.currentUser.getHomeAddress() + " Karaikal ";
 
-        int deliveryCharge = 0,b=0;
-        deliveryCharge = calculateDelivery();
-        edtDelivery.setText(fmt.format(deliveryCharge));
-        edtDiscount.setText(fmt.format(b));
+        database.getReference("FD").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                freeDelivery = (String) dataSnapshot.getValue();
+                if (freeDelivery.equals("true"))
+                    edtDelivery.setText(fmt.format(0));
+                else {
+                    int deliveryCharge = 0;
+                    deliveryCharge = calculateDelivery();
+                    edtDelivery.setText(fmt.format(deliveryCharge));
+                }
+                Log.d("TAG","ORDER FREE "+freeDelivery );
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        edtDiscount.setText(fmt.format(0));
 
         try {
             payamount += fmt.parse(edtAmount.getText().toString()).intValue() + fmt.parse(edtDelivery.getText().toString()).intValue() + fmt.parse(edtDiscount.getText().toString()).intValue();
@@ -294,8 +311,9 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             e.printStackTrace();
         }
 
-        txtTotalPrice.setText(fmt.format(payamount));
-        pay.setText("PAY ₹ " + payamount);
+        txtTotalPrice.setText(getIntent().getStringExtra("payamount"));
+        Log.d("TAG","PAyamount = "+payamount);
+        pay.setText("PAY "+ getIntent().getStringExtra("payamount"));
 
         pay.setOnClickListener(new View.OnClickListener()
 
@@ -345,7 +363,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                             String.format("%s, %s",latitude,longitude),
                             "Not assigned",
                             cart,
-                            coupon_delivery
+                            coupon_delivery,
+                            deliveryType
                     );
 
                     String order_number = String.valueOf(System.currentTimeMillis());
@@ -388,7 +407,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                                 coordinates,
                                 "Not assigned",
                                 cart,
-                                coupon_delivery
+                                coupon_delivery,
+                                deliveryType
                         );
 
                         final String order_number = String.valueOf(System.currentTimeMillis());
@@ -439,6 +459,50 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
             }
 
     });
+
+        apply_coupon_rlyt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!coupon_applied) {
+                    Intent intent1 = new Intent(PlaceOrder.this,CouponsActivity.class);
+                    intent1.putExtra("apply",true);
+                    intent1.putExtra("total",payamount);
+                    startActivityForResult(intent1,couponRequestCode);
+                }
+            }
+        });
+
+        coupon_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                coupon_detail.setText("Apply Coupon");
+                txtTotalPrice.setText(fmt.format(payamount));
+                edtDiscount.setText(fmt.format(discount));
+                pay.setText("PAY ₹ " + payamount);
+                coupon_delete.setVisibility(View.GONE);
+                coupon_select.setVisibility(View.VISIBLE);
+                coupon_applied = false;
+            }
+        });
+
+    }
+
+    private void showScheduleDialog() {
+
+        Calendar mcurrentTime = Calendar.getInstance();
+        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mcurrentTime.get(Calendar.MINUTE);
+        TimePickerDialog mTimePicker;
+        mTimePicker = new TimePickerDialog(PlaceOrder.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                schedule.setText("Schedule at "+( selectedHour + ":" + selectedMinute ));
+                deliveryType = "Schedule at "+(selectedHour + ":" + selectedMinute);
+            }
+        }, hour, minute, false);//Yes 24 hour time
+        mTimePicker.setTitle("Select Time");
+        mTimePicker.show();
+
     }
 
     public void notifyUser(View v,String order_number) {
@@ -608,11 +672,6 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                         tot = payamount -((payamount*Integer.parseInt(coupon.getOff()))/100);
                         disc = Integer.parseInt(coupon.getOff());
                     }
-                    else if(coupon.getType().equals("Free Delivery"))
-                    {
-                        tot=payamount;
-                        disc=0;
-                    }
                     coupon_detail.setText("Coupon Used :"+coupon.getCode());
                     coupon_delivery=coupon.getCode();
                     txtTotalPrice.setText(fmt.format(tot));
@@ -658,7 +717,8 @@ public class PlaceOrder extends AppCompatActivity implements PaymentResultListen
                 coordinates,
                 "Not assigned",
                 cart,
-                coupon_delivery
+                coupon_delivery,
+                deliveryType
         );
 
         String order_number = String.valueOf(System.currentTimeMillis());

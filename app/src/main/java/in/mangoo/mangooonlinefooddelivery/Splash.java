@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Model.User;
+import in.mangoo.mangooonlinefooddelivery.Service.ListenOrder;
 
 public class Splash extends AppCompatActivity {
 
@@ -54,6 +55,8 @@ public class Splash extends AppCompatActivity {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             User localUser = dataSnapshot.getValue(User.class);
+                                            Intent service = new Intent(Splash.this,ListenOrder.class);
+                                            startService(service);
                                             Intent homeIntent = new Intent(Splash.this, RestaurantList.class);
                                             Common.currentUser = localUser;
                                             startActivity(homeIntent);

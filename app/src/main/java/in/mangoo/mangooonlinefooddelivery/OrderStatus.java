@@ -69,6 +69,8 @@ public class OrderStatus extends AppCompatActivity {
         recyclerView = (RecyclerView)findViewById(R.id.listOrders);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
+        ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+        ((LinearLayoutManager) layoutManager).setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
         backBtn = (ImageView)findViewById(R.id.backBtn);
 
@@ -208,16 +210,26 @@ public class OrderStatus extends AppCompatActivity {
 
     private String convertCodetoStatus(String status) {
 
-        if(status.equals("1"))
+        if(status.equals("1")) {
+            OrderViewHolder.statusCOlor.setBackgroundColor(getResources().getColor(R.color.orange));
             return "Placed";
-        else if(status.equals("2"))
+        }
+        else if(status.equals("2")) {
+            OrderViewHolder.statusCOlor.setBackgroundColor(getResources().getColor(R.color.orange));
             return "Confirmed";
-        else if(status.equals("3"))
+        }
+        else if(status.equals("3")) {
+            OrderViewHolder.statusCOlor.setBackgroundColor(getResources().getColor(R.color.blue));
             return "Cooking";
-        else if(status.equals("4"))
+        }
+        else if(status.equals("4")) {
+            OrderViewHolder.statusCOlor.setBackgroundColor(getResources().getColor(R.color.blue));
             return "On the Way";
-        else
+        }
+        else {
+            OrderViewHolder.statusCOlor.setBackgroundColor(getResources().getColor(R.color.green));
             return "Shipped";
+        }
 
     }
 

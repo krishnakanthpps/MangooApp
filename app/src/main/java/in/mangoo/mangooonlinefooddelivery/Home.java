@@ -3,6 +3,7 @@ package in.mangoo.mangooonlinefooddelivery;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.roughike.bottombar.BottomBar;
@@ -74,6 +76,8 @@ import in.mangoo.mangooonlinefooddelivery.Interface.ItemClickListener;
 import in.mangoo.mangooonlinefooddelivery.Model.Banner;
 import in.mangoo.mangooonlinefooddelivery.Model.Category;
 import in.mangoo.mangooonlinefooddelivery.Model.Food;
+import in.mangoo.mangooonlinefooddelivery.Model.Order;
+import in.mangoo.mangooonlinefooddelivery.Model.Request;
 import in.mangoo.mangooonlinefooddelivery.Model.Restaurant;
 import in.mangoo.mangooonlinefooddelivery.Model.Token;
 import in.mangoo.mangooonlinefooddelivery.ViewHolder.BannerViewHolder;
@@ -90,7 +94,7 @@ public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     FirebaseDatabase database;
-    DatabaseReference category,mName,mAddr,mImage;
+    DatabaseReference category,mName,mAddr,mImage,foodId;
     TextView txtFullName,restaurantName,restaurantAddr;
     ImageView menuBtn,restaurantImage;
 
@@ -102,6 +106,7 @@ public class Home extends AppCompatActivity
     FirebaseRecyclerAdapter<Category,MenuViewHolder>adapter;
 
     SwipeRefreshLayout swipeRefreshLayout;
+    MaterialSearchBar btnSearch;
 
     CounterFab fab;
     BottomBar bottomBar;
@@ -324,6 +329,15 @@ public class Home extends AppCompatActivity
         cart_badge = bottomBar.getTabWithId(R.id.tab_cart);
         cart_badge.setBadgeCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
+        btnSearch = (MaterialSearchBar)findViewById(R.id.btnSearch);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Home.this,SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -370,7 +384,7 @@ public class Home extends AppCompatActivity
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull BannerViewHolder viewHolder, int position, @NonNull final Banner model) {
+            protected void onBindViewHolder(@NonNull final BannerViewHolder viewHolder, final int position, @NonNull final Banner model) {
                 Picasso.with(getBaseContext()).load(model.getImage())
                         .fit()
                         .into(viewHolder.bannerImage);

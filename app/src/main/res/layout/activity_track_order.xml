@@ -139,7 +139,6 @@
                     android:id="@+id/firstStep"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:anchor="30 Nov"
                     app:title="Order Placed"
                     />
 
@@ -147,7 +146,6 @@
                     android:id="@+id/secondStep"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:anchor="Time"
                     app:title="Order Confirmed"
                     />
 
@@ -156,7 +154,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:active="false"
-                    app:anchor="Today"
                     app:title="Waiting for pickup"
                      />
 
@@ -164,7 +161,6 @@
                     android:id="@+id/fourthStep"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:anchor="Time"
                     app:title="Out for Delivery" />
 
                 <com.transferwise.sequencelayout.SequenceStep
@@ -172,7 +168,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:active="true"
-                    app:anchor="2 Dec"
                     app:title="Delivered"
                     />
             </com.transferwise.sequencelayout.SequenceLayout>

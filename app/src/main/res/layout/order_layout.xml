@@ -56,6 +56,7 @@
                 android:layout_height="wrap_content" />
 
             <LinearLayout
+                android:id="@+id/StatusColor"
                 android:layout_margin="10dp"
                 android:padding="5dp"
                 android:background="@color/orange"
@@ -63,7 +64,6 @@
                 android:layout_height="wrap_content">
 
             <TextView
-                android:background="@color/orange"
                 android:id="@+id/order_status"
                 android:gravity="center_vertical|start"
                 android:textAllCaps="true"

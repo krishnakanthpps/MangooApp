@@ -21,6 +21,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import in.mangoo.mangooonlinefooddelivery.Common.Common;
 import in.mangoo.mangooonlinefooddelivery.Model.Request;
 import in.mangoo.mangooonlinefooddelivery.OrderStatus;
@@ -70,7 +73,9 @@ public class ListenOrder extends Service implements ChildEventListener {
 
         Request request = dataSnapshot.getValue(Request.class);
 
-        showNotification(dataSnapshot.getKey(),request);
+        if (Common.currentUser.getPhone().equals(request.getPhone())) {
+            showNotification(dataSnapshot.getKey(), request);
+        }
 
     }
 

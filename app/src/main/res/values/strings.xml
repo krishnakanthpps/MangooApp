@@ -12,7 +12,17 @@
     <string name="restaurants">Restaurants</string>
     <string name="restaurant_locator">Restaurant Locator</string>
 
-    <string name="about"></string>
+    <string name="about"> Mangoo is this first food delivery service which has partnered with your favorite restaurants and hotels in Karaikal.
+        We deliver all kind of foods at your doorsteps. You can render our service to enjoy eating your desired veg and non-veg recipes at the
+        comfort of your home. Simply login to our app by entering your address and selecting the restaurant with items that you would like,
+        we’ll be at your door in about 30-45 minutes. You can follow your order under your account and track it from My Order section. </string>
+
+    <string name="Weather">Although most orders are delivered within an hour, circumstances such as traffic or weather may
+        slightly delay your delivery.</string>
+    
+    <string name="Cancellation">Orders are immediately submitted to the restaurants after being placed. 
+        Once the restaurant starts preparing it, The order cannot be cancelled. 
+        Please contact us with any issues you may have. Our Minimum Ordering Cost is 100 Rupees.</string>
 
     <string name="facebook_app_id">575447299545226</string>
     <string name="facebook_login_protocol_name">fb575447299545226</string>

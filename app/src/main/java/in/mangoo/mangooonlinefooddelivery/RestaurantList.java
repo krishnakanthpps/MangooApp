@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,6 +98,8 @@ public class RestaurantList extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference restaurantId;
     Query query;
+
+    LinearLayout Offers;
 
     NotificationManagerCompat notificationManager;
 
@@ -232,6 +235,16 @@ public class RestaurantList extends AppCompatActivity {
         edtHomeAddress = (TextView)findViewById(R.id.edtHomeAddress);
         edtHomeAddress.setText(Common.currentUser.getHomeAddress());
 
+        Offers = (LinearLayout)findViewById(R.id.Offers);
+        Offers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RestaurantList.this,CouponsActivity.class);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+            }
+        });
+
         edtHomeAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -286,8 +299,8 @@ public class RestaurantList extends AppCompatActivity {
         //setupslider();
         loadBanner();
 
-        Intent service = new Intent(RestaurantList.this,ListenOrder.class);
-        startService(service);
+       /* Intent service = new Intent(RestaurantList.this,ListenOrder.class);
+        startService(service);*/
 
         //ContextCompat.startForegroundService(this,service);
 
